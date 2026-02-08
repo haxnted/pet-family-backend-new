@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\..\Shared\PetFamily.SharedKernel.Application\PetFamily.SharedKernel.Application.csproj"/>
+        <ProjectReference Include="..\Notification.Core\Notification.Core.csproj"/>
+    </ItemGroup>
+
+</Project>

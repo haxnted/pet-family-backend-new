@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Hosts/">
+    <Project Path="Hosts/Auth.Endpoints/Auth.Endpoints.csproj" />
+  </Folder>
+  <Project Path="Auth.Application/Auth.Application.csproj" />
+  <Project Path="Auth.Contracts/Auth.Contracts.csproj" />
+  <Project Path="Auth.Core/Auth.Core.csproj" />
+  <Project Path="Auth.Infrastructure/Auth.Infrastructure.csproj" />
+</Solution>

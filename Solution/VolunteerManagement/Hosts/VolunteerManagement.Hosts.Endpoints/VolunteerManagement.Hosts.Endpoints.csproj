@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <UserSecretsId>8b6533cb-536e-4a3d-a1da-0a6c16ced13e</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+        <PackageReference Include="WolverineFx"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.WebApi\PetFamily.SharedKernel.WebApi.csproj"/>
+        <ProjectReference Include="..\VolunteerManagement.Hosts.DI\VolunteerManagement.Hosts.DI.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Requests\"/>
+    </ItemGroup>
+
+</Project>

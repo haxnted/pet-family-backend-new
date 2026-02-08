@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <PackageId>PetFamily.SharedKernel.WebApi</PackageId>
+        <Version>1.2.10</Version>
+        <Authors>Inullable</Authors>
+        <Company>PetFamily</Company>
+        <Description>Общие WebApi компоненты: GlobalExceptionHandler (RFC 7231, ProblemDetails), Swagger, JWT Authentication, MassTransit, Extensions, Logging (ELK), Metrics (Prometheus), HealthChecks. Поддержка DomainException, UseCaseException и EntityNotFoundException.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/haxnted/pet-family-backend-v2</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/haxnted/pet-family-backend-v2</PackageProjectUrl>
+        <PackageTags>webapi;swagger;jwt;authentication;masstransit;rabbitmq;keycloak;exception-handling;problem-details;rfc7231;elk;prometheus;healthchecks;monitoring;logging;metrics</PackageTags>
+        <PackageReleaseNotes>v1.2.9: Добавлен FileUploadOperationFilter для корректной обработки IFormFile в Swagger; v1.2.0: Добавлены ELK Stack интеграция, Prometheus метрики и HealthChecks extensions</PackageReleaseNotes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.OpenApi" />
+        <PackageReference Include="OpenTelemetry.Exporter.Console" />
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="MassTransit.RabbitMQ" />
+
+        <!-- Logging -->
+        <PackageReference Include="Serilog.AspNetCore" />
+        <PackageReference Include="Serilog.Sinks.Elasticsearch" />
+        <PackageReference Include="Serilog.Enrichers.Environment" />
+        <PackageReference Include="Serilog.Enrichers.Thread" />
+
+        <!-- Metrics -->
+        <PackageReference Include="prometheus-net.AspNetCore" />
+        <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" />
+
+        <!-- Health Checks -->
+        <PackageReference Include="AspNetCore.HealthChecks.Npgsql" />
+        <PackageReference Include="AspNetCore.HealthChecks.RabbitMQ" />
+        <PackageReference Include="AspNetCore.HealthChecks.Uris" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
+    </ItemGroup>
+
+</Project>

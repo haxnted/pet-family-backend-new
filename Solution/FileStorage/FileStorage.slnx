@@ -1,0 +1,15 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Hosts/">
+    <Project Path="Hosts/FileStorage.Api/FileStorage.Api.csproj" />
+    <Project Path="Hosts/FileStorage.Consumers/FileStorage.Consumers.csproj" />
+    <Project Path="Hosts/FileStorage.DI/FileStorage.DI.csproj" />
+  </Folder>
+  <Project Path="FileStorage.Application/FileStorage.Application.csproj" />
+  <Project Path="FileStorage.Contracts/FileStorage.Contracts.csproj" />
+  <Project Path="FileStorage.Infrastructure/FileStorage.Infrastructure.csproj" />
+</Solution>

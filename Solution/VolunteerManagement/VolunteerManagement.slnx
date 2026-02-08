@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Application/">
+    <Project Path="Application/VolunteerManagement.Handlers/VolunteerManagement.Handlers.csproj" />
+    <Project Path="Application/VolunteerManagement.Services/VolunteerManagement.Services.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="VolunteerManagement.Domain/VolunteerManagement.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Hosts/">
+    <Project Path="Hosts/VolunteerManagement.Hosts.Consumers/VolunteerManagement.Hosts.Consumers.csproj" />
+    <Project Path="Hosts/VolunteerManagement.Hosts.DI/VolunteerManagement.Hosts.DI.csproj" />
+    <Project Path="Hosts/VolunteerManagement.Hosts.Endpoints/VolunteerManagement.Hosts.Endpoints.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="VolunteerManagement.Infrastructure/VolunteerManagement.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/" />
+</Solution>

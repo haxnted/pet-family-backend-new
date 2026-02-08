@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>VolunteerManagement.Tests.Architecture</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="NetArchTest.Rules" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Tests\PetFamily.SharedKernel.Tests.csproj" />
+        <ProjectReference Include="..\..\VolunteerManagement.Domain\VolunteerManagement.Domain.csproj" />
+        <ProjectReference Include="..\..\Application\VolunteerManagement.Services\VolunteerManagement.Services.csproj" />
+        <ProjectReference Include="..\..\Application\VolunteerManagement.Handlers\VolunteerManagement.Handlers.csproj" />
+        <ProjectReference Include="..\..\VolunteerManagement.Infrastructure\VolunteerManagement.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Hosts\VolunteerManagement.Hosts.Endpoints\VolunteerManagement.Hosts.Endpoints.csproj" />
+    </ItemGroup>
+
+</Project>

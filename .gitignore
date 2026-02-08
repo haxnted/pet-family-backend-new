@@ -10,7 +10,8 @@
 *.userosscache
 *.sln.docstates
 *.env
-
+*.md
+nuget.config
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -416,3 +417,23 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Claude Code
+.claude/
+.auto-claude/
+
+# JetBrains IDEs (Rider, WebStorm, etc.)
+.idea/
+**/.idea/
+
+# Windows reserved filename artifacts
+nul
+**/nul
+
+# Auto Claude generated files
+.auto-claude-security.json
+.auto-claude-status
+.claude_settings.json
+.worktrees/
+.security-key
+logs/security/

@@ -1,0 +1,29 @@
+# Автоматическая конфигурация datasources для Grafana
+apiVersion: 1
+
+datasources:
+  # Prometheus - метрики
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: '15s'
+      queryTimeout: '60s'
+
+  # Elasticsearch - логи
+  - name: Elasticsearch
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    database: 'petfamily-*'
+    editable: true
+    jsonData:
+      timeField: '@timestamp'
+      esVersion: '8.0.0'
+      logMessageField: 'message'
+      logLevelField: 'level'
+      interval: Daily
+      timeInterval: '15s'

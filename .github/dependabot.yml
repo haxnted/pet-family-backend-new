@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Moscow"
+    open-pull-requests-limit: 10
+
+    groups:
+      sharedkernel:
+        patterns:
+          - "PetFamily.SharedKernel.*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      microsoft:
+        patterns:
+          - "Microsoft.*"
+        update-types:
+          - "patch"
+
+    versioning-strategy: auto
+
+    reviewers:
+      - "haxnted"
+
+    labels:
+      - "dependencies"
+      - "nuget"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"

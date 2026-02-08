@@ -1,0 +1,499 @@
+services:
+  # ===== Databases for each microservice =====
+
+  postgres-auth:
+    image: postgres:17.2
+    container_name: petfamily-postgres-auth
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-volunteer-management:
+    image: postgres:17.2
+    container_name: petfamily-postgres-volunteer-management
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: volunteer_management
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_volunteer_management_data:/var/lib/postgresql/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-notification:
+    image: postgres:17.2
+    container_name: petfamily-postgres-notification
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notification
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_notification_data:/var/lib/postgresql/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-volunteer-request:
+    image: postgres:17.2
+    container_name: petfamily-postgres-volunteer-request
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: volunteer_request
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_volunteer_request_data:/var/lib/postgresql/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-keycloak:
+    image: postgres:17.2
+    container_name: petfamily-postgres-keycloak
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: keycloak
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_keycloak_data:/var/lib/postgresql/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: petfamily-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+      - "15692:15692" # Prometheus metrics
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ../Shared/Infrastructure/rabbitmq/rabbitmq-plugins.conf:/etc/rabbitmq/enabled_plugins
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    container_name: petfamily-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+    ports:
+      - "8080:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    command: start-dev
+
+  minio:
+    image: minio/minio:latest
+    container_name: petfamily-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # API port
+      - "9001:9001"   # Console UI
+    volumes:
+      - minio_data:/data
+    networks:
+      - petfamily-network
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  seq:
+    image: datalust/seq:latest
+    container_name: petfamily-seq
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "admin"
+    ports:
+      - "5341:80"
+    volumes:
+      - seq_data:/data
+    networks:
+      - petfamily-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    container_name: petfamily-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.name=petfamily-cluster
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.3
+    container_name: petfamily-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_NAME=kibana
+      - SERVER_HOST=0.0.0.0
+    ports:
+      - "5601:5601"
+    networks:
+      - petfamily-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  prometheus:
+    image: prom/prometheus:v2.48.1
+    container_name: petfamily-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../Shared/Infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - petfamily-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:10.2.3
+    container_name: petfamily-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../Shared/Infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - petfamily-network
+    depends_on:
+      - prometheus
+      - elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.54
+    container_name: petfamily-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4317:4317"    # OTLP gRPC receiver
+      - "4318:4318"    # OTLP HTTP receiver
+      - "14268:14268"  # Jaeger collector HTTP
+    networks:
+      - petfamily-network
+    restart: unless-stopped
+
+  # ===== Microservices =====
+
+  api-gateway:
+    build:
+      context: ..
+      dockerfile: Solution/ApiGateway/Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-api-gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Keycloak__ClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "6000:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      auth-service:
+        condition: service_started
+      volunteer-management-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+      filestorage-service:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    restart: unless-stopped
+
+  auth-service:
+    build:
+      context: ..
+      dockerfile: Solution/Auth/Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-auth-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Keycloak__ClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "6001:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  volunteer-management-service:
+    build:
+      context: ..
+      dockerfile: Solution/VolunteerManagement/Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-volunteer-management-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Keycloak__ClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "6002:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-volunteer-management:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ..
+      dockerfile: Solution/Notification/Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-notification-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Keycloak__ClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "6003:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-notification:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  filestorage-service:
+    build:
+      context: ..
+      dockerfile: Solution/FileStorage/Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-filestorage-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Keycloak__ClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "6004:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===== Consumers =====
+
+  volunteer-management-consumers:
+    build:
+      context: ..
+      dockerfile: Solution/VolunteerManagement/Dockerfile.consumers
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-volunteer-management-consumers
+    environment:
+      DOTNET_ENVIRONMENT: Docker
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-volunteer-management:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  notification-consumers:
+    build:
+      context: ..
+      dockerfile: Solution/Notification/Dockerfile.consumers
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-notification-consumers
+    environment:
+      DOTNET_ENVIRONMENT: Docker
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-notification:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  filestorage-consumers:
+    build:
+      context: ..
+      dockerfile: Solution/FileStorage/Dockerfile.consumers
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-filestorage-consumers
+    environment:
+      DOTNET_ENVIRONMENT: Docker
+    networks:
+      - petfamily-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  petfamily-network:
+    driver: bridge
+
+volumes:
+  postgres_auth_data:
+  postgres_volunteer_management_data:
+  postgres_notification_data:
+  postgres_volunteer_request_data:
+  postgres_keycloak_data:
+  rabbitmq_data:
+  minio_data:
+  seq_data:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:

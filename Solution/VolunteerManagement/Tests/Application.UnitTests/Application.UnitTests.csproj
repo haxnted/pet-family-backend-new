@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>VolunteerManagement.Tests.Application</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="NSubstitute.Analyzers.CSharp">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Bogus" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Tests\PetFamily.SharedKernel.Tests.csproj" />
+        <ProjectReference Include="..\Domain.UnitTests\Domain.UnitTests.csproj" />
+        <ProjectReference Include="..\..\Application\VolunteerManagement.Services\VolunteerManagement.Services.csproj" />
+        <ProjectReference Include="..\..\Application\VolunteerManagement.Handlers\VolunteerManagement.Handlers.csproj" />
+    </ItemGroup>
+
+</Project>

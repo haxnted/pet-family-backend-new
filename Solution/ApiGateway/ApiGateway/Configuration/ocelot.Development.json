@@ -1,0 +1,350 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/api/auth/register",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamPathTemplate": "/api/auth/register",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6001 }
+      ],
+      "SwaggerKey": "auth",
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 10
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/auth/login",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6001 }
+      ],
+      "SwaggerKey": "auth",
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 30
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/auth/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6001 }
+      ],
+      "SwaggerKey": "auth",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/volunteers/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/volunteers/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6002 }
+      ],
+      "SwaggerKey": "volunteer",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 200
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/volunteers",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/volunteers",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6002 }
+      ],
+      "SwaggerKey": "volunteer",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 200
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/species/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/species/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6002 }
+      ],
+      "SwaggerKey": "volunteer",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 200
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/species",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/species",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6002 }
+      ],
+      "SwaggerKey": "volunteer",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 200
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/notifications/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/notifications/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6003 }
+      ],
+      "SwaggerKey": "notification",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
+    },
+    {
+        "UpstreamPathTemplate": "/api/notifications",
+        "UpstreamHttpMethod": [ "GET", "POST" ],
+        "DownstreamPathTemplate": "/api/notifications",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          { "Host": "localhost", "Port": 6003 }
+        ],
+        "SwaggerKey": "notification",
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        }
+    },
+    {
+      "UpstreamPathTemplate": "/api/applications/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/applications/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6005 }
+      ],
+      "SwaggerKey": "volunteerrequest",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 50
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/applications",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/applications",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6005 }
+      ],
+      "SwaggerKey": "volunteerrequest",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 50
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/restrictions/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/restrictions/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6005 }
+      ],
+      "SwaggerKey": "volunteerrequest",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 30
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/files/upload",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamPathTemplate": "/api/files/upload",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6004 }
+      ],
+      "SwaggerKey": "filestorage",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 20
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/files/{fileId}/download",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/api/files/{fileId}/download",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6004 }
+      ],
+      "SwaggerKey": "filestorage",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/files/{fileId}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ],
+      "DownstreamPathTemplate": "/api/files/{fileId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 6004 }
+      ],
+      "SwaggerKey": "filestorage",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 100
+      }
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "auth",
+      "TransformByOcelotConfig": true,
+      "Config": [
+        {
+          "Name": "Auth API",
+          "Version": "v1",
+          "Url": "http://localhost:6001/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "volunteer",
+      "TransformByOcelotConfig": true,
+      "Config": [
+        {
+          "Name": "Volunteer Management API",
+          "Version": "v1",
+          "Url": "http://localhost:6002/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "notification",
+      "TransformByOcelotConfig": true,
+      "Config": [
+        {
+          "Name": "Notification API",
+          "Version": "v1",
+          "Url": "http://localhost:6003/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "volunteerrequest",
+      "TransformByOcelotConfig": true,
+      "Config": [
+        {
+          "Name": "Volunteer Request API",
+          "Version": "v1",
+          "Url": "http://localhost:6005/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "filestorage",
+      "TransformByOcelotConfig": true,
+      "Config": [
+        {
+          "Name": "FileStorage API",
+          "Version": "v1",
+          "Url": "http://localhost:6004/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:6000"
+  }
+}

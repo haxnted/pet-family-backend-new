@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.WebApi\PetFamily.SharedKernel.WebApi.csproj"/>
+        <ProjectReference Include="..\..\Notification.Application\Notification.Application.csproj"/>
+        <ProjectReference Include="..\..\Notification.Infrastructure\Notification.Infrastructure.csproj"/>
+    </ItemGroup>
+
+</Project>

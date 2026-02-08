@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit.EntityFrameworkCore"/>
+        <PackageReference Include="MassTransit.RabbitMQ"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="MailKit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\..\Shared\PetFamily.SharedKernel.Contracts\PetFamily.SharedKernel.Contracts.csproj"/>
+        <ProjectReference Include="..\Notification.Core\Notification.Core.csproj"/>
+        <ProjectReference Include="..\Notification.Contracts\Notification.Contracts.csproj"/>
+        <ProjectReference Include="..\Notification.Application\Notification.Application.csproj"/>
+    </ItemGroup>
+
+</Project>

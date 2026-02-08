@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="IdentityModel.AspNetCore"/>
+        <PackageReference Include="MassTransit.EntityFrameworkCore"/>
+        <PackageReference Include="MassTransit.RabbitMQ"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Http.Polly"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Shared\PetFamily.SharedKernel.Contracts\PetFamily.SharedKernel.Contracts.csproj"/>
+        <ProjectReference Include="..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
+        <ProjectReference Include="..\Auth.Contracts\Auth.Contracts.csproj"/>
+        <ProjectReference Include="..\Auth.Core\Auth.Core.csproj"/>
+    </ItemGroup>
+
+</Project>

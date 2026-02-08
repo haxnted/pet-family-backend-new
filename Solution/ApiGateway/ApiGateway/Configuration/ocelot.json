@@ -1,0 +1,23 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:6000",
+    "RequestIdKey": "OcsRequestId",
+    "RateLimitOptions": {
+      "ClientIdHeader": "ClientId",
+      "QuotaExceededMessage": "Too many requests. Please try again later.",
+      "RateLimitCounterPrefix": "ocelot",
+      "DisableRateLimitHeaders": false,
+      "HttpStatusCode": 429
+    },
+    "QoSOptions": {
+      "ExceptionsAllowedBeforeBreaking": 3,
+      "DurationOfBreak": 5000,
+      "TimeoutValue": 30000
+    },
+    "LoadBalancerOptions": {
+      "Type": "RoundRobin"
+    }
+  },
+  "Routes": [],
+  "SwaggerEndPoints": []
+}

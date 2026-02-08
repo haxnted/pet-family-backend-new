@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/UnitTests/">
+    <Project Path="Domain.UnitTests\Domain.UnitTests.csproj" />
+    <Project Path="Application.UnitTests\Application.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/IntegrationTests/">
+    <Project Path="IntegrationTests\IntegrationTests.csproj" />
+  </Folder>
+  <Folder Name="/ArchitectureTests/">
+    <Project Path="ArchitectureTests\ArchitectureTests.csproj" />
+  </Folder>
+  <Folder Name="/Shared/">
+    <Project Path="..\..\..\Shared\PetFamily.SharedKernel.Tests\PetFamily.SharedKernel.Tests.csproj" />
+  </Folder>
+</Solution>

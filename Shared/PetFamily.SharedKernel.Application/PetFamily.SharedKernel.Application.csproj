@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <PackageId>PetFamily.SharedKernel.Application</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Inullable</Authors>
+    <Company>PetFamily</Company>
+    <Description>Application-уровень исключений для Clean Architecture микросервисов. Содержит UseCaseException и EntityNotFoundException&lt;T&gt; для обработки ошибок бизнес-логики и отсутствующих сущностей.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/haxnted/pet-family-backend-v2</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/haxnted/pet-family-backend-v2</PackageProjectUrl>
+    <PackageTags>application;clean-architecture;exceptions;use-cases;microservices;entity-not-found</PackageTags>
+    <PackageReleaseNotes>v1.0.0: Начальный релиз с UseCaseException и EntityNotFoundException&lt;T&gt;</PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>

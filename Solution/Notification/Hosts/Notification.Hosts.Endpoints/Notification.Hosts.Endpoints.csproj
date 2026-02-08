@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <UserSecretsId>6f82553e-b503-4909-ae71-0baf264a8021</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.WebApi\PetFamily.SharedKernel.WebApi.csproj"/>
+        <ProjectReference Include="..\Notification.Hosts.DI\Notification.Hosts.DI.csproj"/>
+    </ItemGroup>
+
+</Project>

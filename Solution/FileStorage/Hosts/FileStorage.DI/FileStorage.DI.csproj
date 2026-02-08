@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.WebApi\PetFamily.SharedKernel.WebApi.csproj"/>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\FileStorage.Application\FileStorage.Application.csproj"/>
+        <ProjectReference Include="..\..\FileStorage.Infrastructure\FileStorage.Infrastructure.csproj"/>
+    </ItemGroup>
+
+</Project>

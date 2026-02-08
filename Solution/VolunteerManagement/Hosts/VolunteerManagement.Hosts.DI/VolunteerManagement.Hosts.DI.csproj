@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+        <PackageReference Include="WolverineFx"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.WebApi\PetFamily.SharedKernel.WebApi.csproj"/>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\Application\VolunteerManagement.Handlers\VolunteerManagement.Handlers.csproj"/>
+        <ProjectReference Include="..\..\VolunteerManagement.Infrastructure\VolunteerManagement.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\..\FileStorage\FileStorage.Contracts\FileStorage.Contracts.csproj"/>
+    </ItemGroup>
+
+</Project>

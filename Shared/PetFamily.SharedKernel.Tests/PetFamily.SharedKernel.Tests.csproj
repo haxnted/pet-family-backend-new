@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>false</IsTestProject>
+        <RootNamespace>PetFamily.SharedKernel.Tests</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+        <Using Include="FluentAssertions" />
+        <Using Include="NSubstitute" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Test Frameworks -->
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+
+        <!-- Assertions &amp; Mocking -->
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="NSubstitute" />
+
+        <!-- Test Data Generation -->
+        <PackageReference Include="Bogus" />
+        <PackageReference Include="AutoFixture" />
+
+        <!-- Integration Testing -->
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+        <PackageReference Include="Testcontainers" />
+        <PackageReference Include="Testcontainers.PostgreSql" />
+        <PackageReference Include="Testcontainers.RabbitMq" />
+        <PackageReference Include="Respawn" />
+
+        <!-- MassTransit Testing -->
+        <PackageReference Include="MassTransit.TestFramework" />
+
+        <!-- Architecture Testing -->
+        <PackageReference Include="NetArchTest.Rules" />
+
+        <!-- EF Core -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    </ItemGroup>
+
+</Project>

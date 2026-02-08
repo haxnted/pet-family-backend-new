@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <PackageId>PetFamily.SharedKernel.Domain</PackageId>
+        <Version>1.1.1</Version>
+        <Authors>Inullable</Authors>
+        <Company>PetFamily</Company>
+        <Description>Domain models, бизнес-логика и исключения (DomainException) для DDD микросервисов. Содержит базовые классы для доменного слоя и типизированные ошибки.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/haxnted/pet-family-backend-v2</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/haxnted/pet-family-backend-v2</PackageProjectUrl>
+        <PackageTags>domain;ddd;domain-driven-design;microservices;exceptions;domain-exceptions</PackageTags>
+        <PackageReleaseNotes>v1.1.0: Добавлен DomainException для валидации бизнес-правил</PackageReleaseNotes>
+    </PropertyGroup>
+
+</Project>

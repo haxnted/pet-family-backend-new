@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <UserSecretsId>dotnet-Notification.Hosts.Consumers-86052153-0747-4249-9f82-9d844921990b</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting"/>
+        <PackageReference Include="MassTransit"/>
+        <PackageReference Include="MassTransit.RabbitMQ"/>
+        <PackageReference Include="MassTransit.EntityFrameworkCore"/>
+        <PackageReference Include="Serilog.Extensions.Hosting"/>
+        <PackageReference Include="Serilog.Sinks.Console"/>
+        <PackageReference Include="Serilog.Sinks.Seq"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Contracts\PetFamily.SharedKernel.Contracts.csproj"/>
+        <ProjectReference Include="..\Notification.Hosts.DI\Notification.Hosts.DI.csproj"/>
+    </ItemGroup>
+
+</Project>

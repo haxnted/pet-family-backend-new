@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <PackageId>PetFamily.SharedKernel.Contracts</PackageId>
+        <Version>1.0.6</Version>
+        <Authors>Inullable</Authors>
+        <Company>PetFamily</Company>
+        <Description>Контракты для integration events в проекте PetFamily. Содержит события для интеграции между микросервисами.</Description>
+        <RepositoryUrl>https://github.com/pet-family-backend-v2</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/pet-family-backend-v2</PackageProjectUrl>
+        <PackageTags>petfamily;contracts;events;integration;masstransit</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit.Abstractions"/>
+    </ItemGroup>
+
+</Project>

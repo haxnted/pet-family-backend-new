@@ -1,0 +1,78 @@
+# Prometheus Configuration для PetFamily микросервисов
+global:
+  scrape_interval: 15s       # Частота сбора метрик
+  evaluation_interval: 15s   # Частота вычисления правил
+  external_labels:
+    cluster: 'petfamily-dev'
+    environment: 'docker'
+
+# Конфигурация для сбора метрик с микросервисов
+scrape_configs:
+  # Prometheus самомониторинг
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['api-gateway:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'api-gateway'
+
+  # Auth Microservice
+  - job_name: 'auth-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['auth-api:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'auth-api'
+
+  # VolunteerManagement API
+  - job_name: 'volunteer-management-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['volunteer-management-api:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'volunteer-management-api'
+
+  # Notification API
+  - job_name: 'notification-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['notification-api:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'notification-api'
+
+  # FileStorage API
+  - job_name: 'filestorage-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['filestorage-api:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'filestorage-api'
+
+  # PostgreSQL Exporter (опционально, можно добавить позже)
+  # - job_name: 'postgres'
+  #   static_configs:
+  #     - targets: ['postgres-exporter:9187']
+
+  # RabbitMQ (встроенные метрики через management plugin)
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15692']  # RabbitMQ Prometheus plugin port
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'rabbitmq'

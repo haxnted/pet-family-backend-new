@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- Set default TargetFramework for projects that don't specify it -->
+    <TargetFramework Condition="'$(TargetFramework)' == ''">net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
