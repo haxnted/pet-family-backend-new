@@ -44,6 +44,16 @@
     <!-- IntegrationTests исключён из решения: требуют Docker. Запуск: dotnet test Solution/VolunteerManagement/Tests/IntegrationTests/IntegrationTests.csproj -->
     <Project Path="VolunteerManagement/Tests/ArchitectureTests/ArchitectureTests.csproj" />
   </Folder>
+  <Folder Name="/Conversation/">
+    <Project Path="Conversation/Conversation.Domain/Conversation.Domain.csproj" />
+    <Project Path="Conversation/Conversation.Contracts/Conversation.Contracts.csproj" />
+    <Project Path="Conversation/Application/Conversation.Services/Conversation.Services.csproj" />
+    <Project Path="Conversation/Application/Conversation.Handlers/Conversation.Handlers.csproj" />
+    <Project Path="Conversation/Conversation.Infrastructure/Conversation.Infrastructure.csproj" />
+    <Project Path="Conversation/Hosts/Conversation.Hosts.DI/Conversation.Hosts.DI.csproj" />
+    <Project Path="Conversation/Hosts/Conversation.Hosts.Endpoints/Conversation.Hosts.Endpoints.csproj" />
+    <Project Path="Conversation/Hosts/Conversation.Hosts.Consumers/Conversation.Hosts.Consumers.csproj" />
+  </Folder>
   <Folder Name="/Shared/">
     <Project Path="../Shared/PetFamily.SharedKernel.Application/PetFamily.SharedKernel.Application.csproj" />
     <Project Path="../Shared/PetFamily.SharedKernel.Contracts/PetFamily.SharedKernel.Contracts.csproj" />
