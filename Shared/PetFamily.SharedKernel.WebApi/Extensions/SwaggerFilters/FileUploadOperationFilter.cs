@@ -7,7 +7,7 @@ namespace PetFamily.SharedKernel.WebApi.Extensions.SwaggerFilters;
 /// <summary>
 /// Swagger operation filter для корректной обработки загрузки файлов.
 /// </summary>
-public abstract class FileUploadOperationFilter : IOperationFilter
+public class FileUploadOperationFilter : IOperationFilter
 {
     /// <inheritdoc />
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
