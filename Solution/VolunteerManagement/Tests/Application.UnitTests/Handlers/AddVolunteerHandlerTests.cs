@@ -26,7 +26,6 @@ public sealed class AddVolunteerHandlerTests : UnitTestBase
             Surname = FakeDataGenerator.LastName(),
             Patronymic = FakeDataGenerator.Patronymic(),
             UserId = Guid.NewGuid(),
-            GeneralDescription = FakeDataGenerator.Description(15, 50)
         };
 
         _volunteerServiceMock.AddAsync(
@@ -34,7 +33,6 @@ public sealed class AddVolunteerHandlerTests : UnitTestBase
                 Arg.Any<string>(),
                 Arg.Any<string?>(),
                 Arg.Any<Guid>(),
-                Arg.Any<string>(),
                 Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
@@ -45,7 +43,6 @@ public sealed class AddVolunteerHandlerTests : UnitTestBase
             command.Surname,
             command.Patronymic,
             command.UserId,
-            command.GeneralDescription,
             Arg.Any<CancellationToken>());
     }
 
@@ -58,7 +55,6 @@ public sealed class AddVolunteerHandlerTests : UnitTestBase
             Surname = FakeDataGenerator.LastName(),
             Patronymic = null,
             UserId = Guid.NewGuid(),
-            GeneralDescription = FakeDataGenerator.Description(15, 50)
         };
 
         _volunteerServiceMock.AddAsync(
@@ -66,7 +62,6 @@ public sealed class AddVolunteerHandlerTests : UnitTestBase
                 Arg.Any<string>(),
                 Arg.Any<string?>(),
                 Arg.Any<Guid>(),
-                Arg.Any<string>(),
                 Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("Service error"));
 

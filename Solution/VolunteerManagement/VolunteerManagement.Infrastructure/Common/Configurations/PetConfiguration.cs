@@ -35,9 +35,9 @@ public class PetConfiguration : IEntityTypeConfiguration<Pet>
             .HasMaxLength(NickName.MaxLength)
             .IsRequired();
 
-        builder.Property(p => p.GeneralDescription)
+        builder.Property(p => p.Description)
             .HasConversion(desc => desc.Value, value => Description.Of(value))
-            .HasColumnName("GeneralDescription")
+            .HasColumnName("Description")
             .HasMaxLength(Description.MaxLength)
             .IsRequired();
 
@@ -46,40 +46,6 @@ public class PetConfiguration : IEntityTypeConfiguration<Pet>
             .HasColumnName("HealthInformation")
             .HasMaxLength(Description.MaxLength)
             .IsRequired();
-
-        builder.Property(p => p.PhonePhoneNumber)
-            .HasConversion(phone => phone.Value, value => PhoneNumber.Of(value))
-            .HasColumnName("PhoneNumber")
-            .HasMaxLength(PhoneNumber.MaxLength)
-            .IsRequired();
-
-        builder.Property(p => p.Position)
-            .HasConversion(pos => pos.Value, value => Position.Of(value))
-            .HasColumnName("Position")
-            .IsRequired();
-
-        builder.OwnsOne(p => p.Address, address =>
-        {
-            address.Property(a => a.City)
-                .HasColumnName("City")
-                .HasMaxLength(100)
-                .IsRequired();
-
-            address.Property(a => a.State)
-                .HasColumnName("State")
-                .HasMaxLength(100)
-                .IsRequired();
-
-            address.Property(a => a.Street)
-                .HasColumnName("Street")
-                .HasMaxLength(100)
-                .IsRequired();
-
-            address.Property(a => a.ZipCode)
-                .HasColumnName("ZipCode")
-                .HasMaxLength(20)
-                .IsRequired();
-        });
 
         builder.OwnsOne(p => p.PhysicalAttributes, attributes =>
         {
@@ -118,6 +84,13 @@ public class PetConfiguration : IEntityTypeConfiguration<Pet>
             .HasConversion<string>()
             .HasColumnName("HelpStatus")
             .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Property(p => p.Position)
+            .HasConversion(
+                pos => pos.Value,
+                value => Position.Of(value))
+            .HasColumnName("Position")
             .IsRequired();
 
         builder.Property(p => p.DateCreated)

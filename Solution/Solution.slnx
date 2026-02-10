@@ -4,6 +4,15 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/Account/Application/">
+    <Project Path="Account/Application/Account.Handlers/Account.Handlers.csproj" />
+    <Project Path="Account/Application/Account.Services/Account.Services.csproj" />
+  </Folder>
+  <Folder Name="/Account/Hosts/">
+    <Project Path="Account/Hosts/Account.Hosts.Consumers/Account.Hosts.Consumers.csproj" />
+    <Project Path="Account/Hosts/Account.Hosts.DI/Account.Hosts.DI.csproj" />
+    <Project Path="Account/Hosts/Account.Hosts.Endpoints/Account.Hosts.Endpoints.csproj" />
+  </Folder>
   <Folder Name="/ApiGateway/">
     <Project Path="ApiGateway/ApiGateway/ApiGateway.csproj" />
   </Folder>
@@ -14,10 +23,21 @@
     <Project Path="Auth/Auth.Infrastructure/Auth.Infrastructure.csproj" />
     <Project Path="Auth/Hosts/Auth.Endpoints/Auth.Endpoints.csproj" />
   </Folder>
+  <Folder Name="/Conversation/Application/">
+    <Project Path="Conversation/Application/Conversation.Handlers/Conversation.Handlers.csproj" />
+    <Project Path="Conversation/Application/Conversation.Services/Conversation.Services.csproj" />
+  </Folder>
+  <Folder Name="/Conversation/Hosts/">
+    <Project Path="Conversation/Hosts/Conversation.Hosts.Consumers/Conversation.Hosts.Consumers.csproj" />
+    <Project Path="Conversation/Hosts/Conversation.Hosts.DI/Conversation.Hosts.DI.csproj" />
+    <Project Path="Conversation/Hosts/Conversation.Hosts.Endpoints/Conversation.Hosts.Endpoints.csproj" />
+  </Folder>
   <Folder Name="/FileStorage/">
     <Project Path="FileStorage/FileStorage.Application/FileStorage.Application.csproj" />
     <Project Path="FileStorage/FileStorage.Contracts/FileStorage.Contracts.csproj" />
     <Project Path="FileStorage/FileStorage.Infrastructure/FileStorage.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/FileStorage/Hosts/">
     <Project Path="FileStorage/Hosts/FileStorage.Api/FileStorage.Api.csproj" />
     <Project Path="FileStorage/Hosts/FileStorage.Consumers/FileStorage.Consumers.csproj" />
     <Project Path="FileStorage/Hosts/FileStorage.DI/FileStorage.DI.csproj" />
@@ -27,32 +47,24 @@
     <Project Path="Notification/Notification.Contracts/Notification.Contracts.csproj" />
     <Project Path="Notification/Notification.Core/Notification.Core.csproj" />
     <Project Path="Notification/Notification.Infrastructure/Notification.Infrastructure.csproj" />
-    <Project Path="Notification/Hosts/Notification.Hosts.Consumers/Notification.Hosts.Consumers.csproj" />
-    <Project Path="Notification/Hosts/Notification.Hosts.DI/Notification.Hosts.DI.csproj" />
-    <Project Path="Notification/Hosts/Notification.Hosts.Endpoints/Notification.Hosts.Endpoints.csproj" />
   </Folder>
   <Folder Name="/VolunteerManagement/">
-    <Project Path="VolunteerManagement/Application/VolunteerManagement.Handlers/VolunteerManagement.Handlers.csproj" />
-    <Project Path="VolunteerManagement/Application/VolunteerManagement.Services/VolunteerManagement.Services.csproj" />
     <Project Path="VolunteerManagement/VolunteerManagement.Domain/VolunteerManagement.Domain.csproj" />
     <Project Path="VolunteerManagement/VolunteerManagement.Infrastructure/VolunteerManagement.Infrastructure.csproj" />
-    <Project Path="VolunteerManagement/Hosts/VolunteerManagement.Hosts.Consumers/VolunteerManagement.Hosts.Consumers.csproj" />
-    <Project Path="VolunteerManagement/Hosts/VolunteerManagement.Hosts.DI/VolunteerManagement.Hosts.DI.csproj" />
-    <Project Path="VolunteerManagement/Hosts/VolunteerManagement.Hosts.Endpoints/VolunteerManagement.Hosts.Endpoints.csproj" />
-    <Project Path="VolunteerManagement/Tests/Domain.UnitTests/Domain.UnitTests.csproj" />
-    <Project Path="VolunteerManagement/Tests/Application.UnitTests/Application.UnitTests.csproj" />
-    <!-- IntegrationTests исключён из решения: требуют Docker. Запуск: dotnet test Solution/VolunteerManagement/Tests/IntegrationTests/IntegrationTests.csproj -->
-    <Project Path="VolunteerManagement/Tests/ArchitectureTests/ArchitectureTests.csproj" />
   </Folder>
   <Folder Name="/Conversation/">
     <Project Path="Conversation/Conversation.Domain/Conversation.Domain.csproj" />
     <Project Path="Conversation/Conversation.Contracts/Conversation.Contracts.csproj" />
-    <Project Path="Conversation/Application/Conversation.Services/Conversation.Services.csproj" />
-    <Project Path="Conversation/Application/Conversation.Handlers/Conversation.Handlers.csproj" />
     <Project Path="Conversation/Conversation.Infrastructure/Conversation.Infrastructure.csproj" />
-    <Project Path="Conversation/Hosts/Conversation.Hosts.DI/Conversation.Hosts.DI.csproj" />
-    <Project Path="Conversation/Hosts/Conversation.Hosts.Endpoints/Conversation.Hosts.Endpoints.csproj" />
-    <Project Path="Conversation/Hosts/Conversation.Hosts.Consumers/Conversation.Hosts.Consumers.csproj" />
+  </Folder>
+  <Folder Name="/Account/">
+    <Project Path="Account/Account.Domain/Account.Domain.csproj" />
+    <Project Path="Account/Account.Infrastructure/Account.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Notification/Hosts/">
+    <Project Path="Notification/Hosts/Notification.Hosts.Consumers/Notification.Hosts.Consumers.csproj" />
+    <Project Path="Notification/Hosts/Notification.Hosts.DI/Notification.Hosts.DI.csproj" />
+    <Project Path="Notification/Hosts/Notification.Hosts.Endpoints/Notification.Hosts.Endpoints.csproj" />
   </Folder>
   <Folder Name="/Shared/">
     <Project Path="../Shared/PetFamily.SharedKernel.Application/PetFamily.SharedKernel.Application.csproj" />
@@ -61,5 +73,19 @@
     <Project Path="../Shared/PetFamily.SharedKernel.Infrastructure/PetFamily.SharedKernel.Infrastructure.csproj" />
     <Project Path="../Shared/PetFamily.SharedKernel.Tests/PetFamily.SharedKernel.Tests.csproj" />
     <Project Path="../Shared/PetFamily.SharedKernel.WebApi/PetFamily.SharedKernel.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/VolunteerManagement/Application/">
+    <Project Path="VolunteerManagement/Application/VolunteerManagement.Handlers/VolunteerManagement.Handlers.csproj" />
+    <Project Path="VolunteerManagement/Application/VolunteerManagement.Services/VolunteerManagement.Services.csproj" />
+  </Folder>
+  <Folder Name="/VolunteerManagement/Hosts/">
+    <Project Path="VolunteerManagement/Hosts/VolunteerManagement.Hosts.Consumers/VolunteerManagement.Hosts.Consumers.csproj" />
+    <Project Path="VolunteerManagement/Hosts/VolunteerManagement.Hosts.DI/VolunteerManagement.Hosts.DI.csproj" />
+    <Project Path="VolunteerManagement/Hosts/VolunteerManagement.Hosts.Endpoints/VolunteerManagement.Hosts.Endpoints.csproj" />
+  </Folder>
+  <Folder Name="/VolunteerManagement/Tests/">
+    <Project Path="VolunteerManagement/Tests/Application.UnitTests/Application.UnitTests.csproj" />
+    <Project Path="VolunteerManagement/Tests/ArchitectureTests/ArchitectureTests.csproj" />
+    <Project Path="VolunteerManagement/Tests/Domain.UnitTests/Domain.UnitTests.csproj" />
   </Folder>
 </Solution>

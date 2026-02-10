@@ -21,26 +21,15 @@ public class UploadPetPhotosHandler(
     {
         var petId = PetId.Of(command.PetId);
 
-        // Получаем волонтёра и животное
         var volunteer = await volunteerService.GetAsync(command.VolunteerId, ct);
         if (volunteer == null)
             throw new InvalidOperationException($"Волонтёр с ID {command.VolunteerId} не найден");
 
         var pet = volunteer.GetPetById(petId);
 
-        // Создаём Photo ValueObjects
         var photos = command.PhotoIds.Select(Photo.Create).ToList();
 
-        // Добавляем фотографии к питомцу
         pet.AddPhotos(photos);
-
-        // Сохраняем изменения через UpdateAsync
-        await volunteerService.UpdateAsync(
-            command.VolunteerId,
-            volunteer.GeneralDescription.Value,
-            volunteer.AgeExperience?.Value,
-            volunteer.PhoneNumber?.Value,
-            ct);
 
         logger.LogInformation(
             "Добавлено {Count} фотографий для животного {PetId} волонтёра {VolunteerId}",

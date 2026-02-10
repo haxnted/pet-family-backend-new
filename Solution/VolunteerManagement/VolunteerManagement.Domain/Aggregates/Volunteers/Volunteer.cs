@@ -24,14 +24,11 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     /// </summary>
     /// <param name="id">Идентификатор.</param>
     /// <param name="fullName">Фамилия, Имя, Отчество.</param>
-    /// <param name="generalDescription">Общая информация.</param>
     private Volunteer(
         VolunteerId id,
-        FullName fullName,
-        Description generalDescription) : base(id)
+        FullName fullName) : base(id)
     {
         FullName = fullName;
-        GeneralDescription = generalDescription;
     }
 
     /// <summary>
@@ -40,29 +37,9 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     public FullName FullName { get; private set; }
 
     /// <summary>
-    /// Общее описание сущности.
-    /// </summary>
-    public Description GeneralDescription { get; private set; }
-
-    /// <summary>
-    /// Опыт работы.
-    /// </summary>
-    public AgeExperience? AgeExperience { get; private set; }
-
-    /// <summary>
-    /// Номер телефона.
-    /// </summary>
-    public PhoneNumber? PhoneNumber { get; private set; }
-
-    /// <summary>
     /// Идентификатор пользователя из Auth модуля (если волонтер создан через регистрацию).
     /// </summary>
     public Guid? UserId { get; private set; }
-
-    /// <summary>
-    /// Фотография волонтёра.
-    /// </summary>
-    public Photo? Photo { get; private set; }
 
     private readonly List<Pet> _pets = [];
 
@@ -81,14 +58,12 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     /// </summary>
     /// <param name="id">Идентификатор.</param>
     /// <param name="fullName">Фамилия, Имя, Отчество.</param>
-    /// <param name="generalDescription">Общая информация.</param>
     /// <returns>Волонтер <see cref="Volunteer"/>.</returns>
     public static Volunteer Create(
         VolunteerId id,
-        FullName fullName,
-        Description generalDescription)
+        FullName fullName)
     {
-        return new Volunteer(id, fullName, generalDescription);
+        return new Volunteer(id, fullName);
     }
 
     /// <summary>
@@ -191,22 +166,6 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     }
 
     /// <summary>
-    /// Обновить основную информацию о волонтере.
-    /// </summary>
-    /// <param name="generalDescription">Общая информация.</param>
-    /// <param name="ageExperience">Опыт работы.</param>
-    /// <param name="number">Номер телефона.</param>
-    public void UpdateMainInfo(
-        Description generalDescription,
-        AgeExperience? ageExperience,
-        PhoneNumber? number)
-    {
-        GeneralDescription = generalDescription;
-        AgeExperience = ageExperience;
-        PhoneNumber = number;
-    }
-
-    /// <summary>
     /// Установить связь с пользователем из Auth модуля.
     /// </summary>
     /// <param name="userId">Идентификатор пользователя.</param>
@@ -214,35 +173,6 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     {
         UserId = userId;
     }
-
-    /// <summary>
-    /// Добавить фотографию волонтёра.
-    /// </summary>
-    /// <param name="photo">Фотография.</param>
-    public void AddPhoto(Photo photo)
-    {
-        ArgumentNullException.ThrowIfNull(photo);
-        Photo = photo;
-    }
-
-    /// <summary>
-    /// Обновить фотографию волонтёра.
-    /// </summary>
-    /// <param name="photo">Новая фотография.</param>
-    public void UpdatePhoto(Photo photo)
-    {
-        ArgumentNullException.ThrowIfNull(photo);
-        Photo = photo;
-    }
-
-    /// <summary>
-    /// Удалить фотографию волонтёра.
-    /// </summary>
-    public void RemovePhoto()
-    {
-        Photo = null;
-    }
-
 
     /// <summary>
     /// Передвинуть животное на другую позицию.

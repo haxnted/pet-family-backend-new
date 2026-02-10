@@ -4,6 +4,7 @@ using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using PetFamily.SharedKernel.Application.Exceptions;
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
+using PetFamily.SharedKernel.Infrastructure.Caching;
 using PetFamily.SharedKernel.Tests.Abstractions;
 using PetFamily.SharedKernel.Tests.Fakes;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
@@ -15,12 +16,14 @@ namespace VolunteerManagement.Tests.Application.Services;
 public sealed class VolunteerServiceTests : UnitTestBase
 {
     private readonly IRepository<Volunteer> _repositoryMock;
+    private readonly ICacheService _cacheMock;
     private readonly IVolunteerService _sut;
 
     public VolunteerServiceTests()
     {
         _repositoryMock = Substitute.For<IRepository<Volunteer>>();
-        _sut = CreateVolunteerService(_repositoryMock);
+        _cacheMock = Substitute.For<ICacheService>();
+        _sut = CreateVolunteerService(_repositoryMock, _cacheMock);
     }
 
     #region AddAsync Tests
@@ -32,61 +35,18 @@ public sealed class VolunteerServiceTests : UnitTestBase
         var surname = FakeDataGenerator.LastName();
         var patronymic = FakeDataGenerator.Patronymic();
         var userId = Guid.NewGuid();
-        var description = FakeDataGenerator.Description(15, 50);
 
         Volunteer? capturedVolunteer = null;
         _repositoryMock.AddAsync(Arg.Do<Volunteer>(v => capturedVolunteer = v), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        await _sut.AddAsync(name, surname, patronymic, userId, description, CancellationToken.None);
+        await _sut.AddAsync(name, surname, patronymic, userId, CancellationToken.None);
 
         await _repositoryMock.Received(1).AddAsync(Arg.Any<Volunteer>(), Arg.Any<CancellationToken>());
         capturedVolunteer.Should().NotBeNull();
         capturedVolunteer!.FullName.Name.Should().Be(name);
         capturedVolunteer.FullName.Surname.Should().Be(surname);
         capturedVolunteer.UserId.Should().Be(userId);
-    }
-
-    #endregion
-
-    #region UpdateAsync Tests
-
-    [Fact]
-    public async Task UpdateAsync_WithExistingVolunteer_ShouldUpdateVolunteer()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
-        var newDescription = "Обновленное описание для волонтера";
-        var newExperience = 5;
-        var newPhone = "79991234567";
-
-        _repositoryMock.FirstOrDefaultAsync(Arg.Any<ISpecification<Volunteer>>(), Arg.Any<CancellationToken>())
-            .Returns(volunteer);
-        _repositoryMock.UpdateAsync(Arg.Any<Volunteer>(), Arg.Any<CancellationToken>())
-            .Returns(Task.CompletedTask);
-
-        await _sut.UpdateAsync(volunteer.Id.Value, newDescription, newExperience, newPhone, CancellationToken.None);
-
-        await _repositoryMock.Received(1).UpdateAsync(volunteer, Arg.Any<CancellationToken>());
-        volunteer.GeneralDescription.Value.Should().Be(newDescription);
-        volunteer.AgeExperience!.Value.Should().Be(newExperience);
-        volunteer.PhoneNumber!.Value.Should().Be(newPhone);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_WithNonExistentVolunteer_ShouldThrowArgumentNullException()
-    {
-        var volunteerId = Guid.NewGuid();
-        _repositoryMock.FirstOrDefaultAsync(Arg.Any<ISpecification<Volunteer>>(), Arg.Any<CancellationToken>())
-            .ReturnsNull();
-
-        var act = async () => await _sut.UpdateAsync(
-            volunteerId,
-            "Новое описание волонтера",
-            null,
-            null,
-            CancellationToken.None);
-
-        await act.Should().ThrowAsync<EntityNotFoundException<Volunteer>>();
     }
 
     #endregion
@@ -154,13 +114,15 @@ public sealed class VolunteerServiceTests : UnitTestBase
 
     #endregion
 
-    private static IVolunteerService CreateVolunteerService(IRepository<Volunteer> repository)
+    private static IVolunteerService CreateVolunteerService(
+        IRepository<Volunteer> repository,
+        ICacheService cache)
     {
         var serviceType = typeof(IVolunteerService).Assembly
             .GetTypes()
             .First(t => t.Name == "VolunteerService" && !t.IsInterface);
 
-        var instance = Activator.CreateInstance(serviceType, repository);
+        var instance = Activator.CreateInstance(serviceType, repository, cache);
         return (IVolunteerService)instance!;
     }
 }

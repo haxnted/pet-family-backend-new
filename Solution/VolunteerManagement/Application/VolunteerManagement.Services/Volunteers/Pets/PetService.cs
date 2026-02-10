@@ -1,4 +1,5 @@
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
+using PetFamily.SharedKernel.Infrastructure.Caching;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.Entities;
 using VolunteerManagement.Domain.Aggregates.Volunteers.Enums;
@@ -6,15 +7,18 @@ using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Identifiers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
 using VolunteerManagement.Services.AnimalKinds;
 using PetFamily.SharedKernel.Application.Exceptions;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Dtos;
 using VolunteerManagement.Services.Volunteers.Specifications;
 
 namespace VolunteerManagement.Services.Volunteers.Pets;
 
 /// <inheritdoc/>
+/// <param name="cache">Сервис кеширования.</param>
 internal sealed class PetService(
     IRepository<Volunteer> repository,
-    ISpeciesService speciesService) : IPetService
+    ISpeciesService speciesService,
+    ICacheService cache) : IPetService
 {
     /// <inheritdoc/>
     public async Task<Guid> AddPet(
@@ -53,9 +57,7 @@ internal sealed class PetService(
         var petNickName = NickName.Of(nickName);
         var petDescription = Description.Of(generalDescription);
         var petHealthInfo = Description.Of(healthInformation);
-        var petAddress = Address.Of(address.Street, address.City, address.State, address.ZipCode);
         var petAttributes = PetPhysicalAttributes.Of(weight, height);
-        var petPhone = PhoneNumber.Of(phoneNumber);
         var petStatus = (HelpStatusPet)helpStatus;
         var petRequisites = requisites.Select(r => Requisite.Of(r.Name, r.Description)).ToList();
 
@@ -65,11 +67,9 @@ internal sealed class PetService(
             petNickName,
             petDescription,
             petHealthInfo,
-            petAddress,
             petAttributes,
             speciesId,
             breedId,
-            petPhone,
             birthDate,
             isCastrated,
             isVaccinated,
@@ -78,6 +78,9 @@ internal sealed class PetService(
 
         volunteer.AddPet(pet);
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
 
         return petId.Value;
     }
@@ -107,24 +110,23 @@ internal sealed class PetService(
 
         var petDescription = Description.Of(generalDescription);
         var petHealthInfo = Description.Of(healthInformation);
-        var petAddress = Address.Of(address.Street, address.City, address.State, address.ZipCode);
         var petAttributes = PetPhysicalAttributes.Of(weight, height);
-        var petPhone = PhoneNumber.Of(phoneNumber);
         var petStatus = (HelpStatusPet)helpStatus;
         var petRequisites = requisites.Select(r => Requisite.Of(r.Name, r.Description)).ToList();
 
         pet.Update(
             petDescription,
             petHealthInfo,
-            petAddress,
             petAttributes,
-            petPhone,
             isCastrated,
             isVaccinated,
             petStatus,
             petRequisites);
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
     }
 
     /// <inheritdoc/>
@@ -139,6 +141,10 @@ internal sealed class PetService(
         volunteer.HardRemovePet(pet);
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
     }
 
     /// <inheritdoc/>
@@ -175,6 +181,9 @@ internal sealed class PetService(
         volunteer.SoftRemovePet(pet);
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
     }
 
     /// <inheritdoc/>
@@ -189,6 +198,9 @@ internal sealed class PetService(
         volunteer.RestorePet(pet);
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
     }
 
     /// <inheritdoc/>
@@ -203,5 +215,7 @@ internal sealed class PetService(
         volunteer.MovePet(PetId.Of(petId), position);
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
     }
 }
