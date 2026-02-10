@@ -20,7 +20,6 @@ public class AddVolunteerHandler(IVolunteerService volunteerService)
             command.Surname,
             command.Patronymic,
             command.UserId,
-            command.GeneralDescription,
             ct);
     }
 }

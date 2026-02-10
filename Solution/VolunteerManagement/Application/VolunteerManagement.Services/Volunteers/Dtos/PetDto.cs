@@ -10,10 +10,8 @@
 /// <param name="HealthInformation">Здоровье животного.</param>
 /// <param name="BreedId">Идентификатор породы.</param>
 /// <param name="SpeciesId">Идентификатор вида.</param>
-/// <param name="Address">Адрес.</param>
 /// <param name="Weight">Вес.</param>
 /// <param name="Height">Рост.</param>
-/// <param name="PhoneNumber">Номер телефона.</param>
 /// <param name="BirthDate">Дата рождения.</param>
 /// <param name="IsCastrated">Кастрирован.</param>
 /// <param name="IsVaccinated">Вакцинация.</param>
@@ -31,10 +29,8 @@ public record PetDto(
     string HealthInformation,
     Guid BreedId,
     Guid SpeciesId,
-    AddressDto Address,
     double Weight,
     double Height,
-    string PhoneNumber,
     DateTime BirthDate,
     bool IsCastrated,
     bool IsVaccinated,

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+   <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Domain\PetFamily.SharedKernel.Domain.csproj"/>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Contracts\PetFamily.SharedKernel.Contracts.csproj"/>
+        <ProjectReference Include="..\Account.Services\Account.Services.csproj"/>
+    </ItemGroup>
+
+</Project>

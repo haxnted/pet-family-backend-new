@@ -29,7 +29,6 @@ public class UserCreatedEventConsumer(
                 Name = userEvent.FirstName,
                 Surname = userEvent.LastName,
                 Patronymic = userEvent.Patronymic,
-                GeneralDescription = "Новый волонтер",
                 UserId = userEvent.UserId
             };
 

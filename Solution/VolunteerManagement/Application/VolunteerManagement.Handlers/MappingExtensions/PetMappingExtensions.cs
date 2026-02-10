@@ -15,12 +15,6 @@ public static class PetMappingExtensions
     /// <returns>DTO животного.</returns>
     public static PetDto ToDto(this Pet pet)
     {
-        var addressDto = new AddressDto(
-            pet.Address.Street,
-            pet.Address.City,
-            pet.Address.State,
-            pet.Address.ZipCode);
-
         var mappedRequisites = pet.RequisiteList
             .Select(r => new RequisiteDto(r.Name, r.Description));
 
@@ -31,14 +25,12 @@ public static class PetMappingExtensions
             pet.Id.Value,
             pet.VolunteerId.Value,
             pet.NickName.Value,
-            pet.GeneralDescription.Value,
+            pet.Description.Value,
             pet.HealthInformation.Value,
             pet.BreedId,
             pet.SpeciesId,
-            addressDto,
             pet.PhysicalAttributes.Weight,
             pet.PhysicalAttributes.Height,
-            pet.PhonePhoneNumber.Value,
             pet.BirthDate,
             pet.IsCastrated,
             pet.IsVaccinated,

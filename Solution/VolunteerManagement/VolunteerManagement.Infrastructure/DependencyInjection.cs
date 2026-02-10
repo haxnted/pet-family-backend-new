@@ -2,7 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using PetFamily.SharedKernel.Infrastructure;
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
 using VolunteerManagement.Domain.Aggregates.AnimalKinds;
+using VolunteerManagement.Domain.Aggregates.Shelters;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
+using VolunteerManagement.Domain.Aggregates.Volunteers.Entities;
 using VolunteerManagement.Infrastructure.Common;
 using VolunteerManagement.Infrastructure.Common.Contexts;
 
@@ -25,5 +27,7 @@ public static class DependencyInjection
 
         services.AddScoped<IRepository<Volunteer>, EntityFrameworkRepository<Volunteer>>();
         services.AddScoped<IRepository<Species>, EntityFrameworkRepository<Species>>();
+        services.AddScoped<IRepository<Shelter>, EntityFrameworkRepository<Shelter>>();
+        services.AddScoped<IRepository<Pet>, EntityFrameworkRepository<Pet>>();
     }
 }

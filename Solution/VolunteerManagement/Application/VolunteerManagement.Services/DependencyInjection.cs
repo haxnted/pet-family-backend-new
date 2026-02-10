@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using VolunteerManagement.Services.AnimalKinds;
+using VolunteerManagement.Services.Shelters;
 using VolunteerManagement.Services.Volunteers;
 using VolunteerManagement.Services.Volunteers.Pets;
 
@@ -19,6 +20,8 @@ public static class DependencyInjection
         services.AddScoped<IVolunteerService, VolunteerService>();
         services.AddScoped<IPetService, PetService>();
         services.AddScoped<ISpeciesService, SpeciesService>();
+        services.AddScoped<IShelterService, ShelterService>();
+        services.AddScoped<IPetSearchService, PetSearchService>();
 
         return services;
     }

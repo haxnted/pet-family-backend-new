@@ -1,6 +1,8 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using VolunteerManagement.Domain.Aggregates.Shelters;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
+using VolunteerManagement.Domain.Aggregates.Volunteers.Entities;
 using DomainSpecies = VolunteerManagement.Domain.Aggregates.AnimalKinds.Species;
 
 namespace VolunteerManagement.Infrastructure.Common.Contexts;
@@ -20,6 +22,16 @@ public class VolunteerManagementDbContext(DbContextOptions<VolunteerManagementDb
     /// Коллекция видов животных.
     /// </summary>
     public DbSet<DomainSpecies> Species => Set<DomainSpecies>();
+
+    /// <summary>
+    /// Коллекция приютов.
+    /// </summary>
+    public DbSet<Shelter> Shelters => Set<Shelter>();
+
+    /// <summary>
+    /// Коллекция животных.
+    /// </summary>
+    public DbSet<Pet> Pets => Set<Pet>();
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)

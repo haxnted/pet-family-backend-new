@@ -25,9 +25,6 @@ public static class VolunteerMappingExtensions
         return new VolunteerDto(
             volunteer.Id.Value,
             fullNameDto,
-            volunteer.GeneralDescription.Value,
-            volunteer.AgeExperience?.Value,
-            volunteer.PhoneNumber?.Value,
             mappedPets);
     }
 

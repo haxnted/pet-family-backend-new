@@ -1,15 +1,18 @@
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
+using PetFamily.SharedKernel.Infrastructure.Caching;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Identifiers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
 using PetFamily.SharedKernel.Application.Exceptions;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Specifications;
 
 namespace VolunteerManagement.Services.Volunteers;
 
 /// <inheritdoc/>
 /// <param name="repository">Репозиторий над волонтёрами.</param>
-internal sealed class VolunteerService(IRepository<Volunteer> repository) : IVolunteerService
+/// <param name="cache">Сервис кеширования.</param>
+internal sealed class VolunteerService(IRepository<Volunteer> repository, ICacheService cache) : IVolunteerService
 {
     /// <inheritdoc/>
     public async Task AddAsync(
@@ -17,46 +20,16 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository) : IVol
         string surname,
         string? patronymic,
         Guid userId,
-        string generalDescription,
         CancellationToken ct)
     {
         var volunteerId = VolunteerId.Of(Guid.NewGuid());
         var fullName = FullName.Of(name, surname, patronymic);
-        var description = Description.Of(generalDescription);
 
-        var volunteer = Volunteer.Create(volunteerId, fullName, description);
+        var volunteer = Volunteer.Create(volunteerId, fullName);
 
         volunteer.SetUserId(userId);
 
         await repository.AddAsync(volunteer, ct);
-    }
-
-    /// <inheritdoc/>
-    public async Task UpdateAsync(
-        Guid volunteerId,
-        string generalDescription,
-        int? ageExperience,
-        string? phoneNumber,
-        CancellationToken ct)
-    {
-        var volunteerIdValue = VolunteerId.Of(volunteerId);
-
-        var specification = new GetByIdSpecification(volunteerIdValue);
-
-        var volunteer = await repository.FirstOrDefaultAsync(specification, ct);
-
-        if (volunteer == null)
-        {
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
-        }
-
-        var description = Description.Of(generalDescription);
-        var experience = ageExperience.HasValue ? AgeExperience.Of(ageExperience.Value) : null;
-        var phone = phoneNumber != null ? PhoneNumber.Of(phoneNumber) : null;
-
-        volunteer.UpdateMainInfo(description, experience, phone);
-
-        await repository.UpdateAsync(volunteer, ct);
     }
 
     /// <inheritdoc/>
@@ -74,6 +47,8 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository) : IVol
         }
 
         await repository.RemoveAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
     }
 
     /// <inheritdoc/>
@@ -93,6 +68,8 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository) : IVol
         volunteer.Delete();
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
     }
 
     /// <inheritdoc/>
@@ -112,6 +89,8 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository) : IVol
         volunteer.Restore();
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
     }
 
     /// <inheritdoc/>
@@ -155,5 +134,8 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository) : IVol
         volunteer.HardRemoveAllPets();
 
         await repository.UpdateAsync(volunteer, ct);
+
+        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
+        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
     }
 }

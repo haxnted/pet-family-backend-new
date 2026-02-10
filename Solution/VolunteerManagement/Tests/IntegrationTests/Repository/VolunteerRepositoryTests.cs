@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Identifiers;
-using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
 using VolunteerManagement.Tests.Domain.Builders;
 using VolunteerManagement.Tests.Integration.Abstractions;
 using VolunteerManagement.Tests.Integration.Fixtures;
@@ -21,7 +20,6 @@ public sealed class VolunteerRepositoryTests : VolunteerManagementIntegrationTes
     {
         var volunteer = VolunteerBuilder.Default()
             .WithFullName("Иван", "Иванов", "Иванович")
-            .WithDescription("Опытный волонтер с многолетним стажем")
             .Build();
 
         await ExecuteWithDbContextAsync(async dbContext =>
@@ -67,36 +65,6 @@ public sealed class VolunteerRepositoryTests : VolunteerManagementIntegrationTes
                 .FirstOrDefaultAsync(v => v.Id == nonExistentId);
 
             result.Should().BeNull();
-        });
-    }
-
-    [Fact]
-    public async Task Update_ShouldPersistChanges()
-    {
-        var volunteer = VolunteerBuilder.Default()
-            .WithDescription("Старое описание волонтера")
-            .Build();
-        await InsertAsync(volunteer);
-
-        await ExecuteWithDbContextAsync(async dbContext =>
-        {
-            var entity = await dbContext.Volunteers
-                .FirstOrDefaultAsync(v => v.Id == volunteer.Id);
-
-            entity!.UpdateMainInfo(
-                Description.Of("Новое обновленное описание волонтера"),
-                AgeExperience.Of(5),
-                PhoneNumber.Of("+79991234567"));
-        });
-
-        await ExecuteWithDbContextAsync(async dbContext =>
-        {
-            var updated = await dbContext.Volunteers
-                .FirstOrDefaultAsync(v => v.Id == volunteer.Id);
-
-            updated!.GeneralDescription.Value.Should().Be("Новое обновленное описание волонтера");
-            updated.AgeExperience!.Value.Should().Be(5);
-            updated.PhoneNumber!.Value.Should().Be("+79991234567");
         });
     }
 

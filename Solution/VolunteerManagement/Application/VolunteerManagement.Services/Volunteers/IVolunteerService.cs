@@ -14,29 +14,12 @@ public interface IVolunteerService
     /// <param name="surname">Фамилия.</param>
     /// <param name="patronymic">Отчество.</param>
     /// <param name="userId">Идентификатор волонтёра.</param>
-    /// <param name="generalDescription">Общее описание.</param>
     /// <param name="ct">Токен отмены.</param>
     Task AddAsync(
         string name,
         string surname,
         string? patronymic,
         Guid userId,
-        string generalDescription,
-        CancellationToken ct);
-
-    /// <summary>
-    /// Обновить основные данные об волонтере.
-    /// </summary>
-    /// <param name="volunteerId">Идентификатор волонтёра.</param>
-    /// <param name="generalDescription">Общее описание.</param>
-    /// <param name="ageExperience">Опыт работы в годах.</param>
-    /// <param name="phoneNumber">Номер телефона.</param>
-    /// <param name="ct">Токен отмены.</param>
-    Task UpdateAsync(
-        Guid volunteerId,
-        string generalDescription,
-        int? ageExperience,
-        string? phoneNumber,
         CancellationToken ct);
 
     /// <summary>
@@ -45,7 +28,7 @@ public interface IVolunteerService
     /// <param name="volunteerId">Идентификатор волонтёра.</param>
     /// <param name="ct">Токен отмены.</param>
     Task HardRemoveAsync(Guid volunteerId, CancellationToken ct);
-
+    
     /// <summary>
     /// Скрывает волонтёра.
     /// </summary>

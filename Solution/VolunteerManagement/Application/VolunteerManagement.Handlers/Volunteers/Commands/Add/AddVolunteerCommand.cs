@@ -26,9 +26,4 @@ public sealed class AddVolunteerCommand : Command
     /// Идентификатор пользователя.
     /// </summary>
     public Guid UserId { get; init; }
-
-    /// <summary>
-    /// Общее описание.
-    /// </summary>
-    public required string GeneralDescription { get; init; }
 }
