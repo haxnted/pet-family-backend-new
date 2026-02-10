@@ -17,7 +17,7 @@ namespace VolunteerManagement.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -239,6 +239,85 @@ namespace VolunteerManagement.Infrastructure.Migrations
                     b.ToTable("Species", (string)null);
                 });
 
+            modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Shelters.Entities.VolunteerAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("AssignedAt");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Role");
+
+                    b.Property<Guid?>("ShelterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VolunteerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("VolunteerId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShelterId");
+
+                    b.HasIndex("VolunteerId");
+
+                    b.ToTable("VolunteerAssignments", (string)null);
+                });
+
+            modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Shelters.Shelter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("integer")
+                        .HasColumnName("Capacity");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("Description");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)")
+                        .HasColumnName("PhoneNumber");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Shelters", (string)null);
+                });
+
             modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Volunteers.Entities.Pet", b =>
                 {
                     b.Property<Guid>("Id")
@@ -259,11 +338,11 @@ namespace VolunteerManagement.Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("GeneralDescription")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("GeneralDescription");
+                        .HasColumnName("Description");
 
                     b.Property<string>("HealthInformation")
                         .IsRequired()
@@ -294,15 +373,12 @@ namespace VolunteerManagement.Infrastructure.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("NickName");
 
-                    b.Property<string>("PhonePhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)")
-                        .HasColumnName("PhoneNumber");
-
                     b.Property<int>("Position")
                         .HasColumnType("integer")
                         .HasColumnName("Position");
+
+                    b.Property<Guid?>("ShelterId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SpeciesId")
                         .HasColumnType("uuid")
@@ -323,34 +399,14 @@ namespace VolunteerManagement.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("AgeExperience")
-                        .HasColumnType("integer")
-                        .HasColumnName("AgeExperience");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GeneralDescription")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("GeneralDescription");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)")
-                        .HasColumnName("PhoneNumber");
-
-                    b.Property<Guid?>("Photo")
-                        .HasColumnType("uuid")
-                        .HasColumnName("Photo");
-
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("UserId");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -380,17 +436,40 @@ namespace VolunteerManagement.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Volunteers.Entities.Pet", b =>
+            modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Shelters.Entities.VolunteerAssignment", b =>
                 {
-                    b.HasOne("VolunteerManagement.Domain.Aggregates.Volunteers.Volunteer", null)
-                        .WithMany("Pets")
-                        .HasForeignKey("VolunteerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("VolunteerManagement.Domain.Aggregates.Shelters.Shelter", null)
+                        .WithMany("VolunteerAssignments")
+                        .HasForeignKey("ShelterId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Shelters.Shelter", b =>
+                {
+                    b.OwnsOne("VolunteerManagement.Domain.Aggregates.Shelters.ValueObjects.Properties.WorkingHours", "WorkingHours", b1 =>
+                        {
+                            b1.Property<Guid>("ShelterId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<TimeOnly>("CloseTime")
+                                .HasColumnType("time without time zone")
+                                .HasColumnName("CloseTime");
+
+                            b1.Property<TimeOnly>("OpenTime")
+                                .HasColumnType("time without time zone")
+                                .HasColumnName("OpenTime");
+
+                            b1.HasKey("ShelterId");
+
+                            b1.ToTable("Shelters");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ShelterId");
+                        });
 
                     b.OwnsOne("VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties.Address", "Address", b1 =>
                         {
-                            b1.Property<Guid>("PetId")
+                            b1.Property<Guid>("ShelterId")
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("City")
@@ -417,13 +496,28 @@ namespace VolunteerManagement.Infrastructure.Migrations
                                 .HasColumnType("character varying(20)")
                                 .HasColumnName("ZipCode");
 
-                            b1.HasKey("PetId");
+                            b1.HasKey("ShelterId");
 
-                            b1.ToTable("Pets");
+                            b1.ToTable("Shelters");
 
                             b1.WithOwner()
-                                .HasForeignKey("PetId");
+                                .HasForeignKey("ShelterId");
                         });
+
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("WorkingHours")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Volunteers.Entities.Pet", b =>
+                {
+                    b.HasOne("VolunteerManagement.Domain.Aggregates.Volunteers.Volunteer", null)
+                        .WithMany("Pets")
+                        .HasForeignKey("VolunteerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsOne("VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties.PetPhysicalAttributes", "PhysicalAttributes", b1 =>
                         {
@@ -450,15 +544,12 @@ namespace VolunteerManagement.Infrastructure.Migrations
 
                     b.OwnsMany("VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties.Photo", "Photos", b1 =>
                         {
-                            b1.Property<Guid>("PetId")
-                                .HasColumnType("uuid");
+                            b1.Property<Guid>("PetId");
 
                             b1.Property<int>("__synthesizedOrdinal")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
+                                .ValueGeneratedOnAdd();
 
-                            b1.Property<Guid>("Value")
-                                .HasColumnType("uuid");
+                            b1.Property<Guid>("Value");
 
                             b1.HasKey("PetId", "__synthesizedOrdinal");
 
@@ -472,22 +563,18 @@ namespace VolunteerManagement.Infrastructure.Migrations
 
                     b.OwnsMany("VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties.Requisite", "RequisiteList", b1 =>
                         {
-                            b1.Property<Guid>("PetId")
-                                .HasColumnType("uuid");
+                            b1.Property<Guid>("PetId");
 
                             b1.Property<int>("__synthesizedOrdinal")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
+                                .ValueGeneratedOnAdd();
 
                             b1.Property<string>("Description")
                                 .IsRequired()
-                                .HasMaxLength(500)
-                                .HasColumnType("character varying(500)");
+                                .HasMaxLength(500);
 
                             b1.Property<string>("Name")
                                 .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)");
+                                .HasMaxLength(100);
 
                             b1.HasKey("PetId", "__synthesizedOrdinal");
 
@@ -498,9 +585,6 @@ namespace VolunteerManagement.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("PetId");
                         });
-
-                    b.Navigation("Address")
-                        .IsRequired();
 
                     b.Navigation("Photos");
 
@@ -549,6 +633,11 @@ namespace VolunteerManagement.Infrastructure.Migrations
             modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.AnimalKinds.Species", b =>
                 {
                     b.Navigation("Breeds");
+                });
+
+            modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Shelters.Shelter", b =>
+                {
+                    b.Navigation("VolunteerAssignments");
                 });
 
             modelBuilder.Entity("VolunteerManagement.Domain.Aggregates.Volunteers.Volunteer", b =>

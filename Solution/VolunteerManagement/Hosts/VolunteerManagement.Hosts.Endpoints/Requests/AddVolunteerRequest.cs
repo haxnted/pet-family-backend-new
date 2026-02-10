@@ -6,5 +6,4 @@ namespace VolunteerManagement.Hosts.Endpoints.Requests;
 /// Запрос на добавление волонтера.
 /// </summary>
 /// <param name="FullName">Полное имя волонтёра.</param>
-/// <param name="Description">Описание волонтёра.</param>
-public sealed record AddVolunteerRequest(FullNameDto FullName, string Description);
+public sealed record AddVolunteerRequest(FullNameDto FullName);

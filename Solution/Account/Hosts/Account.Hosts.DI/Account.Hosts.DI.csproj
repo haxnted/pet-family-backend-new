@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+   <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="WolverineFx"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\..\FileStorage\FileStorage.Contracts\FileStorage.Contracts.csproj"/>
+        <ProjectReference Include="..\..\Application\Account.Handlers\Account.Handlers.csproj"/>
+        <ProjectReference Include="..\..\Account.Infrastructure\Account.Infrastructure.csproj"/>
+    </ItemGroup>
+
+</Project>

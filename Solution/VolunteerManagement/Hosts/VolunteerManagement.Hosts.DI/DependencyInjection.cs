@@ -1,6 +1,7 @@
 ﻿using FileStorage.Contracts.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PetFamily.SharedKernel.Infrastructure.Caching;
 using PetFamily.SharedKernel.Infrastructure.Options;
 using VolunteerManagement.Handlers.Volunteers.Commands.Add;
 using VolunteerManagement.Infrastructure;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddInfrastructure();
 
         services.AddFileStorageClient(configuration);
+        services.AddCaching(configuration);
 
         return services;
     }

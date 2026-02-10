@@ -32,7 +32,7 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     /// <summary>
     /// Общая информация.
     /// </summary>
-    public Description GeneralDescription { get; private set; } = null!;
+    public Description Description { get; private set; } = null!;
 
     /// <summary>
     /// Информация о здоровье.
@@ -50,19 +50,9 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     public Guid SpeciesId { get; private set; }
 
     /// <summary>
-    /// Адрес.
-    /// </summary>
-    public Address Address { get; private set; }
-
-    /// <summary>
     /// Физические характеристики.
     /// </summary>
     public PetPhysicalAttributes PhysicalAttributes { get; private set; } = null!;
-
-    /// <summary>
-    /// Номер телефона.
-    /// </summary>
-    public PhoneNumber PhonePhoneNumber { get; private set; } = null!;
 
     /// <summary>
     /// Дата рождения.
@@ -85,6 +75,11 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     public HelpStatusPet HelpStatus { get; private set; }
 
     /// <summary>
+    /// Идентификатор приюта.
+    /// </summary>
+    public Guid? ShelterId { get; private set; }
+
+    /// <summary>
     /// Дата создания.
     /// </summary>
     public DateTime DateCreated { get; private set; }
@@ -93,7 +88,6 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     /// Позиция животного в коллекции животных.
     /// </summary>
     public Position Position { get; private set; }
-
 
     private readonly List<Photo> _photos = [];
 
@@ -113,13 +107,11 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     /// <param name="id">Идентификатор.</param>
     /// <param name="volunteerId">Идентификатор Волонтёра.</param>
     /// <param name="nickName">Кличка.</param>
-    /// <param name="generalDescription">Общее описание.</param>
+    /// <param name="description">Общее описание.</param>
     /// <param name="healthInformation">Информация о здоровье.</param>
-    /// <param name="address">Адрес.</param>
     /// <param name="attributes">Физические характеристики.</param>
     /// <param name="speciesId">Порода.</param>
     /// <param name="breedId">Вид.</param>
-    /// <param name="phoneNumber">Номер телефона.</param>
     /// <param name="birthDate">Дата рождения.</param>
     /// <param name="isCastrated">Флаг кастрации.</param>
     /// <param name="isVaccinated">Флаг вакцинации.</param>
@@ -132,13 +124,11 @@ public sealed class Pet : SoftDeletableEntity<PetId>
         PetId id,
         VolunteerId volunteerId,
         NickName nickName,
-        Description generalDescription,
+        Description description,
         Description healthInformation,
-        Address address,
         PetPhysicalAttributes attributes,
         Guid speciesId,
         Guid breedId,
-        PhoneNumber phoneNumber,
         DateTime birthDate,
         bool isCastrated,
         bool isVaccinated,
@@ -152,13 +142,11 @@ public sealed class Pet : SoftDeletableEntity<PetId>
         RequisiteList = requisiteList.AsReadOnly();
         VolunteerId = volunteerId;
         NickName = nickName;
-        GeneralDescription = generalDescription;
+        Description = description;
         HealthInformation = healthInformation;
-        Address = address;
         PhysicalAttributes = attributes;
         BreedId = breedId;
         SpeciesId = speciesId;
-        PhonePhoneNumber = phoneNumber;
         BirthDate = birthDate;
         IsCastrated = isCastrated;
         IsVaccinated = isVaccinated;
@@ -176,11 +164,9 @@ public sealed class Pet : SoftDeletableEntity<PetId>
         NickName nickName,
         Description generalDescription,
         Description healthInformation,
-        Address address,
         PetPhysicalAttributes attributes,
         Guid speciesId,
         Guid breedId,
-        PhoneNumber phoneNumber,
         DateTime birthDate,
         bool isCastrated,
         bool isVaccinated,
@@ -193,11 +179,9 @@ public sealed class Pet : SoftDeletableEntity<PetId>
             nickName,
             generalDescription,
             healthInformation,
-            address,
             attributes,
             speciesId,
             breedId,
-            phoneNumber,
             birthDate,
             isCastrated,
             isVaccinated,
@@ -214,9 +198,7 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     public void Update(
         Description generalDescription,
         Description healthInformation,
-        Address address,
         PetPhysicalAttributes attributes,
-        PhoneNumber number,
         bool isCastrated,
         bool isVaccinated,
         HelpStatusPet helpStatus,
@@ -228,11 +210,9 @@ public sealed class Pet : SoftDeletableEntity<PetId>
             throw new DomainException("Нельзя обновить животное которое удалено.");
         }
 
-        GeneralDescription = generalDescription;
+        Description = generalDescription;
         HealthInformation = healthInformation;
-        Address = address;
         PhysicalAttributes = attributes;
-        PhonePhoneNumber = number;
         IsCastrated = isCastrated;
         IsVaccinated = isVaccinated;
         HelpStatus = helpStatus;
@@ -251,6 +231,26 @@ public sealed class Pet : SoftDeletableEntity<PetId>
         }
 
         Position = newPosition;
+    }
+
+    /// <summary>
+    /// Привязать питомца к приюту.
+    /// </summary>
+    /// <param name="shelterId">Идентификатор приюта.</param>
+    public void AssignToShelter(Guid shelterId)
+    {
+        if (shelterId == Guid.Empty)
+            throw new DomainException("Идентификатор приюта не может быть пустым.");
+
+        ShelterId = shelterId;
+    }
+
+    /// <summary>
+    /// Отвязать питомца от приюта.
+    /// </summary>
+    public void RemoveFromShelter()
+    {
+        ShelterId = null;
     }
 
     /// <summary>

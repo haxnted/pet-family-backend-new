@@ -17,22 +17,14 @@ public sealed class PetBuilder : IBuilder<Pet>
     private NickName _nickName = NickName.Of("ТестовыйПитомец"); // 10–500 символов, только буквы и дефис
     private Description _generalDescription = Description.Of("Достаточно длинное описание для теста питомца не менее десяти символов.");
     private Description _healthInformation = Description.Of("Информация о здоровье питомца для тестовых сценариев.");
-    private Address _address = CreateDefaultAddress();
     private PetPhysicalAttributes _attributes = PetPhysicalAttributes.Of(25.5, 50.0);
     private Guid _speciesId = Guid.NewGuid();
     private Guid _breedId = Guid.NewGuid();
-    private PhoneNumber _phoneNumber = PhoneNumber.Of("79991234567"); // формат 7XXXXXXXXXX
     private DateTime _birthDate = FakeDataGenerator.PastDate(3);
     private bool _isCastrated = FakeDataGenerator.Bool();
     private bool _isVaccinated = FakeDataGenerator.Bool();
     private HelpStatusPet _helpStatus = HelpStatusPet.NeedsHelp;
     private List<Requisite> _requisites = [];
-
-    private static Address CreateDefaultAddress()
-    {
-        var (city, street, building) = FakeDataGenerator.Address();
-        return Address.Of(street, city, building, "000000");
-    }
 
     public PetBuilder WithId(Guid id)
     {
@@ -70,12 +62,6 @@ public sealed class PetBuilder : IBuilder<Pet>
         return this;
     }
 
-    public PetBuilder WithAddress(string city, string street, string building, string zipCode = "000000")
-    {
-        _address = Address.Of(street, city, building, zipCode);
-        return this;
-    }
-
     public PetBuilder WithPhysicalAttributes(double weight, double height)
     {
         _attributes = PetPhysicalAttributes.Of(weight, height);
@@ -91,12 +77,6 @@ public sealed class PetBuilder : IBuilder<Pet>
     public PetBuilder WithBreedId(Guid breedId)
     {
         _breedId = breedId;
-        return this;
-    }
-
-    public PetBuilder WithPhoneNumber(string phoneNumber)
-    {
-        _phoneNumber = PhoneNumber.Of(phoneNumber);
         return this;
     }
 
@@ -138,11 +118,9 @@ public sealed class PetBuilder : IBuilder<Pet>
             _nickName,
             _generalDescription,
             _healthInformation,
-            _address,
             _attributes,
             _speciesId,
             _breedId,
-            _phoneNumber,
             _birthDate,
             _isCastrated,
             _isVaccinated,

@@ -1,6 +1,4 @@
-using FluentAssertions;
 using PetFamily.SharedKernel.Tests.Abstractions;
-using VolunteerManagement.Domain.Aggregates.Volunteers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Identifiers;
 using PetFamily.SharedKernel.Domain.Exceptions;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
@@ -10,40 +8,6 @@ namespace VolunteerManagement.Tests.Domain.Aggregates;
 
 public sealed class VolunteerTests : UnitTestBase
 {
-    #region Create Tests
-
-    [Fact]
-    public void Create_WithValidData_ShouldCreateVolunteer()
-    {
-        var id = VolunteerId.Of(Guid.NewGuid());
-        var fullName = FullName.Of("Иван", "Иванов", "Иванович");
-        var description = Description.Of("Опытный волонтер с большим стажем работы");
-
-        var volunteer = Volunteer.Create(id, fullName, description);
-
-        volunteer.Should().NotBeNull();
-        volunteer.Id.Should().Be(id);
-        volunteer.FullName.Should().Be(fullName);
-        volunteer.GeneralDescription.Should().Be(description);
-        volunteer.Pets.Should().BeEmpty();
-        volunteer.IsDeleted.Should().BeFalse();
-    }
-
-    [Fact]
-    public void Create_UsingBuilder_ShouldCreateVolunteer()
-    {
-        var volunteer = VolunteerBuilder.Default()
-            .WithFullName("Петр", "Петров", "Петрович")
-            .WithDescription("Описание волонтера для тестирования")
-            .Build();
-
-        volunteer.Should().NotBeNull();
-        volunteer.FullName.Name.Should().Be("Петр");
-        volunteer.FullName.Surname.Should().Be("Петров");
-    }
-
-    #endregion
-
     #region AddPet Tests
 
     [Fact]
@@ -230,25 +194,6 @@ public sealed class VolunteerTests : UnitTestBase
 
         volunteer.IsDeleted.Should().BeFalse();
         volunteer.Pets.Should().AllSatisfy(p => p.IsDeleted.Should().BeFalse());
-    }
-
-    #endregion
-
-    #region UpdateMainInfo Tests
-
-    [Fact]
-    public void UpdateMainInfo_ShouldUpdateProperties()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
-        var newDescription = Description.Of("Новое описание волонтера для обновления");
-        var newExperience = AgeExperience.Of(5);
-        var newPhoneNumber = PhoneNumber.Of("79991234567");
-
-        volunteer.UpdateMainInfo(newDescription, newExperience, newPhoneNumber);
-
-        volunteer.GeneralDescription.Should().Be(newDescription);
-        volunteer.AgeExperience.Should().Be(newExperience);
-        volunteer.PhoneNumber.Should().Be(newPhoneNumber);
     }
 
     #endregion

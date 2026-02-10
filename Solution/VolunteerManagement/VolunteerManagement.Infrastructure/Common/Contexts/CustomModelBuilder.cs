@@ -19,6 +19,8 @@ internal sealed class CustomModelBuilder
         modelBuilder.ApplyConfiguration(new VolunteerConfiguration());
         modelBuilder.ApplyConfiguration(new SpeciesConfiguration());
         modelBuilder.ApplyConfiguration(new BreedConfiguration());
+        modelBuilder.ApplyConfiguration(new ShelterConfiguration());
+        modelBuilder.ApplyConfiguration(new VolunteerAssignmentConfiguration());
 
         modelBuilder.SetDefaultDateTimeKind(DateTimeKind.Utc);
     }

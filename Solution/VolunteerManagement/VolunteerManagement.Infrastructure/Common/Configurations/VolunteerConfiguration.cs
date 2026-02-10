@@ -41,40 +41,6 @@ public class VolunteerConfiguration : IEntityTypeConfiguration<Volunteer>
                 .IsRequired(false);
         });
 
-        builder.Property(v => v.GeneralDescription)
-            .HasConversion(
-                desc => desc.Value,
-                value => Description.Of(value))
-            .HasColumnName("GeneralDescription")
-            .HasMaxLength(Description.MaxLength)
-            .IsRequired();
-
-        builder.Property(v => v.AgeExperience)
-            .HasConversion(
-                exp => exp != null ? exp.Value : (int?)null,
-                value => value.HasValue ? AgeExperience.Of(value.Value) : null)
-            .HasColumnName("AgeExperience")
-            .IsRequired(false);
-
-        builder.Property(v => v.PhoneNumber)
-            .HasConversion(
-                phone => phone != null ? phone.Value : null,
-                value => value != null ? PhoneNumber.Of(value) : null)
-            .HasColumnName("PhoneNumber")
-            .HasMaxLength(11)
-            .IsRequired(false);
-
-        builder.Property(v => v.UserId)
-            .HasColumnName("UserId")
-            .IsRequired(false);
-
-        builder.Property(v => v.Photo)
-            .HasConversion(
-                photo => photo != null ? photo.Value : (Guid?)null,
-                value => value.HasValue ? Photo.Create(value.Value) : null)
-            .HasColumnName("Photo")
-            .IsRequired(false);
-
         builder.HasIndex(v => v.UserId)
             .IsUnique(false);
 

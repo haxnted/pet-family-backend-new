@@ -77,6 +77,25 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-account:
+    image: postgres:17.2
+    container_name: petfamily-postgres-account
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: account
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_account_data:/var/lib/postgresql/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   postgres-keycloak:
     image: postgres:17.2
     container_name: petfamily-postgres-keycloak
@@ -95,6 +114,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: petfamily-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - petfamily-network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -362,6 +398,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       keycloak:
         condition: service_started
       elasticsearch:
@@ -415,6 +453,35 @@ services:
       rabbitmq:
         condition: service_healthy
       minio:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  account-service:
+    build:
+      context: ..
+      dockerfile: Solution/Account/Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-account-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Keycloak__ClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "6006:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-account:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       keycloak:
         condition: service_started
@@ -481,12 +548,32 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  account-consumers:
+    build:
+      context: ..
+      dockerfile: Solution/Account/Dockerfile.consumers
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-account-consumers
+    environment:
+      DOTNET_ENVIRONMENT: Docker
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-account:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
 networks:
   petfamily-network:
     driver: bridge
 
 volumes:
   postgres_auth_data:
+  postgres_account_data:
   postgres_volunteer_management_data:
   postgres_notification_data:
   postgres_volunteer_request_data:
@@ -496,4 +583,5 @@ volumes:
   seq_data:
   prometheus_data:
   grafana_data:
+  redis_data:
   elasticsearch_data:

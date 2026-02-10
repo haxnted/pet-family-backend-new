@@ -12,11 +12,11 @@ namespace VolunteerManagement.Tests.Domain.Builders;
 public sealed class VolunteerBuilder : IBuilder<Volunteer>
 {
     private VolunteerId _id = VolunteerId.Of(Guid.NewGuid());
+
     private FullName _fullName = FullName.Of(
         FakeDataGenerator.FirstName(),
         FakeDataGenerator.LastName(),
         FakeDataGenerator.Patronymic());
-    private Description _description = Description.Of("Описание волонтера для тестовых сценариев не менее десяти символов.");
 
     public VolunteerBuilder WithId(Guid id)
     {
@@ -42,21 +42,9 @@ public sealed class VolunteerBuilder : IBuilder<Volunteer>
         return this;
     }
 
-    public VolunteerBuilder WithDescription(string description)
-    {
-        _description = Description.Of(description);
-        return this;
-    }
-
-    public VolunteerBuilder WithDescription(Description description)
-    {
-        _description = description;
-        return this;
-    }
-
     public Volunteer Build()
     {
-        return Volunteer.Create(_id, _fullName, _description);
+        return Volunteer.Create(_id, _fullName);
     }
 
     public static VolunteerBuilder Default() => new();

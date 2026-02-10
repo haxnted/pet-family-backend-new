@@ -3,13 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using PetFamily.SharedKernel.WebApi.Services;
 using VolunteerManagement.Handlers.Volunteers.Commands.ActivateAccount;
 using VolunteerManagement.Handlers.Volunteers.Commands.Add;
-using VolunteerManagement.Handlers.Volunteers.Commands.AddPhoto;
 using VolunteerManagement.Handlers.Volunteers.Commands.HardRemove;
 using VolunteerManagement.Handlers.Volunteers.Commands.HardRemoveAllPets;
-using VolunteerManagement.Handlers.Volunteers.Commands.RemovePhoto;
 using VolunteerManagement.Handlers.Volunteers.Commands.SoftRemove;
-using VolunteerManagement.Handlers.Volunteers.Commands.Update;
-using VolunteerManagement.Handlers.Volunteers.Commands.UpdatePhoto;
 using VolunteerManagement.Handlers.Volunteers.Pets.Commands.Add;
 using VolunteerManagement.Handlers.Volunteers.Pets.Commands.AddPhotos;
 using VolunteerManagement.Handlers.Volunteers.Pets.Commands.RemovePhoto;
@@ -62,43 +58,7 @@ public class VolunteerController(
             Name = request.FullName.Name,
             Surname = request.FullName.Surname,
             Patronymic = request.FullName.Patronymic,
-            GeneralDescription = request.Description
-        };
-
-        await bus.InvokeAsync(command, ct);
-
-        return NoContent();
-    }
-
-    /// <summary>
-    /// Обновить основную информацию о волонтере.
-    /// </summary>
-    /// <param name="volunteerId">Идентификатор волонтёра.</param>
-    /// <param name="request">Запрос на обновление волонтера.</param>
-    /// <param name="ct">Токен отмены.</param>
-    [HttpPatch("{volunteerId:guid}/general")]
-    // [Authorize(Policy = "VolunteerPolicy")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> Update(
-        [FromRoute] Guid volunteerId,
-        [FromBody] UpdateVolunteerRequest request,
-        CancellationToken ct)
-    {
-        var userId = currentUser.UserId;
-        if (userId != volunteerId)
-        {
-            return Forbid();
-        }
-
-        var command = new UpdateVolunteerCommand
-        {
-            VolunteerId = volunteerId,
-            Description = request.Description,
-            AgeExperience = request.AgeExperience,
-            PhoneNumber = request.PhoneNumber
+            UserId = currentUser.UserId,
         };
 
         await bus.InvokeAsync(command, ct);
@@ -515,114 +475,6 @@ public class VolunteerController(
             PetId = petId,
             NewPosition = request.NewPosition
         };
-        await bus.InvokeAsync(command, ct);
-
-        return NoContent();
-    }
-
-    /// <summary>
-    /// Добавить фотографию волонтёра.
-    /// </summary>
-    /// <param name="volunteerId">Идентификатор волонтёра.</param>
-    /// <param name="file">Файл фотографии.</param>
-    /// <param name="ct">Токен отмены.</param>
-    [HttpPost("{volunteerId:guid}/photo")]
-    [Authorize(Policy = "VolunteerPolicy")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> AddVolunteerPhoto(
-        [FromRoute] Guid volunteerId,
-        IFormFile file,
-        CancellationToken ct)
-    {
-        var userId = currentUser.UserId;
-        if (userId != volunteerId)
-        {
-            return Forbid();
-        }
-
-        await using var stream = file.OpenReadStream();
-        var uploadResponse = await fileStorageClient.UploadAsync(
-            stream, file.FileName, file.ContentType, ct);
-
-        var command = new AddVolunteerPhotoCommand
-        {
-            VolunteerId = volunteerId,
-            PhotoId = uploadResponse.FileId
-        };
-
-        await bus.InvokeAsync(command, ct);
-
-        return Ok(uploadResponse.FileId);
-    }
-
-    /// <summary>
-    /// Обновить фотографию волонтёра.
-    /// </summary>
-    /// <param name="volunteerId">Идентификатор волонтёра.</param>
-    /// <param name="file">Файл фотографии.</param>
-    /// <param name="ct">Токен отмены.</param>
-    [HttpPut("{volunteerId:guid}/photo")]
-    [Authorize(Policy = "VolunteerPolicy")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UpdateVolunteerPhoto(
-        [FromRoute] Guid volunteerId,
-        IFormFile file,
-        CancellationToken ct)
-    {
-        var userId = currentUser.UserId;
-        if (userId != volunteerId)
-        {
-            return Forbid();
-        }
-
-        await using var stream = file.OpenReadStream();
-        var uploadResponse = await fileStorageClient.UploadAsync(
-            stream, file.FileName, file.ContentType, ct);
-
-        var command = new UpdateVolunteerPhotoCommand
-        {
-            VolunteerId = volunteerId,
-            PhotoId = uploadResponse.FileId
-        };
-
-        await bus.InvokeAsync(command, ct);
-
-        return Ok(uploadResponse.FileId);
-    }
-
-    /// <summary>
-    /// Удалить фотографию волонтёра.
-    /// </summary>
-    /// <param name="volunteerId">Идентификатор волонтёра.</param>
-    /// <param name="ct">Токен отмены.</param>
-    [HttpDelete("{volunteerId:guid}/photo")]
-    [Authorize(Policy = "VolunteerPolicy")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> RemoveVolunteerPhoto(
-        [FromRoute] Guid volunteerId,
-        CancellationToken ct)
-    {
-        var userId = currentUser.UserId;
-        if (userId != volunteerId)
-        {
-            return Forbid();
-        }
-
-        var command = new RemoveVolunteerPhotoCommand
-        {
-            VolunteerId = volunteerId
-        };
-
         await bus.InvokeAsync(command, ct);
 
         return NoContent();
