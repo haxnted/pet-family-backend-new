@@ -21,17 +21,12 @@ public sealed class UpdatePetCommand : Command
     /// <summary>
     /// Общее описание животного.
     /// </summary>
-    public string GeneralDescription { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
 
     /// <summary>
     /// Информация о здоровье животного.
     /// </summary>
     public string HealthInformation { get; init; } = string.Empty;
-
-    /// <summary>
-    /// Адрес местонахождения животного.
-    /// </summary>
-    public AddressDto Address { get; init; } = null!;
 
     /// <summary>
     /// Вес животного в кг.
@@ -42,11 +37,6 @@ public sealed class UpdatePetCommand : Command
     /// Рост животного в см.
     /// </summary>
     public double Height { get; init; }
-
-    /// <summary>
-    /// Контактный номер телефона.
-    /// </summary>
-    public string PhoneNumber { get; init; } = string.Empty;
 
     /// <summary>
     /// Признак кастрации.

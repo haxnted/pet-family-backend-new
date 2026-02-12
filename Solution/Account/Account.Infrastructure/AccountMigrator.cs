@@ -19,7 +19,7 @@ public class AccountMigrator(
     /// Выполняет миграцию базы данных.
     /// </summary>
     /// <param name="ct">Токен отмены операции.</param>
-    public async Task Migrate(CancellationToken ct = default)
+    public async Task Migrate(CancellationToken ct)
     {
         if (!await context.Database.CanConnectAsync(ct))
         {

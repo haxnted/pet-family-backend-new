@@ -4,6 +4,7 @@ using Auth.Infrastructure.Data;
 using Auth.Infrastructure.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PetFamily.SharedKernel.Application.Exceptions;
 using PetFamily.SharedKernel.Contracts.Events.Auth;
 
@@ -15,7 +16,8 @@ namespace Auth.Application.Services;
 public class AuthService(
     AuthDbContext dbContext,
     IKeycloakService keycloakService,
-    IPublishEndpoint publishEndpoint)
+    IPublishEndpoint publishEndpoint,
+    ILogger<AuthService> logger)
     : IAuthService
 {
     /// <inheritdoc/>
@@ -50,7 +52,7 @@ public class AuthService(
             LastName = lastName,
             Patronymic = patronymic,
             Role = "user",
-            EmailVerified = true,
+            EmailVerified = false,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -66,8 +68,18 @@ public class AuthService(
             "user");
 
         await publishEndpoint.Publish(@event, ct);
+        await dbContext.SaveChangesAsync(ct);
 
-        // await keycloakService.SendVerificationEmailAsync(userId, ct);
+        try
+        {
+            await keycloakService.SendVerificationEmailAsync(userId, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex,
+                "Failed to send verification email for user {UserId}. User can request resend later",
+                userId);
+        }
     }
 
     /// <inheritdoc/>

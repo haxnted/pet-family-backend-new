@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using VolunteerManagement.Domain.Aggregates.Shelters;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.Entities;
+using VolunteerManagement.Infrastructure.Common.Configurations;
+using VolunteerManagement.Infrastructure.SagaStates;
 using DomainSpecies = VolunteerManagement.Domain.Aggregates.AnimalKinds.Species;
 
 namespace VolunteerManagement.Infrastructure.Common.Contexts;
@@ -33,10 +35,17 @@ public class VolunteerManagementDbContext(DbContextOptions<VolunteerManagementDb
     /// </summary>
     public DbSet<Pet> Pets => Set<Pet>();
 
+    /// <summary>
+    /// Состояния саг усыновления питомцев.
+    /// </summary>
+    public DbSet<PetAdoptionState> PetAdoptionStates => Set<PetAdoptionState>();
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         CustomModelBuilder.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfiguration(new PetAdoptionStateConfiguration());
 
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();

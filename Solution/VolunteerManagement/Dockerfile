@@ -24,6 +24,10 @@ COPY ["Shared/PetFamily.SharedKernel.Contracts/PetFamily.SharedKernel.Contracts.
 COPY ["Shared/PetFamily.SharedKernel.Infrastructure/PetFamily.SharedKernel.Infrastructure.csproj", "Shared/PetFamily.SharedKernel.Infrastructure/"]
 COPY ["Shared/PetFamily.SharedKernel.WebApi/PetFamily.SharedKernel.WebApi.csproj", "Shared/PetFamily.SharedKernel.WebApi/"]
 
+# Copy cross-service contracts (referenced by VolunteerManagement.Services)
+COPY ["Solution/Notification/Notification.Contracts/Notification.Contracts.csproj", "Solution/Notification/Notification.Contracts/"]
+COPY ["Solution/FileStorage/FileStorage.Contracts/FileStorage.Contracts.csproj", "Solution/FileStorage/FileStorage.Contracts/"]
+
 # Copy VolunteerManagement projects
 COPY ["Solution/VolunteerManagement/VolunteerManagement.Domain/VolunteerManagement.Domain.csproj", "Solution/VolunteerManagement/VolunteerManagement.Domain/"]
 COPY ["Solution/VolunteerManagement/VolunteerManagement.Infrastructure/VolunteerManagement.Infrastructure.csproj", "Solution/VolunteerManagement/VolunteerManagement.Infrastructure/"]
@@ -39,6 +43,8 @@ RUN dotnet restore "Solution/VolunteerManagement/Hosts/VolunteerManagement.Hosts
 # Copy everything else
 COPY ["Shared/", "Shared/"]
 COPY ["Solution/VolunteerManagement/", "Solution/VolunteerManagement/"]
+COPY ["Solution/Notification/Notification.Contracts/", "Solution/Notification/Notification.Contracts/"]
+COPY ["Solution/FileStorage/FileStorage.Contracts/", "Solution/FileStorage/FileStorage.Contracts/"]
 
 # Build
 WORKDIR "/src/Solution/VolunteerManagement/Hosts/VolunteerManagement.Hosts.Endpoints"

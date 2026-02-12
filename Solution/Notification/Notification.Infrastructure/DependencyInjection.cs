@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notification.Core.Models;
 using Notification.Infrastructure.BackgroundJobs;
-using Notification.Infrastructure.Data;
+using Notification.Infrastructure.Common;
 using Notification.Infrastructure.Services.Email;
 using Notification.Infrastructure.Settings;
 using PetFamily.SharedKernel.Infrastructure;

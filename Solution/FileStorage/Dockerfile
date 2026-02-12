@@ -30,22 +30,22 @@ COPY ["Solution/FileStorage/FileStorage.Application/FileStorage.Application.cspr
 COPY ["Solution/FileStorage/FileStorage.Infrastructure/FileStorage.Infrastructure.csproj", "Solution/FileStorage/FileStorage.Infrastructure/"]
 COPY ["Solution/FileStorage/Hosts/FileStorage.Consumers/FileStorage.Consumers.csproj", "Solution/FileStorage/Hosts/FileStorage.Consumers/"]
 COPY ["Solution/FileStorage/Hosts/FileStorage.DI/FileStorage.DI.csproj", "Solution/FileStorage/Hosts/FileStorage.DI/"]
-COPY ["Solution/FileStorage/Hosts/FileStorage.Api/FileStorage.Api.csproj", "Solution/FileStorage/Hosts/FileStorage.Api/"]
+COPY ["Solution/FileStorage/Hosts/FileStorage.Endpoints/FileStorage.Endpoints.csproj", "Solution/FileStorage/Hosts/FileStorage.Endpoints/"]
 
 # Restore dependencies
-RUN dotnet restore "Solution/FileStorage/Hosts/FileStorage.Api/FileStorage.Api.csproj"
+RUN dotnet restore "Solution/FileStorage/Hosts/FileStorage.Endpoints/FileStorage.Endpoints.csproj"
 
 # Copy everything else
 COPY ["Shared/", "Shared/"]
 COPY ["Solution/FileStorage/", "Solution/FileStorage/"]
 
 # Build
-WORKDIR "/src/Solution/FileStorage/Hosts/FileStorage.Api"
-RUN dotnet build "FileStorage.Api.csproj" -c Release -o /app/build
+WORKDIR "/src/Solution/FileStorage/Hosts/FileStorage.Endpoints"
+RUN dotnet build "FileStorage.Endpoints.csproj" -c Release -o /app/build
 
 # Publish stage
 FROM build AS publish
-RUN dotnet publish "FileStorage.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "FileStorage.Endpoints.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
@@ -54,4 +54,4 @@ EXPOSE 8080
 EXPOSE 8081
 
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "FileStorage.Api.dll"]
+ENTRYPOINT ["dotnet", "FileStorage.Endpoints.dll"]

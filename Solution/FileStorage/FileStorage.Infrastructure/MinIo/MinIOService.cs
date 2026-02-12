@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 
-namespace FileStorage.Infrastructure.MinIO;
+namespace FileStorage.Infrastructure.MinIo;
 
 /// <summary>
 /// Сервис для работы с MinIO как с S3-совместимым файловым хранилищем

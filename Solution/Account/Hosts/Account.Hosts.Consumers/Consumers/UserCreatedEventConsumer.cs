@@ -1,6 +1,5 @@
 using Account.Handlers.Commands.Create;
 using MassTransit;
-using Microsoft.Extensions.Logging;
 using PetFamily.SharedKernel.Contracts.Events.Auth;
 
 namespace Account.Hosts.Consumers.Consumers;

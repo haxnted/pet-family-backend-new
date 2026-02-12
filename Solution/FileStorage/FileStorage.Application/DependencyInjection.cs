@@ -1,4 +1,6 @@
 using FileStorage.Application.Services;
+using FileStorage.Application.Validators;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FileStorage.Application;
@@ -16,6 +18,8 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<IFileStorageService, FileStorageService>();
+
+        services.AddValidatorsFromAssemblyContaining<FormFileValidator>();
 
         return services;
     }

@@ -1,7 +1,7 @@
 using FileStorage.Application;
 using FileStorage.Application.Services;
 using FileStorage.Consumers.Consumers;
-using FileStorage.Infrastructure.MinIO;
+using FileStorage.Infrastructure.MinIo;
 using FileStorage.Infrastructure.Settings;
 using MassTransit;
 using PetFamily.SharedKernel.Contracts.Events.FileStorage;

@@ -75,6 +75,11 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     public HelpStatusPet HelpStatus { get; private set; }
 
     /// <summary>
+    /// Идентификатор усыновителя (при бронировании).
+    /// </summary>
+    public Guid? BookerId { get; private set; }
+
+    /// <summary>
     /// Идентификатор приюта.
     /// </summary>
     public Guid? ShelterId { get; private set; }
@@ -284,6 +289,48 @@ public sealed class Pet : SoftDeletableEntity<PetId>
             throw new DomainException("Фотография не найдена.");
 
         _photos.Remove(photoToRemove);
+    }
+
+    /// <summary>
+    /// Забронировать питомца для усыновления.
+    /// </summary>
+    /// <param name="bookerId">Идентификатор усыновителя.</param>
+    public void Reserve(Guid bookerId)
+    {
+        if (IsDeleted)
+            throw new DomainException("Нельзя забронировать удалённое животное.");
+
+        if (HelpStatus == HelpStatusPet.Booked)
+            throw new DomainException("Животное уже забронировано.");
+
+        if (HelpStatus == HelpStatusPet.FoundHome)
+            throw new DomainException("Животное уже нашло дом.");
+
+        HelpStatus = HelpStatusPet.Booked;
+        BookerId = bookerId;
+    }
+
+    /// <summary>
+    /// Отменить бронирование питомца (компенсация саги).
+    /// </summary>
+    public void CancelReservation()
+    {
+        if (HelpStatus != HelpStatusPet.Booked)
+            throw new DomainException("Животное не забронировано.");
+
+        HelpStatus = HelpStatusPet.LookingForHome;
+        BookerId = null;
+    }
+
+    /// <summary>
+    /// Подтвердить усыновление питомца (перевести в статус "нашёл дом").
+    /// </summary>
+    public void Adopt()
+    {
+        if (HelpStatus != HelpStatusPet.Booked)
+            throw new DomainException("Животное не забронировано.");
+
+        HelpStatus = HelpStatusPet.FoundHome;
     }
 
     /// <summary>

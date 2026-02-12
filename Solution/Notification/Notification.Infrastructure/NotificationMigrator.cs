@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Notification.Infrastructure.Data;
+using Notification.Infrastructure.Common;
 using PetFamily.SharedKernel.Infrastructure;
 
 namespace Notification.Infrastructure;

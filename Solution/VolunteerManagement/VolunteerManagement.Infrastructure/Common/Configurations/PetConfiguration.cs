@@ -80,6 +80,10 @@ public class PetConfiguration : IEntityTypeConfiguration<Pet>
             .HasColumnName("IsVaccinated")
             .IsRequired();
 
+        builder.Property(p => p.BookerId)
+            .HasColumnName("BookerId")
+            .IsRequired(false);
+
         builder.Property(p => p.HelpStatus)
             .HasConversion<string>()
             .HasColumnName("HelpStatus")

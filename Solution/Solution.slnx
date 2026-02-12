@@ -16,13 +16,6 @@
   <Folder Name="/ApiGateway/">
     <Project Path="ApiGateway/ApiGateway/ApiGateway.csproj" />
   </Folder>
-  <Folder Name="/Auth/">
-    <Project Path="Auth/Auth.Application/Auth.Application.csproj" />
-    <Project Path="Auth/Auth.Contracts/Auth.Contracts.csproj" />
-    <Project Path="Auth/Auth.Core/Auth.Core.csproj" />
-    <Project Path="Auth/Auth.Infrastructure/Auth.Infrastructure.csproj" />
-    <Project Path="Auth/Hosts/Auth.Endpoints/Auth.Endpoints.csproj" />
-  </Folder>
   <Folder Name="/Conversation/Application/">
     <Project Path="Conversation/Application/Conversation.Handlers/Conversation.Handlers.csproj" />
     <Project Path="Conversation/Application/Conversation.Services/Conversation.Services.csproj" />
@@ -38,9 +31,16 @@
     <Project Path="FileStorage/FileStorage.Infrastructure/FileStorage.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/FileStorage/Hosts/">
-    <Project Path="FileStorage/Hosts/FileStorage.Api/FileStorage.Api.csproj" />
     <Project Path="FileStorage/Hosts/FileStorage.Consumers/FileStorage.Consumers.csproj" />
     <Project Path="FileStorage/Hosts/FileStorage.DI/FileStorage.DI.csproj" />
+    <Project Path="FileStorage/Hosts/FileStorage.Endpoints/FileStorage.Endpoints.csproj" />
+  </Folder>
+  <Folder Name="/Identity/">
+    <Project Path="Auth/Auth.Application/Auth.Application.csproj" />
+    <Project Path="Auth/Auth.Contracts/Auth.Contracts.csproj" />
+    <Project Path="Auth/Auth.Core/Auth.Core.csproj" />
+    <Project Path="Auth/Auth.Infrastructure/Auth.Infrastructure.csproj" />
+    <Project Path="Auth/Hosts/Auth.Endpoints/Auth.Endpoints.csproj" />
   </Folder>
   <Folder Name="/Notification/">
     <Project Path="Notification/Notification.Application/Notification.Application.csproj" />

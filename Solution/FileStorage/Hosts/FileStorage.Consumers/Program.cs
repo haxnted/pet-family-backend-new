@@ -1,6 +1,5 @@
 using FileStorage.Application.Services;
 using FileStorage.Consumers;
-using FileStorage.Infrastructure.MinIO;
 using Serilog;
 using Serilog.Events;
 

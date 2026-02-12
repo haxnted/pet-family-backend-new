@@ -1,7 +1,7 @@
 using MassTransit;
+using Notification.Hosts.Consumers.Consumers;
 using Notification.Hosts.DI;
-using Notification.Infrastructure.Data;
-using Notification.Infrastructure.Messaging;
+using Notification.Infrastructure.Common;
 using PetFamily.SharedKernel.Contracts.Events.Auth;
 using PetFamily.SharedKernel.WebApi.Extensions;
 

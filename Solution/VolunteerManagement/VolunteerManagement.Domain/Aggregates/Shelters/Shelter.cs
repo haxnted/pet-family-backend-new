@@ -82,8 +82,7 @@ public sealed class Shelter : SoftDeletableEntity<ShelterId>
     /// <summary>
     /// Коллекция назначений волонтёров.
     /// </summary>
-    public IReadOnlyList<VolunteerAssignment> VolunteerAssignments =>
-        _volunteerAssignments.AsReadOnly();
+    public IReadOnlyList<VolunteerAssignment> VolunteerAssignments => _volunteerAssignments.AsReadOnly();
 
     /// <summary>
     /// Фабричный метод для создания приюта <see cref="Shelter"/>.
@@ -177,8 +176,7 @@ public sealed class Shelter : SoftDeletableEntity<ShelterId>
     {
         ArgumentNullException.ThrowIfNull(assignment);
 
-        var existing = _volunteerAssignments
-            .FirstOrDefault(a => a.VolunteerId == assignment.VolunteerId && a.IsActive);
+        var existing = _volunteerAssignments.FirstOrDefault(a => a.VolunteerId == assignment.VolunteerId && a.IsActive);
 
         if (existing != null)
         {
@@ -197,8 +195,7 @@ public sealed class Shelter : SoftDeletableEntity<ShelterId>
     /// </exception>
     public void RemoveVolunteer(Guid volunteerId)
     {
-        var assignment = _volunteerAssignments
-            .FirstOrDefault(a => a.VolunteerId == volunteerId && a.IsActive);
+        var assignment = _volunteerAssignments.FirstOrDefault(a => a.VolunteerId == volunteerId && a.IsActive);
 
         if (assignment == null)
         {

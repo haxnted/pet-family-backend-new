@@ -5,5 +5,5 @@
 /// </summary>
 public interface IMigrator
 {
-    Task Migrate(CancellationToken cancellationToken = default);
+    Task Migrate(CancellationToken cancellationToken);
 }

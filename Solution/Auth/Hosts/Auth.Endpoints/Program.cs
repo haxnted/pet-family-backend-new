@@ -1,4 +1,5 @@
 using Auth.Endpoints;
+using Auth.Infrastructure.Services;
 using PetFamily.SharedKernel.Infrastructure;
 using PetFamily.SharedKernel.WebApi.Extensions;
 
@@ -10,10 +11,16 @@ builder.Services.AddProgramDependencies(builder.Configuration);
 
 var app = builder.Build();
 
-await using (var scope = app.Services.CreateAsyncScope())
+await using var scope = app.Services.CreateAsyncScope();
+
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+var migrator = scope.ServiceProvider.GetRequiredService<IMigrator>();
+await migrator.Migrate(cts.Token);
+
+if (!app.Environment.IsProduction())
 {
-    var migrator = scope.ServiceProvider.GetRequiredService<IMigrator>();
-    await migrator.Migrate();
+    var seeder = scope.ServiceProvider.GetRequiredService<DevDataSeeder>();
+    await seeder.SeedAsync(cts.Token);
 }
 
 app.UseSerilogRequestLogging();

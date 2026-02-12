@@ -166,6 +166,37 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     }
 
     /// <summary>
+    /// Забронировать питомца для усыновления.
+    /// </summary>
+    /// <param name="petId">Идентификатор питомца.</param>
+    /// <param name="bookerId">Идентификатор усыновителя.</param>
+    public void ReservePet(PetId petId, Guid bookerId)
+    {
+        var pet = GetPetById(petId);
+        pet.Reserve(bookerId);
+    }
+
+    /// <summary>
+    /// Отменить бронирование питомца (компенсация саги).
+    /// </summary>
+    /// <param name="petId">Идентификатор питомца.</param>
+    public void CancelPetReservation(PetId petId)
+    {
+        var pet = GetPetById(petId);
+        pet.CancelReservation();
+    }
+
+    /// <summary>
+    /// Подтвердить усыновление питомца (перевести в статус "нашёл дом").
+    /// </summary>
+    /// <param name="petId">Идентификатор питомца.</param>
+    public void AdoptPet(PetId petId)
+    {
+        var pet = GetPetById(petId);
+        pet.Adopt();
+    }
+
+    /// <summary>
     /// Установить связь с пользователем из Auth модуля.
     /// </summary>
     /// <param name="userId">Идентификатор пользователя.</param>

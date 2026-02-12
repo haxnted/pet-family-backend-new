@@ -25,6 +25,7 @@ public sealed class FileStorageHttpClient(HttpClient httpClient) : IFileStorageC
 
         var response = await httpClient.PostAsync("api/files/upload", content, ct);
         response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<FileUploadResponse>(ct)
                ?? throw new InvalidOperationException("Не удалось десериализовать ответ FileStorage.");

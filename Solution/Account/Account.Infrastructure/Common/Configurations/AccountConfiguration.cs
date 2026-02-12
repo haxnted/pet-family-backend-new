@@ -1,4 +1,6 @@
 using Account.Domain.Aggregates.ValueObjects;
+using Account.Domain.Aggregates.ValueObjects.Identifiers;
+using Account.Domain.Aggregates.ValueObjects.Properties;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using DomainAccount = Account.Domain.Aggregates.Account;

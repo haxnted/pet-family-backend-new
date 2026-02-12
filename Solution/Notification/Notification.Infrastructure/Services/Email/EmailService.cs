@@ -21,8 +21,10 @@ public class EmailService(
         
         using var client = new SmtpClient();
 
-        await client.ConnectAsync(_options.Host, _options.Port, SecureSocketOptions.StartTls, ct);
-        await client.AuthenticateAsync(_options.Username, _options.Password, ct);
+        await client.ConnectAsync(_options.Host, _options.Port, SecureSocketOptions.Auto, ct);
+
+        if (!string.IsNullOrEmpty(_options.Username))
+            await client.AuthenticateAsync(_options.Username, _options.Password, ct);
 
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_options.SenderName, _options.SenderEmail));

@@ -96,6 +96,25 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-conversation:
+    image: postgres:17.2
+    container_name: petfamily-postgres-conversation
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: conversation
+    ports:
+      - "5438:5432"
+    volumes:
+      - postgres_conversation_data:/var/lib/postgresql/data
+    networks:
+      - petfamily-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   postgres-keycloak:
     image: postgres:17.2
     container_name: petfamily-postgres-keycloak
@@ -114,6 +133,92 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # ===== Metrics Exporters =====
+
+  postgres-exporter-auth:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: petfamily-postgres-exporter-auth
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres-auth:5432/auth?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres-exporter-volunteer-management:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: petfamily-postgres-exporter-volunteer-management
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres-volunteer-management:5432/volunteer_management?sslmode=disable"
+    ports:
+      - "9188:9187"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-volunteer-management:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres-exporter-notification:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: petfamily-postgres-exporter-notification
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres-notification:5432/notification?sslmode=disable"
+    ports:
+      - "9189:9187"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-notification:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres-exporter-account:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: petfamily-postgres-exporter-account
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres-account:5432/account?sslmode=disable"
+    ports:
+      - "9190:9187"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-account:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres-exporter-conversation:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: petfamily-postgres-exporter-conversation
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres-conversation:5432/conversation?sslmode=disable"
+    ports:
+      - "9191:9187"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-conversation:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    container_name: petfamily-redis-exporter
+    environment:
+      REDIS_ADDR: "redis:6379"
+    ports:
+      - "9121:9121"
+    networks:
+      - petfamily-network
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
   redis:
     image: redis:7.4-alpine
@@ -242,8 +347,12 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - SERVER_NAME=kibana
       - SERVER_HOST=0.0.0.0
+      - XPACK_SECURITY_ENABLED=false
     ports:
       - "5601:5601"
+    volumes:
+      - ../Shared/Infrastructure/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+      - kibana_data:/usr/share/kibana/data
     networks:
       - petfamily-network
     depends_on:
@@ -255,6 +364,20 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+    restart: unless-stopped
+
+  kibana-init:
+    image: curlimages/curl:8.5.0
+    container_name: petfamily-kibana-init
+    volumes:
+      - ../Shared/Infrastructure/kibana/kibana-init.sh:/kibana-init.sh:ro
+    networks:
+      - petfamily-network
+    depends_on:
+      kibana:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/kibana-init.sh"]
+    restart: "no"
 
   prometheus:
     image: prom/prometheus:v2.48.1
@@ -315,6 +438,16 @@ services:
       - "4317:4317"    # OTLP gRPC receiver
       - "4318:4318"    # OTLP HTTP receiver
       - "14268:14268"  # Jaeger collector HTTP
+    networks:
+      - petfamily-network
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: petfamily-mailpit
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
     networks:
       - petfamily-network
     restart: unless-stopped
@@ -489,6 +622,35 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  conversation-service:
+    build:
+      context: ..
+      dockerfile: Solution/Conversation/Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-conversation-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Keycloak__ClientSecret: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "6005:8080"
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-conversation:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
   # ===== Consumers =====
 
   volunteer-management-consumers:
@@ -567,6 +729,25 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  conversation-consumers:
+    build:
+      context: ..
+      dockerfile: Solution/Conversation/Dockerfile.consumers
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+    container_name: petfamily-conversation-consumers
+    environment:
+      DOTNET_ENVIRONMENT: Docker
+    networks:
+      - petfamily-network
+    depends_on:
+      postgres-conversation:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
 networks:
   petfamily-network:
     driver: bridge
@@ -577,6 +758,7 @@ volumes:
   postgres_volunteer_management_data:
   postgres_notification_data:
   postgres_volunteer_request_data:
+  postgres_conversation_data:
   postgres_keycloak_data:
   rabbitmq_data:
   minio_data:
@@ -585,3 +767,4 @@ volumes:
   grafana_data:
   redis_data:
   elasticsearch_data:
+  kibana_data:

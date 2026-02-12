@@ -1,5 +1,5 @@
 using FileStorage.Application.Services;
-using FileStorage.Infrastructure.MinIO;
+using FileStorage.Infrastructure.MinIo;
 using FileStorage.Infrastructure.Settings;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -21,8 +21,7 @@ public static class DependencyInjection
     public static void AddInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<MinIoSettings>(
-            configuration.GetSection(MinIoSettings.SectionName));
+        services.Configure<MinIoSettings>(configuration.GetSection(MinIoSettings.SectionName));
 
         services.AddSingleton<IMinIoService, MinIoService>();
 
