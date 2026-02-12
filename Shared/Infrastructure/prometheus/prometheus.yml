@@ -1,14 +1,11 @@
-# Prometheus Configuration для PetFamily микросервисов
 global:
-  scrape_interval: 15s       # Частота сбора метрик
-  evaluation_interval: 15s   # Частота вычисления правил
+  scrape_interval: 3s
+  evaluation_interval: 3s
   external_labels:
     cluster: 'petfamily-dev'
     environment: 'docker'
 
-# Конфигурация для сбора метрик с микросервисов
 scrape_configs:
-  # Prometheus самомониторинг
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
@@ -23,56 +20,118 @@ scrape_configs:
         target_label: instance
         replacement: 'api-gateway'
 
-  # Auth Microservice
-  - job_name: 'auth-api'
+  # Auth Service
+  - job_name: 'auth-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['auth-api:8080']
+      - targets: ['auth-service:8080']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
-        replacement: 'auth-api'
+        replacement: 'auth-service'
 
-  # VolunteerManagement API
-  - job_name: 'volunteer-management-api'
+  # VolunteerManagement Service
+  - job_name: 'volunteer-management-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['volunteer-management-api:8080']
+      - targets: ['volunteer-management-service:8080']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
-        replacement: 'volunteer-management-api'
+        replacement: 'volunteer-management-service'
 
-  # Notification API
-  - job_name: 'notification-api'
+  # Notification Service
+  - job_name: 'notification-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['notification-api:8080']
+      - targets: ['notification-service:8080']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
-        replacement: 'notification-api'
+        replacement: 'notification-service'
 
-  # FileStorage API
-  - job_name: 'filestorage-api'
+  # FileStorage Service
+  - job_name: 'filestorage-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['filestorage-api:8080']
+      - targets: ['filestorage-service:8080']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
-        replacement: 'filestorage-api'
+        replacement: 'filestorage-service'
 
-  # PostgreSQL Exporter (опционально, можно добавить позже)
-  # - job_name: 'postgres'
-  #   static_configs:
-  #     - targets: ['postgres-exporter:9187']
+  # Account Service
+  - job_name: 'account-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['account-service:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'account-service'
 
-  # RabbitMQ (встроенные метрики через management plugin)
+  # Conversation Service
+  - job_name: 'conversation-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['conversation-service:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'conversation-service'
+
   - job_name: 'rabbitmq'
     static_configs:
-      - targets: ['rabbitmq:15692']  # RabbitMQ Prometheus plugin port
+      - targets: ['rabbitmq:15692']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
         replacement: 'rabbitmq'
+
+  - job_name: 'postgres-auth'
+    static_configs:
+      - targets: ['postgres-exporter-auth:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'postgres-auth'
+
+  - job_name: 'postgres-volunteer-management'
+    static_configs:
+      - targets: ['postgres-exporter-volunteer-management:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'postgres-volunteer-management'
+
+  - job_name: 'postgres-notification'
+    static_configs:
+      - targets: ['postgres-exporter-notification:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'postgres-notification'
+
+  - job_name: 'postgres-account'
+    static_configs:
+      - targets: ['postgres-exporter-account:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'postgres-account'
+
+  - job_name: 'postgres-conversation'
+    static_configs:
+      - targets: ['postgres-exporter-conversation:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'postgres-conversation'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'redis'

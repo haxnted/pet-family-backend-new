@@ -52,7 +52,7 @@ public static class LoggingExtensions
                 NumberOfReplicas = 1,
                 MinimumLogEventLevel = environment.IsDevelopment() ? LogEventLevel.Debug : LogEventLevel.Information,
                 EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog,
-                ModifyConnectionSettings = x => x.BasicAuthentication("", "") // для xpack.security.enabled=false
+                ModifyConnectionSettings = x => x.BasicAuthentication("", "")
             });
         });
 

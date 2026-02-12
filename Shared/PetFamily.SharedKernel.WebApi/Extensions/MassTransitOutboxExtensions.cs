@@ -51,6 +51,30 @@ public static class MassTransitOutboxExtensions
     }
 
     /// <summary>
+    /// Добавить MassTransit только для публикации сообщений (без outbox/inbox).
+    /// Используется в API-сервисах, которые не потребляют сообщения.
+    /// </summary>
+    public static IServiceCollection AddMassTransitPublisher(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                var rabbitMqSection = configuration.GetSection("RabbitMQ");
+                cfg.Host(rabbitMqSection["Host"], h =>
+                {
+                    h.Username(rabbitMqSection["Username"] ?? "guest");
+                    h.Password(rabbitMqSection["Password"] ?? "guest");
+                });
+            });
+        });
+
+        return services;
+    }
+
+    /// <summary>
     /// Добавить MassTransit Inbox Pattern для идемпотентной обработки входящих событий
     /// </summary>
     /// <typeparam name="TDbContext">Тип DbContext для хранения Inbox сообщений</typeparam>
