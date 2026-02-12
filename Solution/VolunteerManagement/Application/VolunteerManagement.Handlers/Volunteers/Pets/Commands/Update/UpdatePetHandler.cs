@@ -18,12 +18,10 @@ public class UpdatePetHandler(IPetService petService)
         await petService.UpdatePet(
             command.VolunteerId,
             command.PetId,
-            command.GeneralDescription,
+            command.Description,
             command.HealthInformation,
-            command.Address,
             command.Weight,
             command.Height,
-            command.PhoneNumber,
             command.IsCastrated,
             command.IsVaccinated,
             command.HelpStatus,

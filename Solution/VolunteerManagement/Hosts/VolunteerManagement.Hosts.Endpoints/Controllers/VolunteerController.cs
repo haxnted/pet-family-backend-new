@@ -231,6 +231,7 @@ public class VolunteerController(
     /// <returns>Идентификатор созданного питомца.</returns>
     [HttpPost("{volunteerId:guid}/pets")]
     [Authorize(Policy = "VolunteerPolicy")]
+    [Authorize]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -298,12 +299,10 @@ public class VolunteerController(
         {
             VolunteerId = volunteerId,
             PetId = request.PetId,
-            GeneralDescription = request.GeneralDescription,
+            Description = request.Description,
             HealthInformation = request.HealthInformation,
-            Address = request.Address,
             Weight = request.Weight,
             Height = request.Height,
-            PhoneNumber = request.PhoneNumber,
             IsCastrated = request.IsCastrated,
             IsVaccinated = request.IsVaccinated,
             HelpStatus = request.HelpStatus,
@@ -384,7 +383,7 @@ public class VolunteerController(
     /// <param name="petId">Идентификатор питомца.</param>
     /// <param name="ct">Токен отмены.</param>
     [HttpDelete("{volunteerId:guid}/pets/{petId:guid}/soft")]
-    // [Authorize(Policy = "VolunteerPolicy")]
+    [Authorize(Policy = "VolunteerPolicy")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

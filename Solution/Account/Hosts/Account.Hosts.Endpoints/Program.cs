@@ -10,11 +10,11 @@ builder.Services.AddProgramDependencies(builder.Configuration);
 
 var app = builder.Build();
 
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    var migrator = scope.ServiceProvider.GetRequiredService<IMigrator>();
-    await migrator.Migrate();
-}
+await using var scope = app.Services.CreateAsyncScope();
+
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+var migrator = scope.ServiceProvider.GetRequiredService<IMigrator>();
+await migrator.Migrate(cts.Token);
 
 app.UseSerilogRequestLogging();
 

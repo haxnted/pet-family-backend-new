@@ -17,6 +17,7 @@
         <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Contracts\PetFamily.SharedKernel.Contracts.csproj"/>
         <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
         <ProjectReference Include="..\VolunteerManagement.Hosts.DI\VolunteerManagement.Hosts.DI.csproj"/>
+        <ProjectReference Include="..\..\..\..\Solution\Notification\Notification.Contracts\Notification.Contracts.csproj"/>
     </ItemGroup>
 
 </Project>

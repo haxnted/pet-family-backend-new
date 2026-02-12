@@ -9,7 +9,7 @@ namespace Account.Handlers.MappingExtensions;
 public static class AccountMappingExtensions
 {
     /// <summary>
-    /// Преобразовать сущность Account в DTO.
+    /// Преобразовать сущность <see cref="Account"/> в DTO <see cref="AccountDto"/>.
     /// </summary>
     /// <param name="account">Сущность аккаунта.</param>
     /// <returns>DTO аккаунта.</returns>

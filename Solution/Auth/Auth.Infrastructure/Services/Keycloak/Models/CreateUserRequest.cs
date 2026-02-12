@@ -17,4 +17,4 @@ public record CreateUserRequest(
     string LastName,
     string? Patronymic,
     bool Enabled = true,
-    bool EmailVerified = true);
+    bool EmailVerified = false);

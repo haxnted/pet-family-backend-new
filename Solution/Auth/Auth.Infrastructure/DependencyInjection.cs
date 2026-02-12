@@ -32,6 +32,7 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("AuthDbContext")));
 
         services.AddScoped<IMigrator, AuthMigrator>();
+        services.AddScoped<DevDataSeeder>();
 
         ConfigureKeycloak(services, configuration);
 
@@ -39,6 +40,14 @@ public static class DependencyInjection
     }
 
 
+    /// <summary>
+    /// Сконфигурировать Keycloak.
+    /// </summary>
+    /// <param name="services">Коллекция сервисов.</param>
+    /// <param name="configuration">Конфигурация приложения.</param>
+    /// <exception cref="InvalidOperationException">
+    /// Выбрасывается если конфигурация Keycloak не найдена.
+    /// </exception>
     private static void ConfigureKeycloak(IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<KeycloakOptions>(configuration.GetSection(KeycloakOptions.SectionName));
