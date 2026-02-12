@@ -5,9 +5,15 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <ProjectReference Include="..\..\..\Notification\Notification.Contracts\Notification.Contracts.csproj" />
         <ProjectReference Include="..\..\VolunteerManagement.Domain\VolunteerManagement.Domain.csproj"/>
         <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Infrastructure\PetFamily.SharedKernel.Infrastructure.csproj"/>
         <ProjectReference Include="..\..\..\..\Shared\PetFamily.SharedKernel.Application\PetFamily.SharedKernel.Application.csproj"/>
+        <ProjectReference Include="..\..\VolunteerManagement.Infrastructure\VolunteerManagement.Infrastructure.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="MassTransit" />
     </ItemGroup>
 
 </Project>

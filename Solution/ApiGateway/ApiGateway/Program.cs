@@ -29,17 +29,6 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// TODO: Раскомментировать когда MMLib.SwaggerForOcelot будет поддерживать Microsoft.OpenApi v2
-/*
-app.UseSwaggerForOcelotUI(opt =>
-{
-    opt.PathToSwaggerGenerator = "/swagger/docs";
-}, uiOpt =>
-{
-    uiOpt.DocumentTitle = "Pet Family API Gateway";
-});
-*/
-
 app.MapHealthCheckEndpoints();
 
 await app.UseOcelot();

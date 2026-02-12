@@ -40,6 +40,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         {
             _ when IsDomainException(exception) => CreateValidationProblemDetails(exception, httpContext),
             _ when IsEntityNotFoundException(exception) => CreateNotFoundProblemDetails(exception, httpContext),
+            _ when IsForbiddenException(exception) => CreateForbiddenProblemDetails(exception, httpContext),
             _ when IsUseCaseException(exception) => CreateUseCaseProblemDetails(exception, httpContext),
             _ => CreateInternalServerErrorProblemDetails(exception, httpContext)
         };
@@ -67,6 +68,40 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         return exceptionType.Name.StartsWith("EntityNotFoundException") &&
                (exceptionType.Namespace == "PetFamily.SharedKernel.Application.Exceptions" ||
                 exceptionType.Namespace?.Contains(".Application.Exceptions") == true);
+    }
+
+    /// <summary>
+    /// Проверяет, является ли исключение ForbiddenException из SharedKernel или любого модуля.
+    /// </summary>
+    private static bool IsForbiddenException(Exception exception)
+    {
+        var exceptionType = exception.GetType();
+
+        return exceptionType.Name == "ForbiddenException" &&
+               (exceptionType.Namespace == "PetFamily.SharedKernel.Application.Exceptions" ||
+                exceptionType.Namespace?.Contains(".Application.Exceptions") == true);
+    }
+
+    /// <summary>
+    /// Создает ProblemDetails для ForbiddenException (403 Forbidden).
+    /// </summary>
+    private static ProblemDetails CreateForbiddenProblemDetails(Exception exception, HttpContext httpContext)
+    {
+        const int statusCode = StatusCodes.Status403Forbidden;
+
+        return new ProblemDetails
+        {
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+            Title = "Forbidden",
+            Status = statusCode,
+            Detail = exception.Message,
+            Instance = httpContext.Request.Path,
+            Extensions =
+            {
+                ["traceId"] = Activity.Current?.Id ?? httpContext.TraceIdentifier,
+                ["exceptionType"] = exception.GetType().Name
+            }
+        };
     }
 
     /// <summary>

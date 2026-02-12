@@ -1,4 +1,6 @@
 using Account.Domain.Aggregates.ValueObjects;
+using Account.Domain.Aggregates.ValueObjects.Identifiers;
+using Account.Domain.Aggregates.ValueObjects.Properties;
 using PetFamily.SharedKernel.Domain.Primitives;
 
 namespace Account.Domain.Aggregates;

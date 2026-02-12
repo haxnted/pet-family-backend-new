@@ -21,17 +21,14 @@ internal sealed class PetService(
     ICacheService cache) : IPetService
 {
     /// <inheritdoc/>
-    public async Task<Guid> AddPet(
-        Guid volunteerId,
+    public async Task<Guid> AddPet(Guid volunteerId,
         string nickName,
-        string generalDescription,
+        string description,
         string healthInformation,
         Guid breedId,
         Guid speciesId,
-        AddressDto address,
         double weight,
         double height,
-        string phoneNumber,
         DateTime birthDate,
         bool isCastrated,
         bool isVaccinated,
@@ -55,7 +52,7 @@ internal sealed class PetService(
 
         var petId = PetId.Of(Guid.NewGuid());
         var petNickName = NickName.Of(nickName);
-        var petDescription = Description.Of(generalDescription);
+        var petDescription = Description.Of(description);
         var petHealthInfo = Description.Of(healthInformation);
         var petAttributes = PetPhysicalAttributes.Of(weight, height);
         var petStatus = (HelpStatusPet)helpStatus;
@@ -89,12 +86,10 @@ internal sealed class PetService(
     public async Task UpdatePet(
         Guid volunteerId,
         Guid petId,
-        string generalDescription,
+        string description,
         string healthInformation,
-        AddressDto address,
         double weight,
         double height,
-        string phoneNumber,
         bool isCastrated,
         bool isVaccinated,
         int helpStatus,
@@ -108,7 +103,7 @@ internal sealed class PetService(
 
         var pet = volunteer.GetPetById(PetId.Of(petId));
 
-        var petDescription = Description.Of(generalDescription);
+        var petDescription = Description.Of(description);
         var petHealthInfo = Description.Of(healthInformation);
         var petAttributes = PetPhysicalAttributes.Of(weight, height);
         var petStatus = (HelpStatusPet)helpStatus;

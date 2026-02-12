@@ -3,6 +3,7 @@ using PetFamily.SharedKernel.WebApi.Diagnostics;
 using PetFamily.SharedKernel.WebApi.Extensions;
 using PetFamily.SharedKernel.WebApi.Services;
 using VolunteerManagement.Hosts.DI;
+using VolunteerManagement.Infrastructure.Common.Contexts;
 
 namespace VolunteerManagement.Hosts.Endpoints;
 
@@ -43,6 +44,8 @@ public static class DependencyInjection
             .AddDatabaseHealthCheck(configuration, "VolunteerDbContext")
             .AddRabbitMqHealthCheck(configuration, "RabbitMQ")
             .AddKeycloakHealthCheck(configuration, "Keycloak");
+
+        services.AddMassTransitPublisher(configuration);
 
         services.AddOpenTelemetryTracing(
             configuration,

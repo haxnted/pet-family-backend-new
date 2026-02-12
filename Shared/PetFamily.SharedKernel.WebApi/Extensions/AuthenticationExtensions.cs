@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace PetFamily.SharedKernel.WebApi.Extensions;
@@ -158,41 +159,92 @@ public static class AuthenticationExtensions
             return Task.CompletedTask;
         }
 
+        var rolesAdded = false;
+
+        // Способ 1: realm_access как claim (JwtSecurityTokenHandler)
         var realmAccess = context.Principal?.FindFirst("realm_access")?.Value;
         if (!string.IsNullOrEmpty(realmAccess))
         {
-            try
-            {
-                var roles = JsonDocument.Parse(realmAccess)
-                    .RootElement.GetProperty("roles")
-                    .EnumerateArray()
-                    .Select(r => r.GetString())
-                    .Where(r => r != null);
-
-                foreach (var role in roles)
-                {
-                    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, role!));
-                    logger?.LogDebug("Added role claim: {Role}", role);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger?.LogWarning(ex, "Failed to parse realm_access claim");
-            }
+            rolesAdded = TryAddRolesFromJson(realmAccess, claimsIdentity, logger);
         }
-        else
+
+        // Способ 2: из SecurityToken напрямую (JsonWebTokenHandler в .NET 8+)
+        if (!rolesAdded && context.SecurityToken is JsonWebToken jwt)
         {
-            logger?.LogDebug("realm_access claim not found in JWT token");
+            if (jwt.TryGetPayloadValue<JsonElement>("realm_access", out var realmAccessElement))
+            {
+                rolesAdded = TryAddRolesFromJsonElement(realmAccessElement, claimsIdentity, logger);
+            }
         }
 
-        var sub = context.Principal?.FindFirst("sub")?.Value;
+        if (!rolesAdded)
+        {
+            logger?.LogWarning("realm_access roles not found in JWT token. SecurityToken type: {TokenType}",
+                context.SecurityToken?.GetType().Name);
+        }
+
+        // sub может быть под разными именами в зависимости от JWT handler
+        var sub = context.Principal?.FindFirst("sub")?.Value
+                  ?? context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        // Fallback: читаем из SecurityToken напрямую
+        if (string.IsNullOrEmpty(sub) && context.SecurityToken is JsonWebToken jwtForSub)
+        {
+            jwtForSub.TryGetPayloadValue<string>("sub", out sub);
+        }
+
         if (!string.IsNullOrEmpty(sub))
         {
             claimsIdentity.AddClaim(new Claim("user_id", sub));
-            logger?.LogDebug("Added user_id claim: {UserId}", sub);
         }
 
-        logger?.LogDebug("JWT Token validated successfully");
+        logger?.LogInformation("JWT validated. UserId: {Sub}, Roles: [{Roles}]",
+            sub,
+            string.Join(", ", claimsIdentity.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)));
+
         return Task.CompletedTask;
+    }
+
+    private static bool TryAddRolesFromJson(string json, ClaimsIdentity identity, ILogger? logger)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            return TryAddRolesFromJsonElement(doc.RootElement, identity, logger);
+        }
+        catch (Exception ex)
+        {
+            logger?.LogWarning(ex, "Failed to parse realm_access JSON string");
+            return false;
+        }
+    }
+
+    private static bool TryAddRolesFromJsonElement(JsonElement element, ClaimsIdentity identity, ILogger? logger)
+    {
+        try
+        {
+            if (!element.TryGetProperty("roles", out var rolesElement))
+                return false;
+
+            var added = false;
+            foreach (var role in rolesElement.EnumerateArray())
+            {
+                var roleValue = role.GetString();
+                if (!string.IsNullOrEmpty(roleValue))
+                {
+                    identity.AddClaim(new Claim(ClaimTypes.Role, roleValue));
+                    added = true;
+                }
+            }
+
+            return added;
+        }
+        catch (Exception ex)
+        {
+            logger?.LogWarning(ex, "Failed to parse realm_access element");
+            return false;
+        }
     }
 }

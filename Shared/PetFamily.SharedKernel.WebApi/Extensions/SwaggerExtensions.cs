@@ -43,15 +43,12 @@ public static class SwaggerExtensions
                 Scheme = "bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "Введите JWT токен в формате: Bearer {ваш токен}"
+                Description = "Введите JWT токен (без префикса Bearer)"
             });
 
-            options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                {
-                    new OpenApiSecuritySchemeReference("Bearer"),
-                    []
-                }
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
 
             options.DocumentFilter<HealthChecksDocumentFilter>();

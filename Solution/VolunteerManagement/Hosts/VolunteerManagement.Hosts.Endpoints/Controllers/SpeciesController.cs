@@ -30,7 +30,7 @@ public class SpeciesController(IMessageBus bus) : ControllerBase
     /// <returns>Идентификатор созданного вида.</returns>
     [HttpPost]
     [AllowAnonymous]
-    // [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -57,7 +57,7 @@ public class SpeciesController(IMessageBus bus) : ControllerBase
     /// <param name="ct">Токен отмены.</param>
     /// <returns>Идентификатор созданной породы.</returns>
     [HttpPost("{speciesId:guid}/breeds")]
-    // [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,7 +87,7 @@ public class SpeciesController(IMessageBus bus) : ControllerBase
     /// <param name="ct">Токен отмены.</param>
     /// <returns>Результат операции.</returns>
     [HttpDelete("{speciesId:guid}")]
-    // [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -116,7 +116,7 @@ public class SpeciesController(IMessageBus bus) : ControllerBase
     /// <param name="ct">Токен отмены.</param>
     /// <returns>Результат операции.</returns>
     [HttpDelete("{speciesId:guid}/breeds/{breedId:guid}")]
-    // [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -184,7 +184,7 @@ public class SpeciesController(IMessageBus bus) : ControllerBase
     /// <param name="ct">Токен отмены.</param>
     /// <returns>Результат операции.</returns>
     [HttpPatch("{speciesId:guid}/restore")]
-    // [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -207,7 +207,7 @@ public class SpeciesController(IMessageBus bus) : ControllerBase
     /// <param name="ct">Токен отмены.</param>
     /// <returns>Результат операции.</returns>
     [HttpPatch("{speciesId:guid}/breeds/{breedId:guid}/restore")]
-    // [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

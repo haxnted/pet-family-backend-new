@@ -1,4 +1,5 @@
 using FileStorage.Contracts.Client;
+using FileStorage.Contracts.Handlers;
 using FileStorage.Contracts.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,10 @@ public static class ServiceCollectionExtensions
         services.Configure<FileStorageSettings>(
             configuration.GetSection(FileStorageSettings.SectionName));
 
+        services.AddHttpContextAccessor();
+
+        services.AddTransient<AuthenticationDelegatingHandler>();
+
         services.AddHttpClient<IFileStorageClient, FileStorageHttpClient>((sp, client) =>
         {
             var settings = configuration
@@ -31,7 +36,8 @@ public static class ServiceCollectionExtensions
 
             client.BaseAddress = new Uri(settings.BaseUrl);
             client.Timeout = TimeSpan.FromMinutes(settings.TimeoutMinutes);
-        });
+        })
+        .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
         return services;
     }

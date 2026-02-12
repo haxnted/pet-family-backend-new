@@ -14,6 +14,8 @@ public class GetAccountByUserIdHandler(IAccountService accountService, ICacheSer
     /// <summary>
     /// Обработать запрос на получение аккаунта.
     /// </summary>
+    /// <param name="query">Запрос на получение аккаунта.</param>
+    /// <param name="ct">Токен отмены операции.</param>
     public async Task<AccountDto> Handle(GetAccountByUserIdQuery query, CancellationToken ct)
     {
         var cacheKey = CacheKeys.AccountByUserId(query.UserId);

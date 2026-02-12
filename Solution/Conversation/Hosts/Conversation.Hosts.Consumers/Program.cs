@@ -1,5 +1,34 @@
-var builder = Host.CreateApplicationBuilder(args);
+using Conversation.Hosts.Consumers;
+using Serilog;
+using Serilog.Events;
 
-var app = builder.Build();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .MinimumLevel.Override("MassTransit", LogEventLevel.Information)
+    .WriteTo.Console()
+    .WriteTo.Debug()
+    .WriteTo.Seq(
+        Environment.GetEnvironmentVariable("Seq__Url") ?? "http://localhost:5341")
+    .Enrich.WithProperty("Application", "Conversation.Consumers")
+    .CreateLogger();
 
-await app.RunAsync();
+try
+{
+    var builder = Host.CreateApplicationBuilder(args);
+
+    builder.Services.AddSerilog();
+    builder.Services.AddProgramDependencies(builder.Configuration);
+
+    var app = builder.Build();
+
+    await app.RunAsync();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Conversation Consumers Worker Service terminated unexpectedly");
+    throw;
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}

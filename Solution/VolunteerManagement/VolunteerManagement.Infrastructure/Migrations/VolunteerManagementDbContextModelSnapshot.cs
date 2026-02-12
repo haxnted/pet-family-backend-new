@@ -327,6 +327,10 @@ namespace VolunteerManagement.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("BirthDate");
 
+                    b.Property<Guid?>("BookerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BookerId");
+
                     b.Property<Guid>("BreedId")
                         .HasColumnType("uuid")
                         .HasColumnName("BreedId");
@@ -413,6 +417,60 @@ namespace VolunteerManagement.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Volunteers", (string)null);
+                });
+
+            modelBuilder.Entity("VolunteerManagement.Infrastructure.Sagas.PetAdoptionState", b =>
+                {
+                    b.Property<Guid>("CorrelationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AdopterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdopterName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("ChatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("PetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PetNickName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("VolunteerId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CorrelationId");
+
+                    b.HasIndex("AdopterId");
+
+                    b.HasIndex("CurrentState");
+
+                    b.HasIndex("PetId");
+
+                    b.ToTable("PetAdoptionStates", (string)null);
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
