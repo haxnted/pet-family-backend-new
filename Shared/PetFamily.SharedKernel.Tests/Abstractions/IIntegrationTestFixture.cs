@@ -1,4 +1,4 @@
-﻿namespace PetFamily.SharedKernel.Tests.Abstractions;
+namespace PetFamily.SharedKernel.Tests.Abstractions;
 
 /// <summary>
 /// Интерфейс для fixture интеграционных тестов.

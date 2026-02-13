@@ -99,7 +99,7 @@ public sealed class Pet : SoftDeletableEntity<PetId>
     /// <summary>
     /// Коллекция фотографий.
     /// </summary>
-    public IReadOnlyCollection<Photo> Photos { get; private set; }
+    public IReadOnlyCollection<Photo> Photos => _photos.AsReadOnly();
 
     /// <summary>
     /// Коллекция реквизитов.
@@ -143,7 +143,7 @@ public sealed class Pet : SoftDeletableEntity<PetId>
         List<Requisite> requisiteList,
         Position position) : base(id)
     {
-        Photos = petPhotoList.AsReadOnly();
+        _photos.AddRange(petPhotoList);
         RequisiteList = requisiteList.AsReadOnly();
         VolunteerId = volunteerId;
         NickName = nickName;

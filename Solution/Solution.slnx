@@ -84,8 +84,7 @@
     <Project Path="VolunteerManagement/Hosts/VolunteerManagement.Hosts.Endpoints/VolunteerManagement.Hosts.Endpoints.csproj" />
   </Folder>
   <Folder Name="/VolunteerManagement/Tests/">
-    <Project Path="VolunteerManagement/Tests/Application.UnitTests/Application.UnitTests.csproj" />
-    <Project Path="VolunteerManagement/Tests/ArchitectureTests/ArchitectureTests.csproj" />
     <Project Path="VolunteerManagement/Tests/Domain.UnitTests/Domain.UnitTests.csproj" />
+    <Project Path="VolunteerManagement/Tests/IntegrationTests/IntegrationTests.csproj" />
   </Folder>
 </Solution>
