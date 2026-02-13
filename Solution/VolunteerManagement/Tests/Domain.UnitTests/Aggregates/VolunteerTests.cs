@@ -2,6 +2,7 @@ using PetFamily.SharedKernel.Tests.Abstractions;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Identifiers;
 using PetFamily.SharedKernel.Domain.Exceptions;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
+using VolunteerManagement.Domain.Aggregates.Volunteers;
 using VolunteerManagement.Tests.Domain.Builders;
 
 namespace VolunteerManagement.Tests.Domain.Aggregates;
@@ -48,6 +49,22 @@ public sealed class VolunteerTests : UnitTestBase
         act.Should().Throw<ArgumentNullException>();
     }
 
+    [Fact]
+    public void AddPet_ExceedingLimit_ShouldThrowDomainException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        for (var i = 0; i < Volunteer.LimitPets + 1; i++)
+        {
+            volunteer.AddPet(PetBuilder.Default().WithVolunteerId(volunteer.Id).Build());
+        }
+
+        var act = () => volunteer.AddPet(
+            PetBuilder.Default().WithVolunteerId(volunteer.Id).Build());
+
+        act.Should().Throw<DomainException>()
+            .WithMessage("*лимит*");
+    }
+
     #endregion
 
     #region RemovePet Tests
@@ -86,6 +103,27 @@ public sealed class VolunteerTests : UnitTestBase
 
         volunteer.Pets.Should().HaveCount(1);
         volunteer.Pets[0].IsSoftDeleted.Should().BeTrue();
+    }
+
+    [Fact]
+    public void SoftRemovePet_WithNullPet_ShouldThrowArgumentNullException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+
+        var act = () => volunteer.SoftRemovePet(null!);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void SoftRemovePet_WithNonExistentPet_ShouldThrowDomainException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        var pet = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+
+        var act = () => volunteer.SoftRemovePet(pet);
+
+        act.Should().Throw<DomainException>();
     }
 
     [Fact]
@@ -161,6 +199,108 @@ public sealed class VolunteerTests : UnitTestBase
 
         act.Should().Throw<DomainException>()
             .WithMessage("*Недостаточно*");
+    }
+
+    [Fact]
+    public void MovePet_WithPositionExceedingCount_ShouldThrowDomainException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        var pet1 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        var pet2 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        volunteer.AddPet(pet1);
+        volunteer.AddPet(pet2);
+
+        var act = () => volunteer.MovePet(pet1.Id, Position.Of(5));
+
+        act.Should().Throw<DomainException>()
+            .WithMessage("*превышает*");
+    }
+
+    [Fact]
+    public void MovePet_WithNonExistentPet_ShouldThrowDomainException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        var pet1 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        var pet2 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        volunteer.AddPet(pet1);
+        volunteer.AddPet(pet2);
+
+        var act = () => volunteer.MovePet(PetId.Of(Guid.NewGuid()), Position.Of(1));
+
+        act.Should().Throw<DomainException>()
+            .WithMessage("*найти*");
+    }
+
+    [Fact]
+    public void MovePet_WithSamePosition_ShouldThrowDomainException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        var pet1 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        var pet2 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        volunteer.AddPet(pet1);
+        volunteer.AddPet(pet2);
+
+        var act = () => volunteer.MovePet(pet1.Id, Position.Of(1));
+
+        act.Should().Throw<DomainException>()
+            .WithMessage("*уже находится*");
+    }
+
+    [Fact]
+    public void MovePet_ToHigherPosition_ShouldShiftOthersDown()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        var pet1 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        var pet2 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        var pet3 = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        volunteer.AddPet(pet1);
+        volunteer.AddPet(pet2);
+        volunteer.AddPet(pet3);
+
+        // Move pet1 from position 1 to position 3 (newIdx > oldIdx)
+        volunteer.MovePet(pet1.Id, Position.Of(3));
+
+        pet1.Position.Value.Should().Be(3);
+        pet2.Position.Value.Should().Be(1);
+        pet3.Position.Value.Should().Be(2);
+    }
+
+    #endregion
+
+    #region RestorePet Tests
+
+    [Fact]
+    public void RestorePet_ShouldRestoreSinglePet()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        var pet = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+        volunteer.AddPet(pet);
+        volunteer.SoftRemovePet(pet);
+
+        volunteer.RestorePet(pet);
+
+        pet.IsDeleted.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RestorePet_WithNullPet_ShouldThrowArgumentNullException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+
+        var act = () => volunteer.RestorePet(null!);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RestorePet_WithNonExistentPet_ShouldThrowDomainException()
+    {
+        var volunteer = VolunteerBuilder.Default().Build();
+        var pet = PetBuilder.Default().WithVolunteerId(volunteer.Id).Build();
+
+        var act = () => volunteer.RestorePet(pet);
+
+        act.Should().Throw<DomainException>();
     }
 
     #endregion

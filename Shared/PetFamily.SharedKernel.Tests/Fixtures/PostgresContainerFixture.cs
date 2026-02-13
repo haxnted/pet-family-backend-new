@@ -1,8 +1,5 @@
-using System;
-using System.Threading.Tasks;
 using PetFamily.SharedKernel.Tests.Abstractions;
 using Testcontainers.PostgreSql;
-using Xunit;
 
 namespace PetFamily.SharedKernel.Tests.Fixtures;
 
