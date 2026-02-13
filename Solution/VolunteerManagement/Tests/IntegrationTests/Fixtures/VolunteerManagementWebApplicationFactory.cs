@@ -4,13 +4,17 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using PetFamily.SharedKernel.Infrastructure.Caching;
 using PetFamily.SharedKernel.Tests.Abstractions;
 using Testcontainers.PostgreSql;
 using VolunteerManagement.Infrastructure.Common.Contexts;
+using MassTransit;
 
 namespace VolunteerManagement.Tests.Integration.Fixtures;
 
-public sealed class VolunteerManagementWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime, IIntegrationTestFixture
+public sealed class VolunteerManagementWebApplicationFactory
+    : WebApplicationFactory<Program>, IAsyncLifetime, IIntegrationTestFixture
 {
     private PostgreSqlContainer? _dbContainer;
 
@@ -58,25 +62,37 @@ public sealed class VolunteerManagementWebApplicationFactory : WebApplicationFac
                 options.EnableDetailedErrors();
             });
 
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
-            dbContext.Database.EnsureCreated();
+            var massTransitDescriptors = services
+                .Where(d =>
+                    (d.ServiceType.FullName?.Contains("MassTransit") ?? false) ||
+                    (d.ImplementationType?.FullName?.Contains("MassTransit") ?? false))
+                .ToList();
+
+            foreach (var descriptor in massTransitDescriptors)
+                services.Remove(descriptor);
+
+            services.Configure<HealthCheckServiceOptions>(options =>
+            {
+                var mtChecks = options.Registrations
+                    .Where(r => r.Name.StartsWith("masstransit", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                foreach (var check in mtChecks)
+                    options.Registrations.Remove(check);
+            });
+
+            services.AddMassTransitTestHarness();
+
+            services.RemoveAll<ICacheService>();
+            services.AddSingleton<ICacheService, MemoryCacheService>();
+            services.AddMemoryCache();
         });
     }
 
-    public IServiceScope CreateScope() => Services.CreateScope();
 
     public VolunteerManagementDbContext GetDbContext()
     {
         var scope = Services.CreateScope();
         return scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
     }
-}
-
-[CollectionDefinition(Name)]
-public sealed class VolunteerManagementIntegrationTestCollection
-    : ICollectionFixture<VolunteerManagementWebApplicationFactory>
-{
-    public const string Name = "VolunteerManagementIntegration";
 }

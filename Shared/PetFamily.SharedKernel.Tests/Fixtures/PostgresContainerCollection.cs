@@ -1,4 +1,4 @@
-﻿namespace PetFamily.SharedKernel.Tests.Fixtures;
+namespace PetFamily.SharedKernel.Tests.Fixtures;
 
 [CollectionDefinition(Name)]
 public sealed class PostgresContainerCollection : ICollectionFixture<PostgresContainerFixture>

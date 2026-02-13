@@ -21,6 +21,8 @@
         <PackageReference Include="Testcontainers.PostgreSql" />
         <PackageReference Include="Respawn" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="MassTransit.TestFramework" />
+        <PackageReference Include="NSubstitute" />
     </ItemGroup>
 
     <ItemGroup>

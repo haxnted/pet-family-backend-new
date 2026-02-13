@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Respawn;
 using VolunteerManagement.Infrastructure.Common.Contexts;
 using VolunteerManagement.Tests.Integration.Fixtures;
@@ -11,6 +12,7 @@ public abstract class VolunteerManagementIntegrationTestBase : IAsyncLifetime
     protected readonly VolunteerManagementWebApplicationFactory Factory;
     protected readonly HttpClient Client;
     private Respawner? _respawner;
+    private NpgsqlConnection? _dbConnection;
 
     protected VolunteerManagementIntegrationTestBase(VolunteerManagementWebApplicationFactory factory)
     {
@@ -22,6 +24,12 @@ public abstract class VolunteerManagementIntegrationTestBase : IAsyncLifetime
     {
         var scope = Factory.Services.CreateScope();
         return scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
+    }
+
+    protected T GetService<T>() where T : notnull
+    {
+        var scope = Factory.Services.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<T>();
     }
 
     protected async Task ExecuteInScopeAsync(Func<IServiceProvider, Task> action)
@@ -56,21 +64,29 @@ public abstract class VolunteerManagementIntegrationTestBase : IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        _respawner = await Respawner.CreateAsync(Factory.ConnectionString, new RespawnerOptions
+        _dbConnection = new NpgsqlConnection(Factory.ConnectionString);
+        await _dbConnection.OpenAsync();
+
+        _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
         {
             DbAdapter = DbAdapter.Postgres,
             SchemasToInclude = ["public"],
             TablesToIgnore = ["__EFMigrationsHistory"]
         });
 
-        await _respawner.ResetAsync(Factory.ConnectionString);
+        await _respawner.ResetAsync(_dbConnection);
     }
 
     public virtual async Task DisposeAsync()
     {
-        if (_respawner != null)
+        if (_respawner != null && _dbConnection != null)
         {
-            await _respawner.ResetAsync(Factory.ConnectionString);
+            await _respawner.ResetAsync(_dbConnection);
+        }
+
+        if (_dbConnection != null)
+        {
+            await _dbConnection.DisposeAsync();
         }
     }
 }
