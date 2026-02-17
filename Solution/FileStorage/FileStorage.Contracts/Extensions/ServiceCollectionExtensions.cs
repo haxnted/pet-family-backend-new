@@ -1,5 +1,5 @@
 using FileStorage.Contracts.Client;
-using FileStorage.Contracts.Handlers;
+using PetFamily.SharedKernel.WebApi.Handlers;
 using FileStorage.Contracts.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
