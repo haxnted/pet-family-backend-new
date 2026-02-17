@@ -9,16 +9,16 @@ namespace Notification.Infrastructure.Common;
 /// </summary>
 internal abstract class CustomModelBuilder
 {
-    /// <summary>
-    /// Собирает контекст конфигуратора EF для <see cref="NotificationDbContext"/>.
-    /// </summary>
-    /// <param name="modelBuilder">Конфигуратор модели.</param>
-    public static void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new UserNotificationSettingsConfiguration());
-        modelBuilder.ApplyConfiguration(new NotificationLogConfiguration());
-        modelBuilder.ApplyConfiguration(new EmailSettingsConfiguration());
+	/// <summary>
+	/// Собирает контекст конфигуратора EF для <see cref="NotificationDbContext"/>.
+	/// </summary>
+	/// <param name="modelBuilder">Конфигуратор модели.</param>
+	public static void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.ApplyConfiguration(new UserNotificationSettingsConfiguration());
+		modelBuilder.ApplyConfiguration(new NotificationLogConfiguration());
+		modelBuilder.ApplyConfiguration(new EmailSettingsConfiguration());
 
-        modelBuilder.SetDefaultDateTimeKind(DateTimeKind.Utc);
-    }
+		modelBuilder.SetDefaultDateTimeKind(DateTimeKind.Utc);
+	}
 }

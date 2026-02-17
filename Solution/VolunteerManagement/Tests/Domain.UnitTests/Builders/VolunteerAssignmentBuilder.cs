@@ -10,39 +10,44 @@ namespace VolunteerManagement.Tests.Domain.Builders;
 /// </summary>
 public sealed class VolunteerAssignmentBuilder : IBuilder<VolunteerAssignment>
 {
-    private VolunteerAssignmentId _id = VolunteerAssignmentId.Of(Guid.NewGuid());
-    private Guid _volunteerId = Guid.NewGuid();
-    private VolunteerRole _role = VolunteerRole.Caretaker;
+	private VolunteerAssignmentId _id = VolunteerAssignmentId.Of(Guid.NewGuid());
 
-    public VolunteerAssignmentBuilder WithId(Guid id)
-    {
-        _id = VolunteerAssignmentId.Of(id);
-        return this;
-    }
+	private Guid _volunteerId = Guid.NewGuid();
 
-    public VolunteerAssignmentBuilder WithVolunteerId(Guid volunteerId)
-    {
-        _volunteerId = volunteerId;
-        return this;
-    }
+	private VolunteerRole _role = VolunteerRole.Caretaker;
 
-    public VolunteerAssignmentBuilder WithRole(VolunteerRole role)
-    {
-        _role = role;
-        return this;
-    }
+	public VolunteerAssignmentBuilder WithId(Guid id)
+	{
+		_id = VolunteerAssignmentId.Of(id);
 
-    public VolunteerAssignment Build()
-    {
-        return VolunteerAssignment.Create(_id, _volunteerId, _role);
-    }
+		return this;
+	}
 
-    public static VolunteerAssignmentBuilder Default() => new();
+	public VolunteerAssignmentBuilder WithVolunteerId(Guid volunteerId)
+	{
+		_volunteerId = volunteerId;
 
-    public static IReadOnlyList<VolunteerAssignment> BuildMany(int count)
-    {
-        return Enumerable.Range(0, count)
-            .Select(_ => Default().Build())
-            .ToList();
-    }
+		return this;
+	}
+
+	public VolunteerAssignmentBuilder WithRole(VolunteerRole role)
+	{
+		_role = role;
+
+		return this;
+	}
+
+	public VolunteerAssignment Build()
+	{
+		return VolunteerAssignment.Create(_id, _volunteerId, _role);
+	}
+
+	public static VolunteerAssignmentBuilder Default() => new();
+
+	public static IReadOnlyList<VolunteerAssignment> BuildMany(int count)
+	{
+		return Enumerable.Range(0, count)
+			.Select(_ => Default().Build())
+			.ToList();
+	}
 }

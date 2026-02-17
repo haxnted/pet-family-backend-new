@@ -11,48 +11,55 @@ namespace VolunteerManagement.Tests.Domain.Builders;
 /// </summary>
 public sealed class VolunteerBuilder : IBuilder<Volunteer>
 {
-    private VolunteerId _id = VolunteerId.Of(Guid.NewGuid());
+	private VolunteerId _id = VolunteerId.Of(Guid.NewGuid());
 
-    private FullName _fullName = FullName.Of(
-        FakeDataGenerator.FirstName(),
-        FakeDataGenerator.LastName(),
-        FakeDataGenerator.Patronymic());
+	private FullName _fullName = FullName.Of(
+		FakeDataGenerator.FirstName(),
+		FakeDataGenerator.LastName(),
+		FakeDataGenerator.Patronymic());
 
-    public VolunteerBuilder WithId(Guid id)
-    {
-        _id = VolunteerId.Of(id);
-        return this;
-    }
+	public VolunteerBuilder WithId(Guid id)
+	{
+		_id = VolunteerId.Of(id);
 
-    public VolunteerBuilder WithId(VolunteerId id)
-    {
-        _id = id;
-        return this;
-    }
+		return this;
+	}
 
-    public VolunteerBuilder WithFullName(string name, string surname, string? patronymic = null)
-    {
-        _fullName = FullName.Of(name, surname, patronymic);
-        return this;
-    }
+	public VolunteerBuilder WithId(VolunteerId id)
+	{
+		_id = id;
 
-    public VolunteerBuilder WithFullName(FullName fullName)
-    {
-        _fullName = fullName;
-        return this;
-    }
+		return this;
+	}
 
-    public Volunteer Build()
-    {
-        return Volunteer.Create(_id, _fullName);
-    }
+	public VolunteerBuilder WithFullName(
+		string name,
+		string surname,
+		string? patronymic = null)
+	{
+		_fullName = FullName.Of(name, surname, patronymic);
 
-    public static VolunteerBuilder Default() => new();
+		return this;
+	}
 
-    public static IReadOnlyList<Volunteer> BuildMany(int count)
-    {
-        return Enumerable.Range(0, count)
-            .Select(_ => Default().Build())
-            .ToList();
-    }
+	public VolunteerBuilder WithFullName(FullName fullName)
+	{
+		_fullName = fullName;
+
+		return this;
+	}
+
+	public Volunteer Build()
+	{
+		return Volunteer.Create(_id, _fullName);
+	}
+
+	public static VolunteerBuilder Default() => new();
+
+	public static IReadOnlyList<Volunteer> BuildMany(int count)
+	{
+		return Enumerable.Range(0, count)
+			.Select(_ => Default().Build())
+			.ToList();
+	}
 }

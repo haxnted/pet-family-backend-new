@@ -8,12 +8,12 @@ namespace Conversation.Services.Specifications;
 /// </summary>
 public sealed class GetByLinkedIdSpecification : Specification<Chat>
 {
-    /// <summary>
-    /// Инициализирует спецификацию.
-    /// </summary>
-    /// <param name="linkedId">Идентификатор связанной сущности.</param>
-    public GetByLinkedIdSpecification(Guid linkedId)
-    {
-        Query.Where(c => c.LinkedId == linkedId);
-    }
+	/// <summary>
+	/// Инициализирует спецификацию.
+	/// </summary>
+	/// <param name="linkedId">Идентификатор связанной сущности.</param>
+	public GetByLinkedIdSpecification(Guid linkedId)
+	{
+		Query.Where(c => c.LinkedId == linkedId);
+	}
 }

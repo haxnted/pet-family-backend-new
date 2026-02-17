@@ -8,7 +8,7 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.InitiateAdoption
 /// <param name="AdopterId">Идентификатор усыновителя (текущий пользователь).</param>
 /// <param name="AdopterName">Имя усыновителя (текущий пользователь).</param>
 public sealed record InitiateAdoptionCommand(
-    Guid VolunteerId,
-    Guid PetId,
-    Guid AdopterId,
-    string AdopterName);
+	Guid VolunteerId,
+	Guid PetId,
+	Guid AdopterId,
+	string AdopterName);

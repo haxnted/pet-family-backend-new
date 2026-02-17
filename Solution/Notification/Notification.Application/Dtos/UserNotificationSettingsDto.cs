@@ -1,4 +1,4 @@
-﻿namespace Notification.Application.Dtos;
+namespace Notification.Application.Dtos;
 
 /// <summary>
 /// DTO для базовых настроек уведомлений.
@@ -10,9 +10,9 @@
 /// <param name="UpdatedAt">Дата обновления.</param>
 /// <param name="EmailSettings">Настройки уведомлений для почты.</param>
 public record UserNotificationSettingsDto(
-    Guid Id,
-    Guid UserId,
-    bool IsMuted,
-    DateTime CreatedAt,
-    DateTime UpdatedAt,
-    EmailSettingsDto? EmailSettings);
+	Guid Id,
+	Guid UserId,
+	bool IsMuted,
+	DateTime CreatedAt,
+	DateTime UpdatedAt,
+	EmailSettingsDto? EmailSettings);

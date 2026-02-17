@@ -7,20 +7,20 @@ namespace Conversation.Infrastructure.Common.Contexts;
 /// Фабрика для создания контекста базы данных <see cref="ConversationDbContext"/> в режиме проектирования.
 /// </summary>
 public class ConversationDbContextFactory
-    : IDesignTimeDbContextFactory<ConversationDbContext>
+	: IDesignTimeDbContextFactory<ConversationDbContext>
 {
-    /// <summary>
-    /// Создаёт экземпляр контекста базы данных <see cref="ConversationDbContext"/> в режиме проектирования.
-    /// </summary>
-    public ConversationDbContext CreateDbContext(string[] args)
-    {
-        var connectionString = Environment.GetEnvironmentVariable("ConversationDbContext")
-                               ?? "Host=localhost;Port=5438;Database=conversation;Username=postgres;Password=postgres";
+	/// <summary>
+	/// Создаёт экземпляр контекста базы данных <see cref="ConversationDbContext"/> в режиме проектирования.
+	/// </summary>
+	public ConversationDbContext CreateDbContext(string[] args)
+	{
+		var connectionString = Environment.GetEnvironmentVariable("ConversationDbContext")
+							   ?? "Host=localhost;Port=5438;Database=conversation;Username=postgres;Password=postgres";
 
-        var options = new DbContextOptionsBuilder<ConversationDbContext>()
-            .UseNpgsql(connectionString)
-            .Options;
+		var options = new DbContextOptionsBuilder<ConversationDbContext>()
+			.UseNpgsql(connectionString)
+			.Options;
 
-        return new ConversationDbContext(options);
-    }
+		return new ConversationDbContext(options);
+	}
 }

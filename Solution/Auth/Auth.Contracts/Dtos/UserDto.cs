@@ -12,11 +12,11 @@ namespace Auth.Contracts.Dtos;
 /// <param name="EmailVerified">Флаг, означающий подтверждена ли почта.</param>
 /// <param name="CreatedAt">Дата создания.</param>
 public record UserDto(
-    Guid Id,
-    string Email,
-    string FirstName,
-    string LastName,
-    string? Patronymic,
-    string Role,
-    bool EmailVerified,
-    DateTime CreatedAt);
+	Guid Id,
+	string Email,
+	string FirstName,
+	string LastName,
+	string? Patronymic,
+	string Role,
+	bool EmailVerified,
+	DateTime CreatedAt);

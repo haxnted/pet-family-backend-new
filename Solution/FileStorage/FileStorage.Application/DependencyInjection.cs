@@ -10,17 +10,17 @@ namespace FileStorage.Application;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Добавить все зависимости из Application слоя
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <returns>Коллекция сервисов для цепочки вызовов.</returns>
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddScoped<IFileStorageService, FileStorageService>();
+	/// <summary>
+	/// Добавить все зависимости из Application слоя
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <returns>Коллекция сервисов для цепочки вызовов.</returns>
+	public static IServiceCollection AddApplication(this IServiceCollection services)
+	{
+		services.AddScoped<IFileStorageService, FileStorageService>();
 
-        services.AddValidatorsFromAssemblyContaining<FormFileValidator>();
+		services.AddValidatorsFromAssemblyContaining<FormFileValidator>();
 
-        return services;
-    }
+		return services;
+	}
 }

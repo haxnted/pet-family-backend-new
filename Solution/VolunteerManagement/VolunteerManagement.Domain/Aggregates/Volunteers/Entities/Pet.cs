@@ -11,337 +11,336 @@ namespace VolunteerManagement.Domain.Aggregates.Volunteers.Entities;
 /// </summary>
 public sealed class Pet : SoftDeletableEntity<PetId>
 {
-    /// <summary>
-    /// EF Constructor.
-    /// </summary>
-    /// <param name="id">Идентификатор.</param>
-    protected Pet(PetId id) : base(id)
-    {
-    }
+	/// <summary>
+	/// EF Constructor.
+	/// </summary>
+	/// <param name="id">Идентификатор.</param>
+	protected Pet(PetId id) : base(id)
+	{
+	}
 
-    /// <summary>
-    /// Идентификатор волонтера.
-    /// </summary>
-    public VolunteerId VolunteerId { get; }
+	/// <summary>
+	/// Идентификатор волонтера.
+	/// </summary>
+	public VolunteerId VolunteerId { get; }
 
-    /// <summary>
-    /// Кличка.
-    /// </summary>
-    public NickName NickName { get; private set; } = null!;
+	/// <summary>
+	/// Кличка.
+	/// </summary>
+	public NickName NickName { get; private set; } = null!;
 
-    /// <summary>
-    /// Общая информация.
-    /// </summary>
-    public Description Description { get; private set; } = null!;
+	/// <summary>
+	/// Общая информация.
+	/// </summary>
+	public Description Description { get; private set; } = null!;
 
-    /// <summary>
-    /// Информация о здоровье.
-    /// </summary>
-    public Description HealthInformation { get; private set; } = null!;
+	/// <summary>
+	/// Информация о здоровье.
+	/// </summary>
+	public Description HealthInformation { get; private set; } = null!;
 
-    /// <summary>
-    /// Порода.
-    /// </summary>
-    public Guid BreedId { get; private set; }
+	/// <summary>
+	/// Порода.
+	/// </summary>
+	public Guid BreedId { get; private set; }
 
-    /// <summary>
-    /// Вид.
-    /// </summary>
-    public Guid SpeciesId { get; private set; }
+	/// <summary>
+	/// Вид.
+	/// </summary>
+	public Guid SpeciesId { get; private set; }
 
-    /// <summary>
-    /// Физические характеристики.
-    /// </summary>
-    public PetPhysicalAttributes PhysicalAttributes { get; private set; } = null!;
+	/// <summary>
+	/// Физические характеристики.
+	/// </summary>
+	public PetPhysicalAttributes PhysicalAttributes { get; private set; } = null!;
 
-    /// <summary>
-    /// Дата рождения.
-    /// </summary>
-    public DateTime BirthDate { get; private set; }
+	/// <summary>
+	/// Дата рождения.
+	/// </summary>
+	public DateTime BirthDate { get; private set; }
 
-    /// <summary>
-    /// Флаг кастрации.
-    /// </summary>
-    public bool IsCastrated { get; private set; }
+	/// <summary>
+	/// Флаг кастрации.
+	/// </summary>
+	public bool IsCastrated { get; private set; }
 
-    /// <summary>
-    /// Флаг вакцинации.
-    /// </summary>
-    public bool IsVaccinated { get; private set; }
+	/// <summary>
+	/// Флаг вакцинации.
+	/// </summary>
+	public bool IsVaccinated { get; private set; }
 
-    /// <summary>
-    /// Текущий статус.
-    /// </summary>
-    public HelpStatusPet HelpStatus { get; private set; }
+	/// <summary>
+	/// Текущий статус.
+	/// </summary>
+	public HelpStatusPet HelpStatus { get; private set; }
 
-    /// <summary>
-    /// Идентификатор усыновителя (при бронировании).
-    /// </summary>
-    public Guid? BookerId { get; private set; }
+	/// <summary>
+	/// Идентификатор усыновителя (при бронировании).
+	/// </summary>
+	public Guid? BookerId { get; private set; }
 
-    /// <summary>
-    /// Идентификатор приюта.
-    /// </summary>
-    public Guid? ShelterId { get; private set; }
+	/// <summary>
+	/// Идентификатор приюта.
+	/// </summary>
+	public Guid? ShelterId { get; private set; }
 
-    /// <summary>
-    /// Дата создания.
-    /// </summary>
-    public DateTime DateCreated { get; private set; }
+	/// <summary>
+	/// Дата создания.
+	/// </summary>
+	public DateTime DateCreated { get; private set; }
 
-    /// <summary>
-    /// Позиция животного в коллекции животных.
-    /// </summary>
-    public Position Position { get; private set; }
+	/// <summary>
+	/// Позиция животного в коллекции животных.
+	/// </summary>
+	public Position Position { get; private set; }
 
-    private readonly List<Photo> _photos = [];
+	private readonly List<Photo> _photos = [];
 
-    /// <summary>
-    /// Коллекция фотографий.
-    /// </summary>
-    public IReadOnlyCollection<Photo> Photos => _photos.AsReadOnly();
+	/// <summary>
+	/// Коллекция фотографий.
+	/// </summary>
+	public IReadOnlyCollection<Photo> Photos => _photos.AsReadOnly();
 
-    /// <summary>
-    /// Коллекция реквизитов.
-    /// </summary>
-    public IReadOnlyList<Requisite> RequisiteList { get; private set; }
+	/// <summary>
+	/// Коллекция реквизитов.
+	/// </summary>
+	public IReadOnlyList<Requisite> RequisiteList { get; private set; }
 
-    /// <summary>
-    /// Приватный конструктор для фабричного метода.
-    /// </summary>
-    /// <param name="id">Идентификатор.</param>
-    /// <param name="volunteerId">Идентификатор Волонтёра.</param>
-    /// <param name="nickName">Кличка.</param>
-    /// <param name="description">Общее описание.</param>
-    /// <param name="healthInformation">Информация о здоровье.</param>
-    /// <param name="attributes">Физические характеристики.</param>
-    /// <param name="speciesId">Порода.</param>
-    /// <param name="breedId">Вид.</param>
-    /// <param name="birthDate">Дата рождения.</param>
-    /// <param name="isCastrated">Флаг кастрации.</param>
-    /// <param name="isVaccinated">Флаг вакцинации.</param>
-    /// <param name="helpStatus">Текущий статус.</param>
-    /// <param name="dateCreated">Дата создания.</param>
-    /// <param name="petPhotoList">Коллекция фотографий.</param>
-    /// <param name="requisiteList">Коллекция реквизитов.</param>
-    /// <param name="position">Позиция.</param>
-    private Pet(
-        PetId id,
-        VolunteerId volunteerId,
-        NickName nickName,
-        Description description,
-        Description healthInformation,
-        PetPhysicalAttributes attributes,
-        Guid speciesId,
-        Guid breedId,
-        DateTime birthDate,
-        bool isCastrated,
-        bool isVaccinated,
-        HelpStatusPet helpStatus,
-        DateTime dateCreated,
-        List<Photo> petPhotoList,
-        List<Requisite> requisiteList,
-        Position position) : base(id)
-    {
-        _photos.AddRange(petPhotoList);
-        RequisiteList = requisiteList.AsReadOnly();
-        VolunteerId = volunteerId;
-        NickName = nickName;
-        Description = description;
-        HealthInformation = healthInformation;
-        PhysicalAttributes = attributes;
-        BreedId = breedId;
-        SpeciesId = speciesId;
-        BirthDate = birthDate;
-        IsCastrated = isCastrated;
-        IsVaccinated = isVaccinated;
-        HelpStatus = helpStatus;
-        DateCreated = dateCreated;
-        Position = position;
-    }
+	/// <summary>
+	/// Приватный конструктор для фабричного метода.
+	/// </summary>
+	/// <param name="id">Идентификатор.</param>
+	/// <param name="volunteerId">Идентификатор Волонтёра.</param>
+	/// <param name="nickName">Кличка.</param>
+	/// <param name="description">Общее описание.</param>
+	/// <param name="healthInformation">Информация о здоровье.</param>
+	/// <param name="attributes">Физические характеристики.</param>
+	/// <param name="speciesId">Порода.</param>
+	/// <param name="breedId">Вид.</param>
+	/// <param name="birthDate">Дата рождения.</param>
+	/// <param name="isCastrated">Флаг кастрации.</param>
+	/// <param name="isVaccinated">Флаг вакцинации.</param>
+	/// <param name="helpStatus">Текущий статус.</param>
+	/// <param name="dateCreated">Дата создания.</param>
+	/// <param name="petPhotoList">Коллекция фотографий.</param>
+	/// <param name="requisiteList">Коллекция реквизитов.</param>
+	/// <param name="position">Позиция.</param>
+	private Pet(
+		PetId id,
+		VolunteerId volunteerId,
+		NickName nickName,
+		Description description,
+		Description healthInformation,
+		PetPhysicalAttributes attributes,
+		Guid speciesId,
+		Guid breedId,
+		DateTime birthDate,
+		bool isCastrated,
+		bool isVaccinated,
+		HelpStatusPet helpStatus,
+		DateTime dateCreated,
+		List<Photo> petPhotoList,
+		List<Requisite> requisiteList,
+		Position position) : base(id)
+	{
+		_photos.AddRange(petPhotoList);
+		RequisiteList = requisiteList.AsReadOnly();
+		VolunteerId = volunteerId;
+		NickName = nickName;
+		Description = description;
+		HealthInformation = healthInformation;
+		PhysicalAttributes = attributes;
+		BreedId = breedId;
+		SpeciesId = speciesId;
+		BirthDate = birthDate;
+		IsCastrated = isCastrated;
+		IsVaccinated = isVaccinated;
+		HelpStatus = helpStatus;
+		DateCreated = dateCreated;
+		Position = position;
+	}
 
-    /// <summary>
-    /// Фабричный метод для создания сущности <see cref="Pet"/>.
-    /// </summary>
-    public static Pet Create(
-        PetId id,
-        VolunteerId volunteerId,
-        NickName nickName,
-        Description generalDescription,
-        Description healthInformation,
-        PetPhysicalAttributes attributes,
-        Guid speciesId,
-        Guid breedId,
-        DateTime birthDate,
-        bool isCastrated,
-        bool isVaccinated,
-        HelpStatusPet helpStatus,
-        List<Requisite> requisiteList)
-    {
-        return new Pet(
-            id,
-            volunteerId,
-            nickName,
-            generalDescription,
-            healthInformation,
-            attributes,
-            speciesId,
-            breedId,
-            birthDate,
-            isCastrated,
-            isVaccinated,
-            helpStatus,
-            DateTime.UtcNow,
-            [],
-            requisiteList,
-            Position.Of(0));
-    }
+	/// <summary>
+	/// Фабричный метод для создания сущности <see cref="Pet"/>.
+	/// </summary>
+	public static Pet Create(
+		PetId id,
+		VolunteerId volunteerId,
+		NickName nickName,
+		Description generalDescription,
+		Description healthInformation,
+		PetPhysicalAttributes attributes,
+		Guid speciesId,
+		Guid breedId,
+		DateTime birthDate,
+		bool isCastrated,
+		bool isVaccinated,
+		HelpStatusPet helpStatus,
+		List<Requisite> requisiteList)
+	{
+		return new(
+			id,
+			volunteerId,
+			nickName,
+			generalDescription,
+			healthInformation,
+			attributes,
+			speciesId,
+			breedId,
+			birthDate,
+			isCastrated,
+			isVaccinated,
+			helpStatus,
+			DateTime.UtcNow,
+			[],
+			requisiteList,
+			Position.Of(0));
+	}
 
-    /// <summary>
-    /// Обновить информацию о животном.
-    /// </summary>
-    public void Update(
-        Description generalDescription,
-        Description healthInformation,
-        PetPhysicalAttributes attributes,
-        bool isCastrated,
-        bool isVaccinated,
-        HelpStatusPet helpStatus,
-        IReadOnlyList<Requisite> requisiteList
-    )
-    {
-        if (IsDeleted)
-        {
-            throw new DomainException("Нельзя обновить животное которое удалено.");
-        }
+	/// <summary>
+	/// Обновить информацию о животном.
+	/// </summary>
+	public void Update(
+		Description generalDescription,
+		Description healthInformation,
+		PetPhysicalAttributes attributes,
+		bool isCastrated,
+		bool isVaccinated,
+		HelpStatusPet helpStatus,
+		IReadOnlyList<Requisite> requisiteList)
+	{
+		if (IsDeleted)
+		{
+			throw new DomainException("Нельзя обновить животное которое удалено.");
+		}
 
-        Description = generalDescription;
-        HealthInformation = healthInformation;
-        PhysicalAttributes = attributes;
-        IsCastrated = isCastrated;
-        IsVaccinated = isVaccinated;
-        HelpStatus = helpStatus;
-        RequisiteList = requisiteList;
-    }
+		Description = generalDescription;
+		HealthInformation = healthInformation;
+		PhysicalAttributes = attributes;
+		IsCastrated = isCastrated;
+		IsVaccinated = isVaccinated;
+		HelpStatus = helpStatus;
+		RequisiteList = requisiteList;
+	}
 
-    /// <summary>
-    /// Сменить позицию.
-    /// </summary>
-    /// <param name="newPosition">Позиция.</param>
-    public void ChangePosition(Position newPosition)
-    {
-        if (Position == newPosition)
-        {
-            throw new DomainException("Животное уже стоит на этой позиции.");
-        }
+	/// <summary>
+	/// Сменить позицию.
+	/// </summary>
+	/// <param name="newPosition">Позиция.</param>
+	public void ChangePosition(Position newPosition)
+	{
+		if (Position == newPosition)
+		{
+			throw new DomainException("Животное уже стоит на этой позиции.");
+		}
 
-        Position = newPosition;
-    }
+		Position = newPosition;
+	}
 
-    /// <summary>
-    /// Привязать питомца к приюту.
-    /// </summary>
-    /// <param name="shelterId">Идентификатор приюта.</param>
-    public void AssignToShelter(Guid shelterId)
-    {
-        if (shelterId == Guid.Empty)
-            throw new DomainException("Идентификатор приюта не может быть пустым.");
+	/// <summary>
+	/// Привязать питомца к приюту.
+	/// </summary>
+	/// <param name="shelterId">Идентификатор приюта.</param>
+	public void AssignToShelter(Guid shelterId)
+	{
+		if (shelterId == Guid.Empty)
+			throw new DomainException("Идентификатор приюта не может быть пустым.");
 
-        ShelterId = shelterId;
-    }
+		ShelterId = shelterId;
+	}
 
-    /// <summary>
-    /// Отвязать питомца от приюта.
-    /// </summary>
-    public void RemoveFromShelter()
-    {
-        ShelterId = null;
-    }
+	/// <summary>
+	/// Отвязать питомца от приюта.
+	/// </summary>
+	public void RemoveFromShelter()
+	{
+		ShelterId = null;
+	}
 
-    /// <summary>
-    /// Проверить, удалено ли животное.
-    /// </summary>
-    public bool IsSoftDeleted => IsDeleted;
+	/// <summary>
+	/// Проверить, удалено ли животное.
+	/// </summary>
+	public bool IsSoftDeleted => IsDeleted;
 
-    /// <summary>
-    /// Добавить фотографии к питомцу.
-    /// </summary>
-    /// <param name="photos">Список фотографий.</param>
-    public void AddPhotos(List<Photo> photos)
-    {
-        ArgumentNullException.ThrowIfNull(photos);
+	/// <summary>
+	/// Добавить фотографии к питомцу.
+	/// </summary>
+	/// <param name="photos">Список фотографий.</param>
+	public void AddPhotos(List<Photo> photos)
+	{
+		ArgumentNullException.ThrowIfNull(photos);
 
-        if (photos.Count == 0)
-            throw new DomainException("Список фотографий пуст.");
+		if (photos.Count == 0)
+			throw new DomainException("Список фотографий пуст.");
 
-        _photos.AddRange(photos);
-    }
+		_photos.AddRange(photos);
+	}
 
-    /// <summary>
-    /// Удалить фотографию.
-    /// </summary>
-    /// <param name="photoId">Идентификатор фотографии.</param>
-    public void RemovePhoto(Guid photoId)
-    {
-        var photoToRemove = _photos.FirstOrDefault(p => p.Value == photoId);
+	/// <summary>
+	/// Удалить фотографию.
+	/// </summary>
+	/// <param name="photoId">Идентификатор фотографии.</param>
+	public void RemovePhoto(Guid photoId)
+	{
+		var photoToRemove = _photos.FirstOrDefault(p => p.Value == photoId);
 
-        if (photoToRemove == null)
-            throw new DomainException("Фотография не найдена.");
+		if (photoToRemove == null)
+			throw new DomainException("Фотография не найдена.");
 
-        _photos.Remove(photoToRemove);
-    }
+		_photos.Remove(photoToRemove);
+	}
 
-    /// <summary>
-    /// Забронировать питомца для усыновления.
-    /// </summary>
-    /// <param name="bookerId">Идентификатор усыновителя.</param>
-    public void Reserve(Guid bookerId)
-    {
-        if (IsDeleted)
-            throw new DomainException("Нельзя забронировать удалённое животное.");
+	/// <summary>
+	/// Забронировать питомца для усыновления.
+	/// </summary>
+	/// <param name="bookerId">Идентификатор усыновителя.</param>
+	public void Reserve(Guid bookerId)
+	{
+		if (IsDeleted)
+			throw new DomainException("Нельзя забронировать удалённое животное.");
 
-        if (HelpStatus == HelpStatusPet.Booked)
-            throw new DomainException("Животное уже забронировано.");
+		if (HelpStatus == HelpStatusPet.Booked)
+			throw new DomainException("Животное уже забронировано.");
 
-        if (HelpStatus == HelpStatusPet.FoundHome)
-            throw new DomainException("Животное уже нашло дом.");
+		if (HelpStatus == HelpStatusPet.FoundHome)
+			throw new DomainException("Животное уже нашло дом.");
 
-        HelpStatus = HelpStatusPet.Booked;
-        BookerId = bookerId;
-    }
+		HelpStatus = HelpStatusPet.Booked;
+		BookerId = bookerId;
+	}
 
-    /// <summary>
-    /// Отменить бронирование питомца (компенсация саги).
-    /// </summary>
-    public void CancelReservation()
-    {
-        if (HelpStatus != HelpStatusPet.Booked)
-            throw new DomainException("Животное не забронировано.");
+	/// <summary>
+	/// Отменить бронирование питомца (компенсация саги).
+	/// </summary>
+	public void CancelReservation()
+	{
+		if (HelpStatus != HelpStatusPet.Booked)
+			throw new DomainException("Животное не забронировано.");
 
-        HelpStatus = HelpStatusPet.LookingForHome;
-        BookerId = null;
-    }
+		HelpStatus = HelpStatusPet.LookingForHome;
+		BookerId = null;
+	}
 
-    /// <summary>
-    /// Подтвердить усыновление питомца (перевести в статус "нашёл дом").
-    /// </summary>
-    public void Adopt()
-    {
-        if (HelpStatus != HelpStatusPet.Booked)
-            throw new DomainException("Животное не забронировано.");
+	/// <summary>
+	/// Подтвердить усыновление питомца (перевести в статус "нашёл дом").
+	/// </summary>
+	public void Adopt()
+	{
+		if (HelpStatus != HelpStatusPet.Booked)
+			throw new DomainException("Животное не забронировано.");
 
-        HelpStatus = HelpStatusPet.FoundHome;
-    }
+		HelpStatus = HelpStatusPet.FoundHome;
+	}
 
-    /// <summary>
-    /// Обновить фотографии питомца (заменить все).
-    /// </summary>
-    /// <param name="photos">Новый список фотографий.</param>
-    public void UpdatePhotos(List<Photo> photos)
-    {
-        ArgumentNullException.ThrowIfNull(photos);
+	/// <summary>
+	/// Обновить фотографии питомца (заменить все).
+	/// </summary>
+	/// <param name="photos">Новый список фотографий.</param>
+	public void UpdatePhotos(List<Photo> photos)
+	{
+		ArgumentNullException.ThrowIfNull(photos);
 
-        _photos.Clear();
-        _photos.AddRange(photos);
-    }
+		_photos.Clear();
+		_photos.AddRange(photos);
+	}
 }

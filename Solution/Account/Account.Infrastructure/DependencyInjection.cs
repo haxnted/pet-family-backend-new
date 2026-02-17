@@ -12,16 +12,16 @@ namespace Account.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Настройка инфраструктуры зависимостей.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    public static void AddInfrastructure(this IServiceCollection services)
-    {
-        services.AddDatabase<AccountDbContext, AccountDbContextConfigurator>();
+	/// <summary>
+	/// Настройка инфраструктуры зависимостей.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	public static void AddInfrastructure(this IServiceCollection services)
+	{
+		services.AddDatabase<AccountDbContext, AccountDbContextConfigurator>();
 
-        services.AddScoped<IMigrator, AccountMigrator>();
+		services.AddScoped<IMigrator, AccountMigrator>();
 
-        services.AddScoped<IRepository<DomainAccount>, EntityFrameworkRepository<DomainAccount>>();
-    }
+		services.AddScoped<IRepository<DomainAccount>, EntityFrameworkRepository<DomainAccount>>();
+	}
 }

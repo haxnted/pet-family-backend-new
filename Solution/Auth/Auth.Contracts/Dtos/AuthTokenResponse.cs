@@ -8,7 +8,7 @@ namespace Auth.Contracts.Dtos;
 /// <param name="ExpiresIn">Время истечения токена в секундах.</param>
 /// <param name="TokenType">Тип токена.</param>
 public record AuthTokenResponse(
-    string AccessToken,
-    string RefreshToken,
-    int ExpiresIn,
-    string TokenType = "Bearer");
+	string AccessToken,
+	string RefreshToken,
+	int ExpiresIn,
+	string TokenType = "Bearer");

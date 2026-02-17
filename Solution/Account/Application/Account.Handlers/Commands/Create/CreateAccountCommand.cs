@@ -7,8 +7,8 @@ namespace Account.Handlers.Commands.Create;
 /// </summary>
 public sealed class CreateAccountCommand : Command
 {
-    /// <summary>
-    /// Идентификатор пользователя из Auth.
-    /// </summary>
-    public required Guid UserId { get; init; }
+	/// <summary>
+	/// Идентификатор пользователя из Auth.
+	/// </summary>
+	public required Guid UserId { get; init; }
 }

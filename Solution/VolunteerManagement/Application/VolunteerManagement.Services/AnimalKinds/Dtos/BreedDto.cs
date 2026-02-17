@@ -1,4 +1,4 @@
-﻿namespace VolunteerManagement.Services.AnimalKinds.Dtos;
+namespace VolunteerManagement.Services.AnimalKinds.Dtos;
 
 /// <summary>
 /// Dto Порода.

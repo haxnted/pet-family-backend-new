@@ -10,13 +10,13 @@ namespace Conversation.Services.Specifications;
 /// </summary>
 public sealed class GetByIdWithMessagesSpecification : Specification<Chat>
 {
-    /// <summary>
-    /// Инициализирует спецификацию.
-    /// </summary>
-    /// <param name="chatId">Идентификатор чата.</param>
-    public GetByIdWithMessagesSpecification(ChatId chatId)
-    {
-        Query.Where(c => c.Id == chatId)
-            .Include(c => c.Messages);
-    }
+	/// <summary>
+	/// Инициализирует спецификацию.
+	/// </summary>
+	/// <param name="chatId">Идентификатор чата.</param>
+	public GetByIdWithMessagesSpecification(ChatId chatId)
+	{
+		Query.Where(c => c.Id == chatId)
+			.Include(c => c.Messages);
+	}
 }

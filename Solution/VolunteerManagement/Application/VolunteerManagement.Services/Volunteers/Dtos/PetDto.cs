@@ -1,4 +1,4 @@
-﻿namespace VolunteerManagement.Services.Volunteers.Dtos;
+namespace VolunteerManagement.Services.Volunteers.Dtos;
 
 /// <summary>
 /// Dto Животное.
@@ -22,21 +22,21 @@
 /// <param name="Photos">Коллекция фотографий.</param>
 /// <param name="IsDeleted">Удалено.</param>
 public record PetDto(
-    Guid Id,
-    Guid VolunteerId,
-    string NickName,
-    string GeneralDescription,
-    string HealthInformation,
-    Guid BreedId,
-    Guid SpeciesId,
-    double Weight,
-    double Height,
-    DateTime BirthDate,
-    bool IsCastrated,
-    bool IsVaccinated,
-    int HelpStatus,
-    int Position,
-    DateTime DateCreated,
-    IEnumerable<RequisiteDto> Requisites,
-    IEnumerable<PetPhotoDto> Photos,
-    bool IsDeleted);
+	Guid Id,
+	Guid VolunteerId,
+	string NickName,
+	string GeneralDescription,
+	string HealthInformation,
+	Guid BreedId,
+	Guid SpeciesId,
+	double Weight,
+	double Height,
+	DateTime BirthDate,
+	bool IsCastrated,
+	bool IsVaccinated,
+	int HelpStatus,
+	int Position,
+	DateTime DateCreated,
+	IEnumerable<RequisiteDto> Requisites,
+	IEnumerable<PetPhotoDto> Photos,
+	bool IsDeleted);

@@ -9,13 +9,13 @@ namespace VolunteerManagement.Services.Shelters.Specifications;
 /// </summary>
 public sealed class GetByIdWithAssignmentsSpecification : Specification<Shelter>
 {
-    /// <summary>
-    /// Создаёт спецификацию для поиска приюта с назначениями по идентификатору.
-    /// </summary>
-    /// <param name="shelterId">Идентификатор приюта.</param>
-    public GetByIdWithAssignmentsSpecification(ShelterId shelterId)
-    {
-        Query.Include(s => s.VolunteerAssignments)
-            .Where(shelter => shelter.Id == shelterId);
-    }
+	/// <summary>
+	/// Создаёт спецификацию для поиска приюта с назначениями по идентификатору.
+	/// </summary>
+	/// <param name="shelterId">Идентификатор приюта.</param>
+	public GetByIdWithAssignmentsSpecification(ShelterId shelterId)
+	{
+		Query.Include(s => s.VolunteerAssignments)
+			.Where(shelter => shelter.Id == shelterId);
+	}
 }

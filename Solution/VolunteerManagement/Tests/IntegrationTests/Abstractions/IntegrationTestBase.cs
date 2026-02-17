@@ -7,86 +7,89 @@ using VolunteerManagement.Tests.Integration.Fixtures;
 namespace VolunteerManagement.Tests.Integration.Abstractions;
 
 [Collection(VolunteerManagementIntegrationTestCollection.Name)]
-public abstract class VolunteerManagementIntegrationTestBase : IAsyncLifetime
+public abstract class VolunteerManagementIntegrationTestBase(VolunteerManagementWebApplicationFactory factory) : IAsyncLifetime
 {
-    protected readonly VolunteerManagementWebApplicationFactory Factory;
-    protected readonly HttpClient Client;
-    private Respawner? _respawner;
-    private NpgsqlConnection? _dbConnection;
+	protected readonly HttpClient Client = factory.CreateClient();
 
-    protected VolunteerManagementIntegrationTestBase(VolunteerManagementWebApplicationFactory factory)
-    {
-        Factory = factory;
-        Client = factory.CreateClient();
-    }
+	private Respawner? _respawner;
 
-    protected VolunteerManagementDbContext GetDbContext()
-    {
-        var scope = Factory.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
-    }
+	private NpgsqlConnection? _dbConnection;
 
-    protected T GetService<T>() where T : notnull
-    {
-        var scope = Factory.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<T>();
-    }
+	protected VolunteerManagementDbContext GetDbContext()
+	{
+		var scope = factory.Services.CreateScope();
 
-    protected async Task ExecuteInScopeAsync(Func<IServiceProvider, Task> action)
-    {
-        using var scope = Factory.Services.CreateScope();
-        await action(scope.ServiceProvider);
-    }
+		return scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
+	}
 
-    protected async Task ExecuteWithDbContextAsync(Func<VolunteerManagementDbContext, Task> action)
-    {
-        using var scope = Factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
-        await action(dbContext);
-        await dbContext.SaveChangesAsync();
-    }
+	protected T GetService<T>()
+		where T : notnull
+	{
+		var scope = factory.Services.CreateScope();
 
-    protected async Task<T> InsertAsync<T>(T entity) where T : class
-    {
-        using var scope = Factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
-        dbContext.Set<T>().Add(entity);
-        await dbContext.SaveChangesAsync();
-        return entity;
-    }
+		return scope.ServiceProvider.GetRequiredService<T>();
+	}
 
-    protected async Task<T?> FindAsync<T>(params object[] keyValues) where T : class
-    {
-        using var scope = Factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
-        return await dbContext.Set<T>().FindAsync(keyValues);
-    }
+	protected async Task ExecuteInScopeAsync(Func<IServiceProvider, Task> action)
+	{
+		using var scope = factory.Services.CreateScope();
+		await action(scope.ServiceProvider);
+	}
 
-    public virtual async Task InitializeAsync()
-    {
-        _dbConnection = new NpgsqlConnection(Factory.ConnectionString);
-        await _dbConnection.OpenAsync();
+	protected async Task ExecuteWithDbContextAsync(Func<VolunteerManagementDbContext, Task> action)
+	{
+		using var scope = factory.Services.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
+		await action(dbContext);
+		await dbContext.SaveChangesAsync();
+	}
 
-        _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
-        {
-            DbAdapter = DbAdapter.Postgres,
-            SchemasToInclude = ["public"],
-            TablesToIgnore = ["__EFMigrationsHistory"]
-        });
+	protected async Task<T> InsertAsync<T>(T entity)
+		where T : class
+	{
+		using var scope = factory.Services.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
+		dbContext.Set<T>().Add(entity);
+		await dbContext.SaveChangesAsync();
 
-        await _respawner.ResetAsync(_dbConnection);
-    }
+		return entity;
+	}
 
-    public virtual async Task DisposeAsync()
-    {
-        if (_respawner != null && _dbConnection != null)
-        {
-            await _respawner.ResetAsync(_dbConnection);
-        }
+	protected async Task<T?> FindAsync<T>(params object[] keyValues)
+		where T : class
+	{
+		using var scope = factory.Services.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
 
-        if (_dbConnection != null)
-        {
-            await _dbConnection.DisposeAsync();
-        }
-    }
+		return await dbContext.Set<T>().FindAsync(keyValues);
+	}
+
+	public virtual async Task InitializeAsync()
+	{
+		_dbConnection = new NpgsqlConnection(factory.ConnectionString);
+		await _dbConnection.OpenAsync();
+
+		_respawner = await Respawner.CreateAsync(
+			_dbConnection, new RespawnerOptions
+			{
+				DbAdapter = DbAdapter.Postgres,
+				SchemasToInclude = ["public"],
+				TablesToIgnore = ["__EFMigrationsHistory"]
+			});
+
+		await _respawner.ResetAsync(_dbConnection);
+	}
+
+	public virtual async Task DisposeAsync()
+	{
+		if (_respawner != null && _dbConnection != null)
+		{
+			await _respawner.ResetAsync(_dbConnection);
+		}
+
+		if (_dbConnection != null)
+		{
+			await _dbConnection.DisposeAsync();
+		}
+	}
 }

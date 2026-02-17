@@ -12,157 +12,177 @@ namespace PetFamily.SharedKernel.WebApi.Extensions;
 /// </summary>
 public static class OpenTelemetryExtensions
 {
-    /// <summary>
-    /// Добавить OpenTelemetry distributed tracing с экспортом в Jaeger
-    /// </summary>
-    /// <param name="services">Коллекция сервисов</param>
-    /// <param name="configuration">Конфигурация приложения</param>
-    /// <param name="serviceName">Название микросервиса для идентификации в Jaeger</param>
-    /// <param name="serviceVersion">Версия сервиса</param>
-    /// <param name="additionalActivitySources">Дополнительные Activity Sources для трассировки</param>
-    public static IServiceCollection AddOpenTelemetryTracing(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        string serviceName,
-        string serviceVersion = "1.0.0",
-        params string[] additionalActivitySources)
-    {
-        var jaegerEndpoint = configuration["OpenTelemetry:Jaeger:Endpoint"] ?? "http://localhost:4317";
-        var enableConsoleExporter = configuration.GetValue<bool>("OpenTelemetry:EnableConsoleExporter");
+	/// <summary>
+	/// Добавить OpenTelemetry distributed tracing с экспортом в Jaeger
+	/// </summary>
+	/// <param name="services">Коллекция сервисов</param>
+	/// <param name="configuration">Конфигурация приложения</param>
+	/// <param name="serviceName">Название микросервиса для идентификации в Jaeger</param>
+	/// <param name="serviceVersion">Версия сервиса</param>
+	/// <param name="additionalActivitySources">Дополнительные Activity Sources для трассировки</param>
+	public static IServiceCollection AddOpenTelemetryTracing(
+		this IServiceCollection services,
+		IConfiguration configuration,
+		string serviceName,
+		string serviceVersion = "1.0.0",
+		params string[] additionalActivitySources)
+	{
+		var jaegerEndpoint = configuration["OpenTelemetry:Jaeger:Endpoint"] ?? "http://localhost:4317";
+		var enableConsoleExporter = configuration.GetValue<bool>("OpenTelemetry:EnableConsoleExporter");
 
-        services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource
-                .AddService(
-                    serviceName: serviceName,
-                    serviceVersion: serviceVersion,
-                    serviceInstanceId: Environment.MachineName))
-            .WithTracing(tracing =>
-            {
-                tracing
-                    .AddAspNetCoreInstrumentation(options =>
-                    {
-                        options.RecordException = true;
-                        options.EnrichWithHttpRequest = (activity, request) =>
-                        {
-                            activity.SetTag("http.method", request.Method);
-                            activity.SetTag("http.url", request.Path);
-                            activity.SetTag("http.user_agent", request.Headers.UserAgent.ToString());
-                        };
-                        options.EnrichWithHttpResponse = (activity, response) =>
-                        {
-                            activity.SetTag("http.status_code", response.StatusCode);
-                        };
-                    })
-                    .AddHttpClientInstrumentation(options =>
-                    {
-                        options.RecordException = true;
-                        options.EnrichWithHttpRequestMessage = (activity, request) =>
-                        {
-                            activity.SetTag("http.request.method", request.Method.ToString());
-                            activity.SetTag("http.request.url", request.RequestUri?.ToString());
-                        };
-                    })
-                    .AddEntityFrameworkCoreInstrumentation(options =>
-                    {
-                        options.EnrichWithIDbCommand = (activity, command) =>
-                        {
-                            activity.SetTag("db.operation", command.CommandText);
-                        };
-                    })
-                    .AddSource(serviceName);
+		services.AddOpenTelemetry()
+			.ConfigureResource(resource => resource
+				.AddService(
+					serviceName: serviceName,
+					serviceVersion: serviceVersion,
+					serviceInstanceId: Environment.MachineName))
+			.WithTracing(tracing =>
+			{
+				tracing
+					.AddAspNetCoreInstrumentation(options =>
+					{
+						options.RecordException = true;
 
-                foreach (var activitySource in additionalActivitySources)
-                {
-                    tracing.AddSource(activitySource);
-                }
+						options.EnrichWithHttpRequest = (activity, request) =>
+						{
+							activity.SetTag("http.method", request.Method);
+							activity.SetTag("http.url", request.Path);
+							activity.SetTag("http.user_agent", request.Headers.UserAgent.ToString());
+						};
 
-                tracing.AddSource("MassTransit");
+						options.EnrichWithHttpResponse = (activity, response) =>
+						{
+							activity.SetTag("http.status_code", response.StatusCode);
+						};
+					})
+					.AddHttpClientInstrumentation(options =>
+					{
+						options.RecordException = true;
 
-                tracing.AddOtlpExporter(options =>
-                {
-                    options.Endpoint = new Uri(jaegerEndpoint);
-                    options.Protocol = OtlpExportProtocol.Grpc;
-                });
+						options.EnrichWithHttpRequestMessage = (activity, request) =>
+						{
+							activity.SetTag("http.request.method", request.Method.ToString());
+							activity.SetTag("http.request.url", request.RequestUri?.ToString());
+						};
+					})
+					.AddEntityFrameworkCoreInstrumentation(options =>
+					{
+						options.EnrichWithIDbCommand = (activity, command) =>
+						{
+							activity.SetTag("db.operation", command.CommandText);
+						};
+					})
+					.AddSource(serviceName);
 
-                if (enableConsoleExporter)
-                {
-                    tracing.AddConsoleExporter();
-                }
-            });
+				foreach (var activitySource in additionalActivitySources)
+				{
+					tracing.AddSource(activitySource);
+				}
 
-        return services;
-    }
+				tracing.AddSource("MassTransit");
 
-    /// <summary>
-    /// Создать ActivitySource для микросервиса
-    /// </summary>
-    /// <param name="serviceName">Название сервиса</param>
-    /// <param name="version">Версия сервиса</param>
-    public static ActivitySource CreateActivitySource(string serviceName, string version = "1.0.0")
-    {
-        return new ActivitySource(serviceName, version);
-    }
+				tracing.AddOtlpExporter(options =>
+				{
+					options.Endpoint = new Uri(jaegerEndpoint);
+					options.Protocol = OtlpExportProtocol.Grpc;
+				});
 
-    /// <summary>
-    /// Начать новый span для трассировки операции
-    /// </summary>
-    /// <param name="activitySource">Activity Source</param>
-    /// <param name="operationName">Название операции</param>
-    /// <param name="kind">Тип активности</param>
-    /// <returns>Activity для добавления тегов и событий</returns>
-    public static Activity? StartActivity(
-        this ActivitySource activitySource,
-        string operationName,
-        ActivityKind kind = ActivityKind.Internal)
-    {
-        return activitySource.StartActivity(operationName, kind);
-    }
+				if (enableConsoleExporter)
+				{
+					tracing.AddConsoleExporter();
+				}
+			});
 
-    /// <summary>
-    /// Добавить тег с информацией о пользователе
-    /// </summary>
-    public static Activity? AddUserTag(this Activity? activity, Guid userId)
-    {
-        activity?.SetTag("user.id", userId.ToString());
-        return activity;
-    }
+		return services;
+	}
 
-    /// <summary>
-    /// Добавить тег с информацией о сущности
-    /// </summary>
-    public static Activity? AddEntityTag(this Activity? activity, string entityType, Guid entityId)
-    {
-        activity?.SetTag("entity.type", entityType);
-        activity?.SetTag("entity.id", entityId.ToString());
-        return activity;
-    }
+	/// <summary>
+	/// Создать ActivitySource для микросервиса
+	/// </summary>
+	/// <param name="serviceName">Название сервиса</param>
+	/// <param name="version">Версия сервиса</param>
+	public static ActivitySource CreateActivitySource(string serviceName, string version = "1.0.0")
+	{
+		return new(serviceName, version);
+	}
 
-    /// <summary>
-    /// Добавить событие в trace
-    /// </summary>
-    public static Activity? AddTraceEvent(this Activity? activity, string eventName, params (string key, object? value)[] tags)
-    {
-        if (activity == null) return null;
+	/// <summary>
+	/// Начать новый span для трассировки операции
+	/// </summary>
+	/// <param name="activitySource">Activity Source</param>
+	/// <param name="operationName">Название операции</param>
+	/// <param name="kind">Тип активности</param>
+	/// <returns>Activity для добавления тегов и событий</returns>
+	public static Activity? StartActivity(
+		this ActivitySource activitySource,
+		string operationName,
+		ActivityKind kind = ActivityKind.Internal)
+	{
+		return activitySource.StartActivity(operationName, kind);
+	}
 
-        var tagsCollection = new ActivityTagsCollection();
-        foreach (var (key, value) in tags)
-        {
-            tagsCollection.Add(key, value);
-        }
+	/// <summary>
+	/// Добавить тег с информацией о пользователе
+	/// </summary>
+	public static Activity? AddUserTag(this Activity? activity, Guid userId)
+	{
+		activity?.SetTag("user.id", userId.ToString());
 
-        activity.AddEvent(new ActivityEvent(eventName, tags: tagsCollection));
-        return activity;
-    }
+		return activity;
+	}
 
-    /// <summary>
-    /// Отметить активность как ошибочную
-    /// </summary>
-    public static Activity? RecordException(this Activity? activity, Exception exception)
-    {
-        if (activity == null) return null;
+	/// <summary>
+	/// Добавить тег с информацией о сущности
+	/// </summary>
+	public static Activity? AddEntityTag(
+		this Activity? activity,
+		string entityType,
+		Guid entityId)
+	{
+		activity?.SetTag("entity.type", entityType);
+		activity?.SetTag("entity.id", entityId.ToString());
 
-        activity.SetStatus(ActivityStatusCode.Error, exception.Message);
-        activity.RecordException(exception);
-        return activity;
-    }
+		return activity;
+	}
+
+	/// <summary>
+	/// Добавить событие в trace
+	/// </summary>
+	public static Activity? AddTraceEvent(
+		this Activity? activity,
+		string eventName,
+		params (string Key, object? Value)[] tags)
+	{
+		if (activity == null)
+		{
+			return null;
+		}
+
+		var tagsCollection = new ActivityTagsCollection();
+
+		foreach (var (key, value) in tags)
+		{
+			tagsCollection.Add(key, value);
+		}
+
+		activity.AddEvent(new(eventName, tags: tagsCollection));
+
+		return activity;
+	}
+
+	/// <summary>
+	/// Отметить активность как ошибочную
+	/// </summary>
+	public static Activity? RecordException(this Activity? activity, Exception exception)
+	{
+		if (activity == null)
+		{
+			return null;
+		}
+
+		activity.SetStatus(ActivityStatusCode.Error, exception.Message);
+		activity.RecordException(exception);
+
+		return activity;
+	}
 }

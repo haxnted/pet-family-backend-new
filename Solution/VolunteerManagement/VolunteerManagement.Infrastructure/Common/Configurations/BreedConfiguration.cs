@@ -11,31 +11,31 @@ namespace VolunteerManagement.Infrastructure.Common.Configurations;
 /// </summary>
 public class BreedConfiguration : IEntityTypeConfiguration<Breed>
 {
-    /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<Breed> builder)
-    {
-        builder.ToTable("Breeds");
+	/// <inheritdoc />
+	public void Configure(EntityTypeBuilder<Breed> builder)
+	{
+		builder.ToTable("Breeds");
 
-        builder.HasKey(b => b.Id);
+		builder.HasKey(b => b.Id);
 
-        builder.Property(b => b.Id)
-            .HasConversion(
-                id => id.Value,
-                value => BreedId.Of(value))
-            .ValueGeneratedNever();
+		builder.Property(b => b.Id)
+			.HasConversion(
+				id => id.Value,
+				value => BreedId.Of(value))
+			.ValueGeneratedNever();
 
-        builder.Property(b => b.SpeciesId)
-            .HasConversion(
-                id => id.Value,
-                value => SpeciesId.Of(value))
-            .IsRequired();
+		builder.Property(b => b.SpeciesId)
+			.HasConversion(
+				id => id.Value,
+				value => SpeciesId.Of(value))
+			.IsRequired();
 
-        builder.Property(b => b.Name)
-            .HasConversion(
-                name => name.Value,
-                value => BreedName.Of(value))
-            .HasColumnName("Name")
-            .HasMaxLength(BreedName.MaxLength)
-            .IsRequired();
-    }
+		builder.Property(b => b.Name)
+			.HasConversion(
+				name => name.Value,
+				value => BreedName.Of(value))
+			.HasColumnName("Name")
+			.HasMaxLength(BreedName.MaxLength)
+			.IsRequired();
+	}
 }

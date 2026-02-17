@@ -8,11 +8,11 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Queries.GetAdoptionStatus
 /// </summary>
 public class GetAdoptionStatusHandler(IPetAdoptionService adoptionService)
 {
-    /// <summary>
-    /// Обработать запрос.
-    /// </summary>
-    public async Task<AdoptionStatusDto?> Handle(GetAdoptionStatusQuery query, CancellationToken ct)
-    {
-        return await adoptionService.GetStatusAsync(query.SagaId, ct);
-    }
+	/// <summary>
+	/// Обработать запрос.
+	/// </summary>
+	public async Task<AdoptionStatusDto?> Handle(GetAdoptionStatusQuery query, CancellationToken ct)
+	{
+		return await adoptionService.GetStatusAsync(query.SagaId, ct);
+	}
 }

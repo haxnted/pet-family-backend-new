@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 
 namespace PetFamily.SharedKernel.Infrastructure.Transactions;
 
@@ -7,11 +7,14 @@ namespace PetFamily.SharedKernel.Infrastructure.Transactions;
 /// </summary>
 public interface ITransactionalExecutor
 {
-    /// <summary>
-    /// Выполняет указанное действие внутри транзакции с заданным уровнем изоляции.
-    /// </summary>
-    /// <param name="action">Асинхронное действие, выполняемое внутри транзакции.</param>
-    /// <param name="isolationLevel">Уровень изоляции транзакции.</param>
-    /// <param name="cancellationToken">Токен отмены.</param>
-    Task StartEffect(Func<CancellationToken, Task> action, IsolationLevel isolationLevel, CancellationToken cancellationToken = default);
+	/// <summary>
+	/// Выполняет указанное действие внутри транзакции с заданным уровнем изоляции.
+	/// </summary>
+	/// <param name="action">Асинхронное действие, выполняемое внутри транзакции.</param>
+	/// <param name="isolationLevel">Уровень изоляции транзакции.</param>
+	/// <param name="cancellationToken">Токен отмены.</param>
+	Task StartEffect(
+		Func<CancellationToken, Task> action,
+		IsolationLevel isolationLevel,
+		CancellationToken cancellationToken);
 }

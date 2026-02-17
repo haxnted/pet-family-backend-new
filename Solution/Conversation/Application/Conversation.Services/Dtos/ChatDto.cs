@@ -10,9 +10,9 @@ namespace Conversation.Services.Dtos;
 /// <param name="CreatedAt">Дата создания.</param>
 /// <param name="Messages">Список сообщений.</param>
 public record ChatDto(
-    Guid Id,
-    string Title,
-    string? Description,
-    Guid LinkedId,
-    DateTime CreatedAt,
-    List<MessageDto> Messages);
+	Guid Id,
+	string Title,
+	string? Description,
+	Guid LinkedId,
+	DateTime CreatedAt,
+	List<MessageDto> Messages);

@@ -9,17 +9,17 @@ namespace Notification.Infrastructure.Common.Configurations;
 /// </summary>
 public class EmailSettingsConfiguration : IEntityTypeConfiguration<EmailSettings>
 {
-    /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<EmailSettings> builder)
-    {
-        builder.ToTable("email_settings");
+	/// <inheritdoc />
+	public void Configure(EntityTypeBuilder<EmailSettings> builder)
+	{
+		builder.ToTable("email_settings");
 
-        builder.HasKey(x => x.Id);
+		builder.HasKey(x => x.Id);
 
-        builder.HasIndex(x => x.UserNotificationSettingsId).IsUnique();
+		builder.HasIndex(x => x.UserNotificationSettingsId).IsUnique();
 
-        builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
+		builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
 
-        builder.Property(x => x.IsEnabled).IsRequired().HasDefaultValue(true);
-    }
+		builder.Property(x => x.IsEnabled).IsRequired().HasDefaultValue(true);
+	}
 }

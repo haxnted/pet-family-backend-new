@@ -9,24 +9,24 @@ namespace PetFamily.SharedKernel.WebApi.Extensions;
 /// </summary>
 public static class ErrorHandlingExtensions
 {
-    /// <summary>
-    /// Добавляет глобальную обработку ошибок
-    /// </summary>
-    public static IServiceCollection AddGlobalErrorHandling(this IServiceCollection services)
-    {
-        services.AddExceptionHandler<GlobalExceptionHandler>();
-        services.AddProblemDetails();
+	/// <summary>
+	/// Добавляет глобальную обработку ошибок
+	/// </summary>
+	public static IServiceCollection AddGlobalErrorHandling(this IServiceCollection services)
+	{
+		services.AddExceptionHandler<GlobalExceptionHandler>();
+		services.AddProblemDetails();
 
-        return services;
-    }
+		return services;
+	}
 
-    /// <summary>
-    /// Использует глобальную обработку ошибок
-    /// </summary>
-    public static IApplicationBuilder UseGlobalErrorHandling(this IApplicationBuilder app)
-    {
-        app.UseExceptionHandler();
+	/// <summary>
+	/// Использует глобальную обработку ошибок
+	/// </summary>
+	public static IApplicationBuilder UseGlobalErrorHandling(this IApplicationBuilder app)
+	{
+		app.UseExceptionHandler();
 
-        return app;
-    }
+		return app;
+	}
 }

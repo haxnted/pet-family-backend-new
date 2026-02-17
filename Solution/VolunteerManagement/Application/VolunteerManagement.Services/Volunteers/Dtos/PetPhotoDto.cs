@@ -1,4 +1,4 @@
-﻿namespace VolunteerManagement.Services.Volunteers.Dtos;
+namespace VolunteerManagement.Services.Volunteers.Dtos;
 
 /// <summary>
 /// Dto Фото животного.

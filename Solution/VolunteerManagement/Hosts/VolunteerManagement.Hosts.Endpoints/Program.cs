@@ -22,13 +22,14 @@ app.UseGlobalErrorHandling();
 
 if (!app.Environment.IsProduction())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Volunteer API v1");
-        c.RoutePrefix = string.Empty;
-        c.DisplayRequestDuration();
-    });
+	app.UseSwagger();
+
+	app.UseSwaggerUI(c =>
+	{
+		c.SwaggerEndpoint("/swagger/v1/swagger.json", "Volunteer API v1");
+		c.RoutePrefix = string.Empty;
+		c.DisplayRequestDuration();
+	});
 }
 
 app.UsePrometheusMetrics();

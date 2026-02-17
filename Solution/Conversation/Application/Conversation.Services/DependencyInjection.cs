@@ -7,14 +7,14 @@ namespace Conversation.Services;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Добавить зависимости Application.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddScoped<IChatService, ChatService>();
+	/// <summary>
+	/// Добавить зависимости Application.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	public static IServiceCollection AddApplication(this IServiceCollection services)
+	{
+		services.AddScoped<IChatService, ChatService>();
 
-        return services;
-    }
+		return services;
+	}
 }

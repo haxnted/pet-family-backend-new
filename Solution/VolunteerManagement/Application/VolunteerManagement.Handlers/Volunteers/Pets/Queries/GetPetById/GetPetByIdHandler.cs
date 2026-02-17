@@ -11,23 +11,23 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Queries.GetPetById;
 /// </summary>
 public class GetPetByIdHandler(IPetService petService, ICacheService cache)
 {
-    /// <summary>
-    /// Обработать запрос на получение животного.
-    /// </summary>
-    public async Task<PetDto> Handle(GetPetByIdQuery query, CancellationToken ct)
-    {
-        var cacheKey = CacheKeys.PetById(query.VolunteerId, query.PetId);
+	/// <summary>
+	/// Обработать запрос на получение животного.
+	/// </summary>
+	public async Task<PetDto> Handle(GetPetByIdQuery query, CancellationToken ct)
+	{
+		var cacheKey = CacheKeys.PetById(query.VolunteerId, query.PetId);
 
-        var cached = await cache.GetAsync<PetDto>(cacheKey, ct);
-        if (cached != null)
-            return cached;
+		var cached = await cache.GetAsync<PetDto>(cacheKey, ct);
+		if (cached != null)
+			return cached;
 
-        var pet = await petService.GetPetById(query.VolunteerId, query.PetId, ct);
+		var pet = await petService.GetPetById(query.VolunteerId, query.PetId, ct);
 
-        var result = pet.ToDto();
+		var result = pet.ToDto();
 
-        await cache.SetAsync(cacheKey, result, ct, CacheDurations.Volunteers);
+		await cache.SetAsync(cacheKey, result, ct, CacheDurations.Volunteers);
 
-        return result;
-    }
+		return result;
+	}
 }

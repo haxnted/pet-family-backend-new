@@ -15,205 +15,205 @@ namespace VolunteerManagement.Services.AnimalKinds;
 /// <param name="cache">Сервис кеширования.</param>
 internal sealed class SpeciesService(IRepository<Species> repository, ICacheService cache) : ISpeciesService
 {
-    /// <inheritdoc/>
-    public async Task<Guid> AddAsync(string animalKind, CancellationToken ct)
-    {
-        var animalKindValue = AnimalKind.Of(animalKind);
+	/// <inheritdoc/>
+	public async Task<Guid> AddAsync(string animalKind, CancellationToken ct)
+	{
+		var animalKindValue = AnimalKind.Of(animalKind);
 
-        var specification = new GetByAnimalKindSpecification(animalKindValue);
+		var specification = new GetByAnimalKindSpecification(animalKindValue);
 
-        var existingSpecies = await repository.FirstOrDefaultAsync(specification, ct);
+		var existingSpecies = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (existingSpecies != null)
-        {
-            throw new UseCaseException($"Вид животного '{animalKind}' уже существует.");
-        }
+		if (existingSpecies != null)
+		{
+			throw new UseCaseException($"Вид животного '{animalKind}' уже существует.");
+		}
 
-        var species = Species.Create(animalKindValue);
+		var species = Species.Create(animalKindValue);
 
-        await repository.AddAsync(species, ct);
+		await repository.AddAsync(species, ct);
 
-        await InvalidateSpeciesCacheAsync(species.Id.Value, ct);
+		await InvalidateSpeciesCacheAsync(species.Id.Value, ct);
 
-        return species.Id.Value;
-    }
+		return species.Id.Value;
+	}
 
-    /// <inheritdoc/>
-    public async Task<Guid> AddBreedAsync(Guid speciesId, string breedName, CancellationToken ct)
-    {
-        var speciesIdValue = SpeciesId.Of(speciesId);
+	/// <inheritdoc/>
+	public async Task<Guid> AddBreedAsync(Guid speciesId, string breedName, CancellationToken ct)
+	{
+		var speciesIdValue = SpeciesId.Of(speciesId);
 
-        var specification = new GetByIdSpecification(speciesIdValue);
+		var specification = new GetByIdSpecification(speciesIdValue);
 
-        var species = await repository.FirstOrDefaultAsync(specification, ct);
+		var species = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (species == null)
-        {
-            throw new EntityNotFoundException<Species>(speciesId);
-        }
+		if (species == null)
+		{
+			throw new EntityNotFoundException<Species>(speciesId);
+		}
 
-        var breedNameValue = BreedName.Of(breedName);
-        var breed = Breed.Create(breedNameValue, speciesIdValue);
+		var breedNameValue = BreedName.Of(breedName);
+		var breed = Breed.Create(breedNameValue, speciesIdValue);
 
-        species.AddBreed(breed);
+		species.AddBreed(breed);
 
-        await repository.UpdateAsync(species, ct);
+		await repository.UpdateAsync(species, ct);
 
-        await InvalidateSpeciesCacheAsync(speciesId, ct);
+		await InvalidateSpeciesCacheAsync(speciesId, ct);
 
-        return breed.Id.Value;
-    }
+		return breed.Id.Value;
+	}
 
-    /// <inheritdoc/>
-    public async Task DeleteSpeciesAsync(Guid speciesId, CancellationToken ct)
-    {
-        var speciesIdValue = SpeciesId.Of(speciesId);
+	/// <inheritdoc/>
+	public async Task DeleteSpeciesAsync(Guid speciesId, CancellationToken ct)
+	{
+		var speciesIdValue = SpeciesId.Of(speciesId);
 
-        var specification = new GetByIdSpecification(speciesIdValue);
+		var specification = new GetByIdSpecification(speciesIdValue);
 
-        var species = await repository.FirstOrDefaultAsync(specification, ct);
+		var species = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (species == null)
-        {
-            throw new EntityNotFoundException<Species>(speciesId);
-        }
+		if (species == null)
+		{
+			throw new EntityNotFoundException<Species>(speciesId);
+		}
 
-        species.Delete();
+		species.Delete();
 
-        await repository.UpdateAsync(species, ct);
+		await repository.UpdateAsync(species, ct);
 
-        await InvalidateSpeciesCacheAsync(speciesId, ct);
-    }
+		await InvalidateSpeciesCacheAsync(speciesId, ct);
+	}
 
-    /// <inheritdoc/>
-    public async Task DeleteBreedAsync(Guid speciesId, Guid breedId, CancellationToken ct)
-    {
-        var speciesIdValue = SpeciesId.Of(speciesId);
+	/// <inheritdoc/>
+	public async Task DeleteBreedAsync(Guid speciesId, Guid breedId, CancellationToken ct)
+	{
+		var speciesIdValue = SpeciesId.Of(speciesId);
 
-        var specification = new GetByIdSpecification(speciesIdValue);
+		var specification = new GetByIdSpecification(speciesIdValue);
 
-        var species = await repository.FirstOrDefaultAsync(specification, ct);
+		var species = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (species == null)
-        {
-            throw new EntityNotFoundException<Species>(speciesId);
-        }
+		if (species == null)
+		{
+			throw new EntityNotFoundException<Species>(speciesId);
+		}
 
-        var breedIdValue = BreedId.Of(breedId);
-        var breed = species.Breeds.FirstOrDefault(currentBreed =>
-            currentBreed.Id == breedIdValue && currentBreed.DeletedAt == null);
+		var breedIdValue = BreedId.Of(breedId);
+		var breed = species.Breeds.FirstOrDefault(currentBreed =>
+			currentBreed.Id == breedIdValue && currentBreed.DeletedAt == null);
 
-        if (breed == null)
-        {
-            throw new UseCaseException($"Порода с идентификатором '{breedId}' не найдена в виде '{speciesId}'.");
-        }
+		if (breed == null)
+		{
+			throw new UseCaseException($"Порода с идентификатором '{breedId}' не найдена в виде '{speciesId}'.");
+		}
 
-        breed.Delete();
+		breed.Delete();
 
-        await repository.UpdateAsync(species, ct);
+		await repository.UpdateAsync(species, ct);
 
-        await InvalidateSpeciesCacheAsync(speciesId, ct);
-    }
+		await InvalidateSpeciesCacheAsync(speciesId, ct);
+	}
 
-    /// <inheritdoc/>
-    public Task<IReadOnlyList<Species>> GetAllAsync(CancellationToken ct) =>
-        repository.GetAll(new GetAllSpeciesSpecification(), ct);
+	/// <inheritdoc/>
+	public Task<IReadOnlyList<Species>> GetAllAsync(CancellationToken ct) =>
+		repository.GetAll(new GetAllSpeciesSpecification(), ct);
 
-    /// <inheritdoc/>
-    public async Task<Species> GetByIdAsync(Guid speciesId, CancellationToken ct)
-    {
-        var speciesIdValue = SpeciesId.Of(speciesId);
+	/// <inheritdoc/>
+	public async Task<Species> GetByIdAsync(Guid speciesId, CancellationToken ct)
+	{
+		var speciesIdValue = SpeciesId.Of(speciesId);
 
-        var specification = new GetByIdSpecification(speciesIdValue);
+		var specification = new GetByIdSpecification(speciesIdValue);
 
 
-        var species = await repository.FirstOrDefaultAsync(specification, ct);
+		var species = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (species == null)
-        {
-            throw new EntityNotFoundException<Species>(speciesId);
-        }
+		if (species == null)
+		{
+			throw new EntityNotFoundException<Species>(speciesId);
+		}
 
-        return species;
-    }
+		return species;
+	}
 
-    /// <inheritdoc/>
-    public async Task<bool> ValidateBreedExistsAsync(
-        Guid speciesId,
-        Guid breedId,
-        CancellationToken ct)
-    {
-        var speciesIdValue = SpeciesId.Of(speciesId);
+	/// <inheritdoc/>
+	public async Task<bool> ValidateBreedExistsAsync(
+		Guid speciesId,
+		Guid breedId,
+		CancellationToken ct)
+	{
+		var speciesIdValue = SpeciesId.Of(speciesId);
 
-        var specification = new GetByIdSpecification(speciesIdValue);
+		var specification = new GetByIdSpecification(speciesIdValue);
 
-        var species = await repository.FirstOrDefaultAsync(specification, ct);
+		var species = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (species == null)
-        {
-            return false;
-        }
+		if (species == null)
+		{
+			return false;
+		}
 
-        var breedIdValue = BreedId.Of(breedId);
+		var breedIdValue = BreedId.Of(breedId);
 
-        return species.Breeds.Any(currentBreed =>
-            currentBreed.Id == breedIdValue &&
-            currentBreed.DeletedAt == null);
-    }
+		return species.Breeds.Any(currentBreed =>
+			currentBreed.Id == breedIdValue &&
+			currentBreed.DeletedAt == null);
+	}
 
-    /// <inheritdoc/>
-    public async Task RestoreSpeciesAsync(Guid speciesId, CancellationToken ct)
-    {
-        var speciesIdValue = SpeciesId.Of(speciesId);
+	/// <inheritdoc/>
+	public async Task RestoreSpeciesAsync(Guid speciesId, CancellationToken ct)
+	{
+		var speciesIdValue = SpeciesId.Of(speciesId);
 
-        var specification = new GetByIdSpecification(speciesIdValue);
+		var specification = new GetByIdSpecification(speciesIdValue);
 
-        var species = await repository.FirstOrDefaultAsync(specification, ct);
+		var species = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (species == null)
-        {
-            throw new EntityNotFoundException<Species>(speciesId);
-        }
+		if (species == null)
+		{
+			throw new EntityNotFoundException<Species>(speciesId);
+		}
 
-        species.Restore();
+		species.Restore();
 
-        await repository.UpdateAsync(species, ct);
+		await repository.UpdateAsync(species, ct);
 
-        await InvalidateSpeciesCacheAsync(speciesId, ct);
-    }
+		await InvalidateSpeciesCacheAsync(speciesId, ct);
+	}
 
-    /// <inheritdoc/>
-    public async Task RestoreBreedAsync(Guid speciesId, Guid breedId, CancellationToken ct)
-    {
-        var speciesIdValue = SpeciesId.Of(speciesId);
+	/// <inheritdoc/>
+	public async Task RestoreBreedAsync(Guid speciesId, Guid breedId, CancellationToken ct)
+	{
+		var speciesIdValue = SpeciesId.Of(speciesId);
 
-        var specification = new GetByIdSpecification(speciesIdValue);
+		var specification = new GetByIdSpecification(speciesIdValue);
 
-        var species = await repository.FirstOrDefaultAsync(specification, ct);
+		var species = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (species == null)
-        {
-            throw new EntityNotFoundException<Species>(speciesId);
-        }
+		if (species == null)
+		{
+			throw new EntityNotFoundException<Species>(speciesId);
+		}
 
-        var breedIdValue = BreedId.Of(breedId);
-        var breed = species.Breeds.FirstOrDefault(currentBreed => currentBreed.Id == breedIdValue);
+		var breedIdValue = BreedId.Of(breedId);
+		var breed = species.Breeds.FirstOrDefault(currentBreed => currentBreed.Id == breedIdValue);
 
-        if (breed == null)
-        {
-            throw new UseCaseException($"Порода с идентификатором '{breedId}' не найдена в виде '{speciesId}'.");
-        }
+		if (breed == null)
+		{
+			throw new UseCaseException($"Порода с идентификатором '{breedId}' не найдена в виде '{speciesId}'.");
+		}
 
-        breed.Restore();
+		breed.Restore();
 
-        await repository.UpdateAsync(species, ct);
+		await repository.UpdateAsync(species, ct);
 
-        await InvalidateSpeciesCacheAsync(speciesId, ct);
-    }
+		await InvalidateSpeciesCacheAsync(speciesId, ct);
+	}
 
-    private async Task InvalidateSpeciesCacheAsync(Guid speciesId, CancellationToken ct)
-    {
-        await cache.RemoveAsync(CacheKeys.SpeciesAll(), ct);
-        await cache.RemoveAsync(CacheKeys.SpeciesById(speciesId), ct);
-    }
+	private async Task InvalidateSpeciesCacheAsync(Guid speciesId, CancellationToken ct)
+	{
+		await cache.RemoveAsync(CacheKeys.SpeciesAll(), ct);
+		await cache.RemoveAsync(CacheKeys.SpeciesById(speciesId), ct);
+	}
 }

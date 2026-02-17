@@ -7,8 +7,8 @@ namespace VolunteerManagement.Handlers.AnimalKinds.Commands.Add;
 /// </summary>
 public sealed class AddSpeciesCommand : Command
 {
-    /// <summary>
-    /// Вид животного.
-    /// </summary>
-    public string AnimalKind { get; init; } = string.Empty;
+	/// <summary>
+	/// Вид животного.
+	/// </summary>
+	public string AnimalKind { get; init; } = string.Empty;
 }

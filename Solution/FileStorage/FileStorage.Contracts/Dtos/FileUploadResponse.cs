@@ -10,9 +10,9 @@ namespace FileStorage.Contracts.Dtos;
 /// <param name="ContentType">MIME-тип содержимого файла</param>
 /// <param name="ExpiresAt">Дата и время истечения срока действия предподписанного URL</param>
 public record FileUploadResponse(
-    Guid FileId,
-    string PreSignedUrl,
-    string FileName,
-    long FileSize,
-    string ContentType,
-    DateTime ExpiresAt);
+	Guid FileId,
+	string PreSignedUrl,
+	string FileName,
+	long FileSize,
+	string ContentType,
+	DateTime ExpiresAt);

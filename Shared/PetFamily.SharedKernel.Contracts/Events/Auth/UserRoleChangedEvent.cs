@@ -7,18 +7,18 @@ namespace PetFamily.SharedKernel.Contracts.Events.Auth;
 /// </summary>
 public sealed class UserRoleChangedEvent(Guid userId, string oldRole, string newRole) : IntegrationEvent
 {
-    /// <summary>
-    /// Идентификатор пользователя.
-    /// </summary>
-    public Guid UserId { get; } = userId;
+	/// <summary>
+	/// Идентификатор пользователя.
+	/// </summary>
+	public Guid UserId { get; } = userId;
 
-    /// <summary>
-    /// Старая роль пользователя.
-    /// </summary>
-    public string OldRole { get; } = oldRole;
+	/// <summary>
+	/// Старая роль пользователя.
+	/// </summary>
+	public string OldRole { get; } = oldRole;
 
-    /// <summary>
-    /// Новая роль пользователя.
-    /// </summary>
-    public string NewRole { get; } = newRole;
+	/// <summary>
+	/// Новая роль пользователя.
+	/// </summary>
+	public string NewRole { get; } = newRole;
 }

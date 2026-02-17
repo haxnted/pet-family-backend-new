@@ -70,6 +70,8 @@
     <PackageVersion Include="Respawn" Version="6.2.1" />
     <PackageVersion Include="MassTransit.TestFramework" Version="8.5.7" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
+    <!-- Code Style -->
+    <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <!-- Logging -->
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageVersion Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />

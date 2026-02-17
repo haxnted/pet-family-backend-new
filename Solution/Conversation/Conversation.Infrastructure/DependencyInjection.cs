@@ -12,16 +12,16 @@ namespace Conversation.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Настройка инфраструктуры зависимостей.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    public static void AddInfrastructure(this IServiceCollection services)
-    {
-        services.AddDatabase<ConversationDbContext, ConversationDbContextConfigurator>();
+	/// <summary>
+	/// Настройка инфраструктуры зависимостей.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	public static void AddInfrastructure(this IServiceCollection services)
+	{
+		services.AddDatabase<ConversationDbContext, ConversationDbContextConfigurator>();
 
-        services.AddScoped<IMigrator, ConversationMigrator>();
+		services.AddScoped<IMigrator, ConversationMigrator>();
 
-        services.AddScoped<IRepository<Chat>, EntityFrameworkRepository<Chat>>();
-    }
+		services.AddScoped<IRepository<Chat>, EntityFrameworkRepository<Chat>>();
+	}
 }

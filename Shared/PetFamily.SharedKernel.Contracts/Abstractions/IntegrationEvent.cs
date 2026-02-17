@@ -5,13 +5,13 @@ namespace PetFamily.SharedKernel.Contracts.Abstractions;
 /// </summary>
 public abstract class IntegrationEvent
 {
-    /// <summary>
-    /// Идентификатор корреляции, связывающий это событие с другими событиями.
-    /// </summary>
-    public Guid CorrelationId { get; } = Guid.NewGuid();
+	/// <summary>
+	/// Идентификатор корреляции, связывающий это событие с другими событиями.
+	/// </summary>
+	public Guid CorrelationId { get; } = Guid.NewGuid();
 
-    /// <summary>
-    /// Момент создания события в формате UTC.
-    /// </summary>
-    public DateTime CreatedAtUtc { get; } = DateTime.UtcNow;
+	/// <summary>
+	/// Момент создания события в формате UTC.
+	/// </summary>
+	public DateTime CreatedAtUtc { get; } = DateTime.UtcNow;
 }

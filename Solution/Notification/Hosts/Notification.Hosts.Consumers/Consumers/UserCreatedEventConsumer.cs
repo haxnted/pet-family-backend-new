@@ -12,47 +12,47 @@ namespace Notification.Hosts.Consumers.Consumers;
 /// Создаёт настройки уведомлений для пользователя и отправляет приветственное письмо.
 /// </summary>
 public class UserCreatedEventConsumer(
-    IRepository<UserNotificationSettings> repository,
-    IEmailService emailService,
-    ILogger<UserCreatedEventConsumer> logger) : IConsumer<UserCreatedEvent>
+	IRepository<UserNotificationSettings> repository,
+	IEmailService emailService,
+	ILogger<UserCreatedEventConsumer> logger) : IConsumer<UserCreatedEvent>
 {
-    /// <inheritdoc />
-    public async Task Consume(ConsumeContext<UserCreatedEvent> context)
-    {
-        var @event = context.Message;
+	/// <inheritdoc />
+	public async Task Consume(ConsumeContext<UserCreatedEvent> context)
+	{
+		var @event = context.Message;
 
-        logger.LogInformation(
-            "Обработка UserCreatedEvent для пользователя {UserId} ({Email})",
-            @event.UserId,
-            @event.Email);
+		logger.LogInformation(
+			"Обработка UserCreatedEvent для пользователя {UserId} ({Email})",
+			@event.UserId,
+			@event.Email);
 
-        try
-        {
-            var spec = new GetUserNotificationSettingsSpecification(@event.UserId);
-            var existing = await repository.FirstOrDefaultAsync(spec, context.CancellationToken);
+		try
+		{
+			var spec = new GetUserNotificationSettingsSpecification(@event.UserId);
+			var existing = await repository.FirstOrDefaultAsync(spec, context.CancellationToken);
 
-            if (existing == null)
-            {
-                var settings = new UserNotificationSettings
-                {
-                    UserId = @event.UserId,
-                    IsMuted = false,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    EmailSettings = new EmailSettings
-                    {
-                        Email = @event.Email,
-                        IsEnabled = true
-                    }
-                };
+			if (existing == null)
+			{
+				var settings = new UserNotificationSettings
+				{
+					UserId = @event.UserId,
+					IsMuted = false,
+					CreatedAt = DateTime.UtcNow,
+					UpdatedAt = DateTime.UtcNow,
+					EmailSettings = new EmailSettings
+					{
+						Email = @event.Email,
+						IsEnabled = true
+					}
+				};
 
-                await repository.AddAsync(settings, context.CancellationToken);
+				await repository.AddAsync(settings, context.CancellationToken);
 
-                logger.LogInformation("Созданы базовые настройки для пользователя {UserId}", @event.UserId);
-            }
+				logger.LogInformation("Созданы базовые настройки для пользователя {UserId}", @event.UserId);
+			}
 
-            var subject = "Welcome to Pet Family!";
-            var body = $"""
+			var subject = "Welcome to Pet Family!";
+			var body = $"""
                         Здравствуй {(string.IsNullOrEmpty(@event.FirstName) ? "" : @event.FirstName)},
 
                         Добро пожаловать в Pet Family! Ваш аккаунт был успешно зарегистрирован.
@@ -61,18 +61,18 @@ public class UserCreatedEventConsumer(
                         Pet Family Team
                         """;
 
-            await emailService.SendAsync(@event.Email, subject, body, context.CancellationToken);
+			await emailService.SendAsync(@event.Email, subject, body, context.CancellationToken);
 
-            logger.LogInformation(
-                "Welcome email sent to {Email}",
-                @event.Email);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex,
-                "Failed to process UserCreatedEvent for user {UserId}",
-                @event.UserId);
-            throw;
-        }
-    }
+			logger.LogInformation(
+				"Welcome email sent to {Email}",
+				@event.Email);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex,
+				"Failed to process UserCreatedEvent for user {UserId}",
+				@event.UserId);
+			throw;
+		}
+	}
 }

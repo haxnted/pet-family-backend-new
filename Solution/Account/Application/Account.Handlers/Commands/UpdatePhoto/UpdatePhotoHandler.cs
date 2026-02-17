@@ -8,16 +8,16 @@ namespace Account.Handlers.Commands.UpdatePhoto;
 /// <param name="accountService">Сервис для работы с аккаунтами.</param>
 public class UpdatePhotoHandler(IAccountService accountService)
 {
-    /// <summary>
-    /// Обрабатывает команду обновления фотографии.
-    /// </summary>
-    /// <param name="command">Команда обновления фотографии.</param>
-    /// <param name="ct">Токен отмены операции.</param>
-    public async Task Handle(UpdatePhotoCommand command, CancellationToken ct)
-    {
-        await accountService.UpdatePhotoAsync(
-            command.UserId,
-            command.PhotoId,
-            ct);
-    }
+	/// <summary>
+	/// Обрабатывает команду обновления фотографии.
+	/// </summary>
+	/// <param name="command">Команда обновления фотографии.</param>
+	/// <param name="ct">Токен отмены операции.</param>
+	public async Task Handle(UpdatePhotoCommand command, CancellationToken ct)
+	{
+		await accountService.UpdatePhotoAsync(
+			command.UserId,
+			command.PhotoId,
+			ct);
+	}
 }

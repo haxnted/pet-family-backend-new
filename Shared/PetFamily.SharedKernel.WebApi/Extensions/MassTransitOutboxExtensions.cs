@@ -10,107 +10,113 @@ namespace PetFamily.SharedKernel.WebApi.Extensions;
 /// </summary>
 public static class MassTransitOutboxExtensions
 {
-    /// <summary>
-    /// Добавить MassTransit Outbox Pattern для гарантированной доставки событий
-    /// </summary>
-    /// <typeparam name="TDbContext">Тип DbContext для хранения Outbox сообщений</typeparam>
-    public static IServiceCollection AddMassTransitWithOutbox<TDbContext>(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        Action<IBusRegistrationConfigurator>? configureBus = null,
-        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureRabbitMq = null)
-        where TDbContext : DbContext
-    {
-        services.AddMassTransit(x =>
-        {
-            configureBus?.Invoke(x);
+	/// <summary>
+	/// Добавить MassTransit Outbox Pattern для гарантированной доставки событий
+	/// </summary>
+	/// <typeparam name="TDbContext">Тип DbContext для хранения Outbox сообщений</typeparam>
+	public static IServiceCollection AddMassTransitWithOutbox<TDbContext>(
+		this IServiceCollection services,
+		IConfiguration configuration,
+		Action<IBusRegistrationConfigurator>? configureBus = null,
+		Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureRabbitMq = null)
+		where TDbContext : DbContext
+	{
+		services.AddMassTransit(x =>
+		{
+			configureBus?.Invoke(x);
 
-            x.AddEntityFrameworkOutbox<TDbContext>(o =>
-            {
-                o.UsePostgres();
-                o.QueryDelay = TimeSpan.FromSeconds(1);
-                o.UseBusOutbox();
-            });
+			x.AddEntityFrameworkOutbox<TDbContext>(o =>
+			{
+				o.UsePostgres();
+				o.QueryDelay = TimeSpan.FromSeconds(1);
+				o.UseBusOutbox();
+			});
 
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                var rabbitMqSection = configuration.GetSection("RabbitMQ");
-                cfg.Host(rabbitMqSection["Host"], h =>
-                {
-                    h.Username(rabbitMqSection["Username"] ?? "guest");
-                    h.Password(rabbitMqSection["Password"] ?? "guest");
-                });
+			x.UsingRabbitMq((context, cfg) =>
+			{
+				var rabbitMqSection = configuration.GetSection("RabbitMQ");
 
-                configureRabbitMq?.Invoke(context, cfg);
+				cfg.Host(
+					rabbitMqSection["Host"], h =>
+					{
+						h.Username(rabbitMqSection["Username"] ?? "guest");
+						h.Password(rabbitMqSection["Password"] ?? "guest");
+					});
 
-                cfg.ConfigureEndpoints(context);
-            });
-        });
+				configureRabbitMq?.Invoke(context, cfg);
 
-        return services;
-    }
+				cfg.ConfigureEndpoints(context);
+			});
+		});
 
-    /// <summary>
-    /// Добавить MassTransit только для публикации сообщений (без outbox/inbox).
-    /// Используется в API-сервисах, которые не потребляют сообщения.
-    /// </summary>
-    public static IServiceCollection AddMassTransitPublisher(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddMassTransit(x =>
-        {
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                var rabbitMqSection = configuration.GetSection("RabbitMQ");
-                cfg.Host(rabbitMqSection["Host"], h =>
-                {
-                    h.Username(rabbitMqSection["Username"] ?? "guest");
-                    h.Password(rabbitMqSection["Password"] ?? "guest");
-                });
-            });
-        });
+		return services;
+	}
 
-        return services;
-    }
+	/// <summary>
+	/// Добавить MassTransit только для публикации сообщений (без outbox/inbox).
+	/// Используется в API-сервисах, которые не потребляют сообщения.
+	/// </summary>
+	public static IServiceCollection AddMassTransitPublisher(
+		this IServiceCollection services,
+		IConfiguration configuration)
+	{
+		services.AddMassTransit(x =>
+		{
+			x.UsingRabbitMq((_, cfg) =>
+			{
+				var rabbitMqSection = configuration.GetSection("RabbitMQ");
 
-    /// <summary>
-    /// Добавить MassTransit Inbox Pattern для идемпотентной обработки входящих событий
-    /// </summary>
-    /// <typeparam name="TDbContext">Тип DbContext для хранения Inbox сообщений</typeparam>
-    public static IServiceCollection AddMassTransitWithInbox<TDbContext>(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        Action<IBusRegistrationConfigurator>? configureBus = null,
-        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureRabbitMq = null)
-        where TDbContext : DbContext
-    {
-        services.AddMassTransit(x =>
-        {
-            configureBus?.Invoke(x);
+				cfg.Host(
+					rabbitMqSection["Host"], h =>
+					{
+						h.Username(rabbitMqSection["Username"] ?? "guest");
+						h.Password(rabbitMqSection["Password"] ?? "guest");
+					});
+			});
+		});
 
-            x.AddEntityFrameworkOutbox<TDbContext>(o =>
-            {
-                o.UsePostgres();
-                o.QueryDelay = TimeSpan.FromSeconds(1);
-                o.UseBusOutbox();
-            });
+		return services;
+	}
 
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                var rabbitMqSection = configuration.GetSection("RabbitMQ");
-                cfg.Host(rabbitMqSection["Host"], h =>
-                {
-                    h.Username(rabbitMqSection["Username"] ?? "guest");
-                    h.Password(rabbitMqSection["Password"] ?? "guest");
-                });
+	/// <summary>
+	/// Добавить MassTransit Inbox Pattern для идемпотентной обработки входящих событий
+	/// </summary>
+	/// <typeparam name="TDbContext">Тип DbContext для хранения Inbox сообщений</typeparam>
+	public static IServiceCollection AddMassTransitWithInbox<TDbContext>(
+		this IServiceCollection services,
+		IConfiguration configuration,
+		Action<IBusRegistrationConfigurator>? configureBus = null,
+		Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? configureRabbitMq = null)
+		where TDbContext : DbContext
+	{
+		services.AddMassTransit(x =>
+		{
+			configureBus?.Invoke(x);
 
-                configureRabbitMq?.Invoke(context, cfg);
+			x.AddEntityFrameworkOutbox<TDbContext>(o =>
+			{
+				o.UsePostgres();
+				o.QueryDelay = TimeSpan.FromSeconds(1);
+				o.UseBusOutbox();
+			});
 
-                cfg.ConfigureEndpoints(context);
-            });
-        });
+			x.UsingRabbitMq((context, cfg) =>
+			{
+				var rabbitMqSection = configuration.GetSection("RabbitMQ");
 
-        return services;
-    }
+				cfg.Host(
+					rabbitMqSection["Host"], h =>
+					{
+						h.Username(rabbitMqSection["Username"] ?? "guest");
+						h.Password(rabbitMqSection["Password"] ?? "guest");
+					});
+
+				configureRabbitMq?.Invoke(context, cfg);
+
+				cfg.ConfigureEndpoints(context);
+			});
+		});
+
+		return services;
+	}
 }

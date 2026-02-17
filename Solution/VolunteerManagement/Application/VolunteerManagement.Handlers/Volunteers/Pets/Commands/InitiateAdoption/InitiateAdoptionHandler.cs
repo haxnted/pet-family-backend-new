@@ -10,26 +10,26 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.InitiateAdoption
 /// </summary>
 public class InitiateAdoptionHandler(IPetService petService, IBus massTransitBus)
 {
-    /// <summary>
-    /// Обработать команду на инициацию усыновления.
-    /// </summary>
-    /// <returns>Идентификатор созданной саги.</returns>
-    public async Task<Guid> Handle(InitiateAdoptionCommand command, CancellationToken ct)
-    {
-        var pet = await petService.GetPetById(command.VolunteerId, command.PetId, ct);
+	/// <summary>
+	/// Обработать команду на инициацию усыновления.
+	/// </summary>
+	/// <returns>Идентификатор созданной саги.</returns>
+	public async Task<Guid> Handle(InitiateAdoptionCommand command, CancellationToken ct)
+	{
+		var pet = await petService.GetPetById(command.VolunteerId, command.PetId, ct);
 
-        var sagaId = Guid.NewGuid();
+		var sagaId = Guid.NewGuid();
 
-        await massTransitBus.Publish(new StartPetAdoption
-        {
-            CorrelationId = sagaId,
-            PetId = command.PetId,
-            VolunteerId = command.VolunteerId,
-            AdopterId = command.AdopterId,
-            AdopterName = command.AdopterName,
-            PetNickName = pet.NickName.Value
-        }, ct);
+		await massTransitBus.Publish(new StartPetAdoption
+		{
+			CorrelationId = sagaId,
+			PetId = command.PetId,
+			VolunteerId = command.VolunteerId,
+			AdopterId = command.AdopterId,
+			AdopterName = command.AdopterName,
+			PetNickName = pet.NickName.Value
+		}, ct);
 
-        return sagaId;
-    }
+		return sagaId;
+	}
 }

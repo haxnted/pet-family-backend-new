@@ -12,60 +12,65 @@ namespace VolunteerManagement.Hosts.Endpoints;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Внедрение зависимостей всего приложения.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    public static IServiceCollection AddProgramDependencies(this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddControllers();
-        services.AddGlobalErrorHandling();
-        services.AddHostDependencies(configuration)
-            .AddSwaggerGenWithJwt(
-                title: "VolunteerManagement API",
-                description: "API для управления волонтёрами и питомцами",
-                configureOptions: options =>
-                {
-                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                    if (File.Exists(xmlPath))
-                    {
-                        options.IncludeXmlComments(xmlPath);
-                    }
-                })
-            .AddDefaultAuthorizationPolicies()
-            .AddCurrentUser()
-            .AddAllowAllCors()
-            .ConfigureAuthentification(configuration);
+	/// <summary>
+	/// Внедрение зависимостей всего приложения.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	public static IServiceCollection AddProgramDependencies(
+		this IServiceCollection services,
+		IConfiguration configuration)
+	{
+		services.AddControllers();
+		services.AddGlobalErrorHandling();
 
-        services.AddStandardHealthChecks()
-            .AddDatabaseHealthCheck(configuration, "VolunteerDbContext")
-            .AddRabbitMqHealthCheck(configuration, "RabbitMQ")
-            .AddKeycloakHealthCheck(configuration, "Keycloak");
+		services.AddHostDependencies(configuration)
+			.AddSwaggerGenWithJwt(
+				title: "VolunteerManagement API",
+				description: "API для управления волонтёрами и питомцами",
+				configureOptions: options =>
+				{
+					var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+					var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-        services.AddMassTransitPublisher(configuration);
+					if (File.Exists(xmlPath))
+					{
+						options.IncludeXmlComments(xmlPath);
+					}
+				})
+			.AddDefaultAuthorizationPolicies()
+			.AddCurrentUser()
+			.AddAllowAllCors()
+			.ConfigureAuthentification(configuration);
 
-        services.AddOpenTelemetryTracing(
-            configuration,
-            serviceName: DiagnosticNames.VolunteerManagement,
-            serviceVersion: "1.0.0",
-            additionalActivitySources: "Wolverine");
-        return services;
-    }
+		services.AddStandardHealthChecks()
+			.AddDatabaseHealthCheck(configuration, "VolunteerDbContext")
+			.AddRabbitMqHealthCheck(configuration, "RabbitMQ")
+			.AddKeycloakHealthCheck(configuration, "Keycloak");
 
-    /// <summary>
-    /// Сконфигурировать аутентификацию.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    private static IServiceCollection ConfigureAuthentification(this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddKeycloakJwtBearer(configuration);
-        services.AddDefaultAuthorizationPolicies();
+		services.AddMassTransitPublisher(configuration);
 
-        return services;
-    }
+		services.AddOpenTelemetryTracing(
+			configuration,
+			serviceName: DiagnosticNames.VolunteerManagement,
+			serviceVersion: "1.0.0",
+			additionalActivitySources: "Wolverine");
+
+		return services;
+	}
+
+	/// <summary>
+	/// Сконфигурировать аутентификацию.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	private static IServiceCollection ConfigureAuthentification(
+		this IServiceCollection services,
+		IConfiguration configuration)
+	{
+		services.AddKeycloakJwtBearer(configuration);
+		services.AddDefaultAuthorizationPolicies();
+
+		return services;
+	}
 }
