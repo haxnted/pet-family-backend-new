@@ -7,26 +7,26 @@ namespace Notification.Contracts.Events;
 /// </summary>
 public class NotificationEvent : IntegrationEvent
 {
-    /// <summary>
-    /// Идентификатор события.
-    /// </summary>
-    public Guid EventId { get; init; }
+	/// <summary>
+	/// Идентификатор события.
+	/// </summary>
+	public Guid EventId { get; init; }
 
-    /// <summary>
-    /// Идентификатор пользователя.
-    /// </summary>
-    public Guid UserId { get; init; }
+	/// <summary>
+	/// Идентификатор пользователя.
+	/// </summary>
+	public Guid UserId { get; init; }
 
-    /// <summary>
-    /// Сообщение.
-    /// </summary>
-    public required string Message { get; init; }
+	/// <summary>
+	/// Сообщение.
+	/// </summary>
+	public required string Message { get; init; }
 
-    /// <summary>
-    /// Тип уведомления.
-    /// </summary>
-    /// <remarks>
-    /// Почта или в телеграмм.
-    /// </remarks>
-    public required string NotificationType { get; init; }
+	/// <summary>
+	/// Тип уведомления.
+	/// </summary>
+	/// <remarks>
+	/// Почта или в телеграмм.
+	/// </remarks>
+	public required string NotificationType { get; init; }
 }

@@ -8,293 +8,311 @@ namespace VolunteerManagement.Tests.Domain.Entities;
 
 public sealed class PetTests : UnitTestBase
 {
-    #region Create Tests
-
-    [Fact]
-    public void Create_ShouldSetDefaultValues()
-    {
-        var pet = PetBuilder.Default().Build();
+	#region Create Tests
+
+	[Fact]
+	public void Create_ShouldSetDefaultValues()
+	{
+		var pet = PetBuilder.Default().Build();
 
-        pet.Should().NotBeNull();
-        pet.Position.Value.Should().Be(0);
-        pet.Photos.Should().BeEmpty();
-        pet.DateCreated.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
-        pet.BookerId.Should().BeNull();
-        pet.ShelterId.Should().BeNull();
-    }
+		pet.Should().NotBeNull();
+		pet.Position.Value.Should().Be(0);
+		pet.Photos.Should().BeEmpty();
+		pet.DateCreated.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+		pet.BookerId.Should().BeNull();
+		pet.ShelterId.Should().BeNull();
+	}
 
-    #endregion
+	#endregion
 
-    #region Update Tests
+	#region Update Tests
 
-    [Fact]
-    public void Update_ShouldChangeFields()
-    {
-        var pet = PetBuilder.Default().Build();
-        var newDescription = Description.Of("Обновленное описание питомца для тестирования");
-        var newHealth = Description.Of("Обновленная информация о здоровье питомца");
-        var newAttributes = PetPhysicalAttributes.Of(30.0, 60.0);
-        var newRequisites = new List<Requisite>
-        {
-            Requisite.Of("Паспорт", "Ветеринарный паспорт международного образца")
-        };
+	[Fact]
+	public void Update_ShouldChangeFields()
+	{
+		var pet = PetBuilder.Default().Build();
+		var newDescription = Description.Of("Обновленное описание питомца для тестирования");
+		var newHealth = Description.Of("Обновленная информация о здоровье питомца");
+		var newAttributes = PetPhysicalAttributes.Of(30.0, 60.0);
 
-        pet.Update(newDescription, newHealth, newAttributes, true, true, HelpStatusPet.LookingForHome, newRequisites);
+		var newRequisites = new List<Requisite>
+		{
+			Requisite.Of("Паспорт", "Ветеринарный паспорт международного образца")
+		};
 
-        pet.Description.Should().Be(newDescription);
-        pet.HealthInformation.Should().Be(newHealth);
-        pet.PhysicalAttributes.Should().Be(newAttributes);
-        pet.IsCastrated.Should().BeTrue();
-        pet.IsVaccinated.Should().BeTrue();
-        pet.HelpStatus.Should().Be(HelpStatusPet.LookingForHome);
-    }
+		pet.Update(
+			newDescription, newHealth, newAttributes, true, true,
+			HelpStatusPet.LookingForHome, newRequisites);
 
-    [Fact]
-    public void Update_WhenDeleted_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
-        pet.Delete();
+		pet.Description.Should().Be(newDescription);
+		pet.HealthInformation.Should().Be(newHealth);
+		pet.PhysicalAttributes.Should().Be(newAttributes);
+		pet.IsCastrated.Should().BeTrue();
+		pet.IsVaccinated.Should().BeTrue();
+		pet.HelpStatus.Should().Be(HelpStatusPet.LookingForHome);
+	}
 
-        var act = () => pet.Update(
-            Description.Of("Обновленное описание питомца для тестирования"),
-            Description.Of("Обновленная информация о здоровье питомца"),
-            PetPhysicalAttributes.Of(10, 20),
-            false, false, HelpStatusPet.NeedsHelp, []);
+	[Fact]
+	public void Update_WhenDeleted_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
+		pet.Delete();
 
-        act.Should().Throw<DomainException>();
-    }
+		var act = () => pet.Update(
+			Description.Of("Обновленное описание питомца для тестирования"),
+			Description.Of("Обновленная информация о здоровье питомца"),
+			PetPhysicalAttributes.Of(10, 20),
+			false, false, HelpStatusPet.NeedsHelp, []);
 
-    #endregion
+		act.Should().Throw<DomainException>();
+	}
 
-    #region ChangePosition Tests
+	#endregion
 
-    [Fact]
-    public void ChangePosition_ShouldChangePosition()
-    {
-        var pet = PetBuilder.Default().Build();
+	#region ChangePosition Tests
 
-        pet.ChangePosition(Position.Of(5));
+	[Fact]
+	public void ChangePosition_ShouldChangePosition()
+	{
+		var pet = PetBuilder.Default().Build();
 
-        pet.Position.Value.Should().Be(5);
-    }
+		pet.ChangePosition(Position.Of(5));
 
-    [Fact]
-    public void ChangePosition_WhenSamePosition_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
+		pet.Position.Value.Should().Be(5);
+	}
 
-        var act = () => pet.ChangePosition(Position.Of(0));
+	[Fact]
+	public void ChangePosition_WhenSamePosition_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
 
-        act.Should().Throw<DomainException>();
-    }
+		var act = () => pet.ChangePosition(Position.Of(0));
 
-    #endregion
+		act.Should().Throw<DomainException>();
+	}
 
-    #region Shelter Assignment Tests
+	#endregion
 
-    [Fact]
-    public void AssignToShelter_ShouldSetShelterId()
-    {
-        var pet = PetBuilder.Default().Build();
-        var shelterId = Guid.NewGuid();
+	#region Shelter Assignment Tests
 
-        pet.AssignToShelter(shelterId);
+	[Fact]
+	public void AssignToShelter_ShouldSetShelterId()
+	{
+		var pet = PetBuilder.Default().Build();
+		var shelterId = Guid.NewGuid();
 
-        pet.ShelterId.Should().Be(shelterId);
-    }
+		pet.AssignToShelter(shelterId);
 
-    [Fact]
-    public void AssignToShelter_WithEmptyGuid_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
+		pet.ShelterId.Should().Be(shelterId);
+	}
 
-        var act = () => pet.AssignToShelter(Guid.Empty);
+	[Fact]
+	public void AssignToShelter_WithEmptyGuid_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
 
-        act.Should().Throw<DomainException>();
-    }
+		var act = () => pet.AssignToShelter(Guid.Empty);
 
-    [Fact]
-    public void RemoveFromShelter_ShouldClearShelterId()
-    {
-        var pet = PetBuilder.Default().Build();
-        pet.AssignToShelter(Guid.NewGuid());
+		act.Should().Throw<DomainException>();
+	}
 
-        pet.RemoveFromShelter();
+	[Fact]
+	public void RemoveFromShelter_ShouldClearShelterId()
+	{
+		var pet = PetBuilder.Default().Build();
+		pet.AssignToShelter(Guid.NewGuid());
 
-        pet.ShelterId.Should().BeNull();
-    }
+		pet.RemoveFromShelter();
 
-    #endregion
+		pet.ShelterId.Should().BeNull();
+	}
 
-    #region Photo Tests
+	#endregion
 
-    [Fact]
-    public void AddPhotos_ShouldAddPhotos()
-    {
-        var pet = PetBuilder.Default().Build();
-        var photos = new List<Photo> { Photo.Create(Guid.NewGuid()), Photo.Create(Guid.NewGuid()) };
+	#region Photo Tests
 
-        pet.AddPhotos(photos);
+	[Fact]
+	public void AddPhotos_ShouldAddPhotos()
+	{
+		var pet = PetBuilder.Default().Build();
 
-        pet.Photos.Should().HaveCount(2);
-    }
+		var photos = new List<Photo>
+		{
+			Photo.Create(Guid.NewGuid()),
+			Photo.Create(Guid.NewGuid())
+		};
 
-    [Fact]
-    public void AddPhotos_WithEmptyList_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
+		pet.AddPhotos(photos);
 
-        var act = () => pet.AddPhotos([]);
+		pet.Photos.Should().HaveCount(2);
+	}
 
-        act.Should().Throw<DomainException>();
-    }
+	[Fact]
+	public void AddPhotos_WithEmptyList_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
 
-    [Fact]
-    public void AddPhotos_WithNull_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
+		var act = () => pet.AddPhotos([]);
 
-        var act = () => pet.AddPhotos(null!);
+		act.Should().Throw<DomainException>();
+	}
 
-        act.Should().Throw<ArgumentNullException>();
-    }
+	[Fact]
+	public void AddPhotos_WithNull_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
 
-    [Fact]
-    public void RemovePhoto_ShouldRemovePhoto()
-    {
-        var pet = PetBuilder.Default().Build();
-        var photoId = Guid.NewGuid();
-        pet.AddPhotos([Photo.Create(photoId)]);
+		var act = () => pet.AddPhotos(null!);
 
-        pet.RemovePhoto(photoId);
+		act.Should().Throw<ArgumentNullException>();
+	}
 
-        pet.Photos.Should().BeEmpty();
-    }
+	[Fact]
+	public void RemovePhoto_ShouldRemovePhoto()
+	{
+		var pet = PetBuilder.Default().Build();
+		var photoId = Guid.NewGuid();
+		pet.AddPhotos([Photo.Create(photoId)]);
 
-    [Fact]
-    public void RemovePhoto_WithNonExistent_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
+		pet.RemovePhoto(photoId);
 
-        var act = () => pet.RemovePhoto(Guid.NewGuid());
+		pet.Photos.Should().BeEmpty();
+	}
 
-        act.Should().Throw<DomainException>();
-    }
+	[Fact]
+	public void RemovePhoto_WithNonExistent_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
 
-    [Fact]
-    public void UpdatePhotos_ShouldReplaceAll()
-    {
-        var pet = PetBuilder.Default().Build();
-        pet.AddPhotos([Photo.Create(Guid.NewGuid())]);
-        var newPhotos = new List<Photo> { Photo.Create(Guid.NewGuid()), Photo.Create(Guid.NewGuid()) };
+		var act = () => pet.RemovePhoto(Guid.NewGuid());
 
-        pet.UpdatePhotos(newPhotos);
+		act.Should().Throw<DomainException>();
+	}
 
-        pet.Photos.Should().HaveCount(2);
-    }
+	[Fact]
+	public void UpdatePhotos_ShouldReplaceAll()
+	{
+		var pet = PetBuilder.Default().Build();
+		pet.AddPhotos([Photo.Create(Guid.NewGuid())]);
 
-    #endregion
+		var newPhotos = new List<Photo>
+		{
+			Photo.Create(Guid.NewGuid()),
+			Photo.Create(Guid.NewGuid())
+		};
 
-    #region Reservation/Adoption Tests
+		pet.UpdatePhotos(newPhotos);
 
-    [Fact]
-    public void Reserve_ShouldSetBookedStatus()
-    {
-        var pet = PetBuilder.Default()
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        var bookerId = Guid.NewGuid();
+		pet.Photos.Should().HaveCount(2);
+	}
 
-        pet.Reserve(bookerId);
+	#endregion
 
-        pet.HelpStatus.Should().Be(HelpStatusPet.Booked);
-        pet.BookerId.Should().Be(bookerId);
-    }
+	#region Reservation/Adoption Tests
 
-    [Fact]
-    public void Reserve_WhenAlreadyBooked_ShouldThrow()
-    {
-        var pet = PetBuilder.Default()
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        pet.Reserve(Guid.NewGuid());
+	[Fact]
+	public void Reserve_ShouldSetBookedStatus()
+	{
+		var pet = PetBuilder.Default()
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
 
-        var act = () => pet.Reserve(Guid.NewGuid());
+		var bookerId = Guid.NewGuid();
 
-        act.Should().Throw<DomainException>();
-    }
+		pet.Reserve(bookerId);
 
-    [Fact]
-    public void Reserve_WhenFoundHome_ShouldThrow()
-    {
-        var pet = PetBuilder.Default()
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        pet.Reserve(Guid.NewGuid());
-        pet.Adopt();
+		pet.HelpStatus.Should().Be(HelpStatusPet.Booked);
+		pet.BookerId.Should().Be(bookerId);
+	}
 
-        var act = () => pet.Reserve(Guid.NewGuid());
+	[Fact]
+	public void Reserve_WhenAlreadyBooked_ShouldThrow()
+	{
+		var pet = PetBuilder.Default()
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
 
-        act.Should().Throw<DomainException>();
-    }
+		pet.Reserve(Guid.NewGuid());
 
-    [Fact]
-    public void Reserve_WhenDeleted_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
-        pet.Delete();
+		var act = () => pet.Reserve(Guid.NewGuid());
 
-        var act = () => pet.Reserve(Guid.NewGuid());
+		act.Should().Throw<DomainException>();
+	}
 
-        act.Should().Throw<DomainException>();
-    }
+	[Fact]
+	public void Reserve_WhenFoundHome_ShouldThrow()
+	{
+		var pet = PetBuilder.Default()
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
 
-    [Fact]
-    public void CancelReservation_ShouldResetStatus()
-    {
-        var pet = PetBuilder.Default()
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        pet.Reserve(Guid.NewGuid());
+		pet.Reserve(Guid.NewGuid());
+		pet.Adopt();
 
-        pet.CancelReservation();
+		var act = () => pet.Reserve(Guid.NewGuid());
 
-        pet.HelpStatus.Should().Be(HelpStatusPet.LookingForHome);
-        pet.BookerId.Should().BeNull();
-    }
+		act.Should().Throw<DomainException>();
+	}
 
-    [Fact]
-    public void CancelReservation_WhenNotBooked_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
+	[Fact]
+	public void Reserve_WhenDeleted_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
+		pet.Delete();
 
-        var act = () => pet.CancelReservation();
+		var act = () => pet.Reserve(Guid.NewGuid());
 
-        act.Should().Throw<DomainException>();
-    }
+		act.Should().Throw<DomainException>();
+	}
 
-    [Fact]
-    public void Adopt_ShouldSetFoundHomeStatus()
-    {
-        var pet = PetBuilder.Default()
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        pet.Reserve(Guid.NewGuid());
+	[Fact]
+	public void CancelReservation_ShouldResetStatus()
+	{
+		var pet = PetBuilder.Default()
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
 
-        pet.Adopt();
+		pet.Reserve(Guid.NewGuid());
 
-        pet.HelpStatus.Should().Be(HelpStatusPet.FoundHome);
-    }
+		pet.CancelReservation();
 
-    [Fact]
-    public void Adopt_WhenNotBooked_ShouldThrow()
-    {
-        var pet = PetBuilder.Default().Build();
+		pet.HelpStatus.Should().Be(HelpStatusPet.LookingForHome);
+		pet.BookerId.Should().BeNull();
+	}
 
-        var act = () => pet.Adopt();
+	[Fact]
+	public void CancelReservation_WhenNotBooked_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
 
-        act.Should().Throw<DomainException>();
-    }
+		var act = () => pet.CancelReservation();
 
-    #endregion
+		act.Should().Throw<DomainException>();
+	}
+
+	[Fact]
+	public void Adopt_ShouldSetFoundHomeStatus()
+	{
+		var pet = PetBuilder.Default()
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
+
+		pet.Reserve(Guid.NewGuid());
+
+		pet.Adopt();
+
+		pet.HelpStatus.Should().Be(HelpStatusPet.FoundHome);
+	}
+
+	[Fact]
+	public void Adopt_WhenNotBooked_ShouldThrow()
+	{
+		var pet = PetBuilder.Default().Build();
+
+		var act = () => pet.Adopt();
+
+		act.Should().Throw<DomainException>();
+	}
+
+	#endregion
 }

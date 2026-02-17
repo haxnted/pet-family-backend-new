@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PetFamily.SharedKernel.Infrastructure.Configurations;
 using VolunteerManagement.Infrastructure.Common.Configurations;
 
@@ -9,19 +9,19 @@ namespace VolunteerManagement.Infrastructure.Common.Contexts;
 /// </summary>
 internal sealed class CustomModelBuilder
 {
-    /// <summary>
-    /// Собирает контекст конфигуратора EF для <see cref="VolunteerManagementDbContext"/>.
-    /// </summary>
-    /// <param name="modelBuilder">Конфигуратор модели.</param>
-    public static void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new PetConfiguration());
-        modelBuilder.ApplyConfiguration(new VolunteerConfiguration());
-        modelBuilder.ApplyConfiguration(new SpeciesConfiguration());
-        modelBuilder.ApplyConfiguration(new BreedConfiguration());
-        modelBuilder.ApplyConfiguration(new ShelterConfiguration());
-        modelBuilder.ApplyConfiguration(new VolunteerAssignmentConfiguration());
+	/// <summary>
+	/// Собирает контекст конфигуратора EF для <see cref="VolunteerManagementDbContext"/>.
+	/// </summary>
+	/// <param name="modelBuilder">Конфигуратор модели.</param>
+	public static void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.ApplyConfiguration(new PetConfiguration());
+		modelBuilder.ApplyConfiguration(new VolunteerConfiguration());
+		modelBuilder.ApplyConfiguration(new SpeciesConfiguration());
+		modelBuilder.ApplyConfiguration(new BreedConfiguration());
+		modelBuilder.ApplyConfiguration(new ShelterConfiguration());
+		modelBuilder.ApplyConfiguration(new VolunteerAssignmentConfiguration());
 
-        modelBuilder.SetDefaultDateTimeKind(DateTimeKind.Utc);
-    }
+		modelBuilder.SetDefaultDateTimeKind(DateTimeKind.Utc);
+	}
 }

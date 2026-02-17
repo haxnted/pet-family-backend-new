@@ -13,67 +13,78 @@ namespace Conversation.Services;
 /// Сервис для работы с чатами.
 /// </summary>
 internal sealed class ChatService(
-    IRepository<Chat> repository,
-    ICacheService cacheService) : IChatService
+	IRepository<Chat> repository,
+	ICacheService cacheService) : IChatService
 {
-    /// <inheritdoc />
-    public async Task<Guid> CreateAsync(string title, string? description, Guid linkedId, CancellationToken ct)
-    {
-        var chatId = ChatId.Of(Guid.NewGuid());
+	/// <inheritdoc />
+	public async Task<Guid> CreateAsync(
+		string title,
+		string? description,
+		Guid linkedId,
+		CancellationToken ct)
+	{
+		var chatId = ChatId.Of(Guid.NewGuid());
 
-        var chat = Chat.Create(
-            chatId,
-            Title.Of(title),
-            description != null ? Description.Of(description) : null,
-            linkedId);
+		var chat = Chat.Create(
+			chatId,
+			Title.Of(title),
+			description != null
+				? Description.Of(description)
+				: null,
+			linkedId);
 
-        await repository.AddAsync(chat, ct);
+		await repository.AddAsync(chat, ct);
 
-        return chatId.Value;
-    }
+		return chatId.Value;
+	}
 
-    /// <inheritdoc />
-    public async Task<Guid> AddMessageAsync(
-        Guid chatId, string text, Guid userId, Guid? parentMessageId, CancellationToken ct)
-    {
-        var chat = await GetByIdAsync(chatId, ct);
+	/// <inheritdoc />
+	public async Task<Guid> AddMessageAsync(
+		Guid chatId,
+		string text,
+		Guid userId,
+		Guid? parentMessageId,
+		CancellationToken ct)
+	{
+		var chat = await GetByIdAsync(chatId, ct);
 
-        var messageId = MessageId.Of(Guid.NewGuid());
+		var messageId = MessageId.Of(Guid.NewGuid());
 
-        chat.AddMessage(
-            messageId,
-            MessageText.Of(text),
-            userId,
-            parentMessageId.HasValue ? MessageId.Of(parentMessageId.Value) : null);
+		chat.AddMessage(
+			messageId,
+			MessageText.Of(text),
+			userId,
+			parentMessageId.HasValue
+				? MessageId.Of(parentMessageId.Value)
+				: null);
 
-        await repository.UpdateAsync(chat, ct);
+		await repository.UpdateAsync(chat, ct);
 
-        await cacheService.RemoveAsync(
-            Caching.CacheKeys.ChatById(chatId), ct);
+		await cacheService.RemoveAsync(Caching.CacheKeys.ChatById(chatId), ct);
 
-        return messageId.Value;
-    }
+		return messageId.Value;
+	}
 
-    /// <inheritdoc />
-    public async Task<Chat> GetByIdAsync(Guid chatId, CancellationToken ct)
-    {
-        var specification = new GetByIdWithMessagesSpecification(ChatId.Of(chatId));
+	/// <inheritdoc />
+	public async Task<Chat> GetByIdAsync(Guid chatId, CancellationToken ct)
+	{
+		var specification = new GetByIdWithMessagesSpecification(ChatId.Of(chatId));
 
-        var chat = await repository.FirstOrDefaultAsync(specification, ct);
+		var chat = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (chat is null)
-        {
-            throw new EntityNotFoundException<Chat>(chatId);
-        }
+		if (chat is null)
+		{
+			throw new EntityNotFoundException<Chat>(chatId);
+		}
 
-        return chat;
-    }
+		return chat;
+	}
 
-    /// <inheritdoc />
-    public async Task<IReadOnlyList<Chat>> GetByLinkedIdAsync(Guid linkedId, CancellationToken ct)
-    {
-        var specification = new GetByLinkedIdSpecification(linkedId);
+	/// <inheritdoc />
+	public async Task<IReadOnlyList<Chat>> GetByLinkedIdAsync(Guid linkedId, CancellationToken ct)
+	{
+		var specification = new GetByLinkedIdSpecification(linkedId);
 
-        return await repository.GetAll(specification, ct);
-    }
+		return await repository.GetAll(specification, ct);
+	}
 }

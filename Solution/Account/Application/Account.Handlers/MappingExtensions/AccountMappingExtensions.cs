@@ -8,19 +8,19 @@ namespace Account.Handlers.MappingExtensions;
 /// </summary>
 public static class AccountMappingExtensions
 {
-    /// <summary>
-    /// Преобразовать сущность <see cref="Account"/> в DTO <see cref="AccountDto"/>.
-    /// </summary>
-    /// <param name="account">Сущность аккаунта.</param>
-    /// <returns>DTO аккаунта.</returns>
-    public static AccountDto ToDto(this DomainAccount account)
-    {
-        return new AccountDto(
-            account.Id.Value,
-            account.UserId,
-            account.PhoneNumber?.Value,
-            account.AgeExperience?.Value,
-            account.Description?.Value,
-            account.Photo?.Value);
-    }
+	/// <summary>
+	/// Преобразовать сущность <see cref="Account"/> в DTO <see cref="AccountDto"/>.
+	/// </summary>
+	/// <param name="account">Сущность аккаунта.</param>
+	/// <returns>DTO аккаунта.</returns>
+	public static AccountDto ToDto(this DomainAccount account)
+	{
+		return new(
+			account.Id.Value,
+			account.UserId,
+			account.PhoneNumber?.Value,
+			account.AgeExperience?.Value,
+			account.Description?.Value,
+			account.Photo?.Value);
+	}
 }

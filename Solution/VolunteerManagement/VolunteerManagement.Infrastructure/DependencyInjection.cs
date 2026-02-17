@@ -15,19 +15,19 @@ namespace VolunteerManagement.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Настройка инфраструктуры зависимостей.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    public static void AddInfrastructure(this IServiceCollection services)
-    {
-        services.AddDatabase<VolunteerManagementDbContext, VolunteerDbContextConfigurator>();
+	/// <summary>
+	/// Настройка инфраструктуры зависимостей.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	public static void AddInfrastructure(this IServiceCollection services)
+	{
+		services.AddDatabase<VolunteerManagementDbContext, VolunteerDbContextConfigurator>();
 
-        services.AddScoped<IMigrator, VolunteerManagementMigrator>();
+		services.AddScoped<IMigrator, VolunteerManagementMigrator>();
 
-        services.AddScoped<IRepository<Volunteer>, EntityFrameworkRepository<Volunteer>>();
-        services.AddScoped<IRepository<Species>, EntityFrameworkRepository<Species>>();
-        services.AddScoped<IRepository<Shelter>, EntityFrameworkRepository<Shelter>>();
-        services.AddScoped<IRepository<Pet>, EntityFrameworkRepository<Pet>>();
-    }
+		services.AddScoped<IRepository<Volunteer>, EntityFrameworkRepository<Volunteer>>();
+		services.AddScoped<IRepository<Species>, EntityFrameworkRepository<Species>>();
+		services.AddScoped<IRepository<Shelter>, EntityFrameworkRepository<Shelter>>();
+		services.AddScoped<IRepository<Pet>, EntityFrameworkRepository<Pet>>();
+	}
 }

@@ -11,50 +11,52 @@ namespace VolunteerManagement.Hosts.Consumers.Consumers;
 /// Consumer для обработки команды бронирования питомца (шаг саги).
 /// </summary>
 public class ReservePetConsumer(
-    IRepository<Volunteer> repository,
-    ILogger<ReservePetConsumer> logger)
-    : IConsumer<ReservePet>
+	IRepository<Volunteer> repository,
+	ILogger<ReservePetConsumer> logger)
+	: IConsumer<ReservePet>
 {
-    /// <inheritdoc />
-    public async Task Consume(ConsumeContext<ReservePet> context)
-    {
-        var message = context.Message;
+	/// <inheritdoc />
+	public async Task Consume(ConsumeContext<ReservePet> context)
+	{
+		var message = context.Message;
 
-        logger.LogInformation(
-            "Получена команда ReservePet: PetId={PetId}, VolunteerId={VolunteerId}, AdopterId={AdopterId}",
-            message.PetId, message.VolunteerId, message.AdopterId);
+		logger.LogInformation(
+			"Получена команда ReservePet: PetId={PetId}, VolunteerId={VolunteerId}, AdopterId={AdopterId}",
+			message.PetId, message.VolunteerId, message.AdopterId);
 
-        try
-        {
-            var spec = new GetByIdWithPetsSpecification(VolunteerId.Of(message.VolunteerId));
-            var volunteer = await repository.FirstOrDefaultAsync(spec, context.CancellationToken)
-                            ?? throw new InvalidOperationException(
-                                $"Волонтёр {message.VolunteerId} не найден.");
+		try
+		{
+			var spec = new GetByIdWithPetsSpecification(VolunteerId.Of(message.VolunteerId));
 
-            volunteer.ReservePet(PetId.Of(message.PetId), message.AdopterId);
+			var volunteer = await repository.FirstOrDefaultAsync(spec, context.CancellationToken)
+							?? throw new InvalidOperationException($"Волонтёр {message.VolunteerId} не найден.");
 
-            await repository.UpdateAsync(volunteer, context.CancellationToken);
+			volunteer.ReservePet(PetId.Of(message.PetId), message.AdopterId);
 
-            await context.Publish<PetReserved>(new
-            {
-                message.CorrelationId,
-                message.PetId,
-                message.VolunteerId,
-                message.AdopterId
-            });
+			await repository.UpdateAsync(volunteer, context.CancellationToken);
 
-            logger.LogInformation("Питомец {PetId} успешно забронирован", message.PetId);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Ошибка при бронировании питомца {PetId}", message.PetId);
+			await context.Publish<PetReserved>(
+				new
+				{
+					message.CorrelationId,
+					message.PetId,
+					message.VolunteerId,
+					message.AdopterId
+				});
 
-            await context.Publish<PetReservationFailed>(new
-            {
-                message.CorrelationId,
-                message.PetId,
-                Reason = ex.Message
-            });
-        }
-    }
+			logger.LogInformation("Питомец {PetId} успешно забронирован", message.PetId);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "Ошибка при бронировании питомца {PetId}", message.PetId);
+
+			await context.Publish<PetReservationFailed>(
+				new
+				{
+					message.CorrelationId,
+					message.PetId,
+					Reason = ex.Message
+				});
+		}
+	}
 }

@@ -5,33 +5,33 @@ namespace PetFamily.SharedKernel.Domain.Errors;
 /// </summary>
 public enum ErrorType
 {
-    /// <summary>
-    /// Ошибка валидации
-    /// </summary>
-    Validation,
+	/// <summary>
+	/// Ошибка валидации
+	/// </summary>
+	Validation,
 
-    /// <summary>
-    /// Сущность не найдена
-    /// </summary>
-    NotFound,
+	/// <summary>
+	/// Сущность не найдена
+	/// </summary>
+	NotFound,
 
-    /// <summary>
-    /// Конфликт (например, дубликат)
-    /// </summary>
-    Conflict,
+	/// <summary>
+	/// Конфликт (например, дубликат)
+	/// </summary>
+	Conflict,
 
-    /// <summary>
-    /// Ошибка авторизации
-    /// </summary>
-    Unauthorized,
+	/// <summary>
+	/// Ошибка авторизации
+	/// </summary>
+	Unauthorized,
 
-    /// <summary>
-    /// Недостаточно прав
-    /// </summary>
-    Forbidden,
+	/// <summary>
+	/// Недостаточно прав
+	/// </summary>
+	Forbidden,
 
-    /// <summary>
-    /// Внутренняя ошибка сервера
-    /// </summary>
-    Failure
+	/// <summary>
+	/// Внутренняя ошибка сервера
+	/// </summary>
+	Failure
 }

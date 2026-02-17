@@ -20,17 +20,17 @@ namespace VolunteerManagement.Hosts.Endpoints.Requests;
 /// <param name="HelpStatus">Статус помощи.</param>
 /// <param name="Requisites">Коллекция реквизитов для пожертвований.</param>
 public sealed record AddPetRequest(
-    string NickName,
-    string GeneralDescription,
-    string HealthInformation,
-    Guid BreedId,
-    Guid SpeciesId,
-    AddressDto Address,
-    double Weight,
-    double Height,
-    string PhoneNumber,
-    DateTime BirthDate,
-    bool IsCastrated,
-    bool IsVaccinated,
-    int HelpStatus,
-    IEnumerable<RequisiteDto> Requisites);
+	string NickName,
+	string GeneralDescription,
+	string HealthInformation,
+	Guid BreedId,
+	Guid SpeciesId,
+	AddressDto Address,
+	double Weight,
+	double Height,
+	string PhoneNumber,
+	DateTime BirthDate,
+	bool IsCastrated,
+	bool IsVaccinated,
+	int HelpStatus,
+	IEnumerable<RequisiteDto> Requisites);

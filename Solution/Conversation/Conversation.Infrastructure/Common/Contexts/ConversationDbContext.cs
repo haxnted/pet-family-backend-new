@@ -10,19 +10,19 @@ namespace Conversation.Infrastructure.Common.Contexts;
 /// <param name="options">Опции контекста.</param>
 public class ConversationDbContext(DbContextOptions<ConversationDbContext> options) : DbContext(options)
 {
-    /// <summary>
-    /// Коллекция чатов.
-    /// </summary>
-    public DbSet<Chat> Chats => Set<Chat>();
+	/// <summary>
+	/// Коллекция чатов.
+	/// </summary>
+	public DbSet<Chat> Chats => Set<Chat>();
 
-    /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new Configurations.ChatConfiguration());
-        modelBuilder.ApplyConfiguration(new Configurations.MessageConfiguration());
+	/// <inheritdoc/>
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.ApplyConfiguration(new Configurations.ChatConfiguration());
+		modelBuilder.ApplyConfiguration(new Configurations.MessageConfiguration());
 
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
-    }
+		modelBuilder.AddInboxStateEntity();
+		modelBuilder.AddOutboxMessageEntity();
+		modelBuilder.AddOutboxStateEntity();
+	}
 }

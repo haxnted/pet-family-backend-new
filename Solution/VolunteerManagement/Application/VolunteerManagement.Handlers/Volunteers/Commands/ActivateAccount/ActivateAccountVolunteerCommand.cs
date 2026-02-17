@@ -7,8 +7,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Commands.ActivateAccount;
 /// </summary>
 public sealed class ActivateAccountVolunteerCommand : Command
 {
-    /// <summary>
-    /// Идентификатор волонтёра.
-    /// </summary>
-    public Guid VolunteerId { get; init; }
+	/// <summary>
+	/// Идентификатор волонтёра.
+	/// </summary>
+	public Guid VolunteerId { get; init; }
 }

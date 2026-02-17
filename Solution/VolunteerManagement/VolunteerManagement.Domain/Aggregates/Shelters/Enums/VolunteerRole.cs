@@ -5,18 +5,18 @@ namespace VolunteerManagement.Domain.Aggregates.Shelters.Enums;
 /// </summary>
 public enum VolunteerRole
 {
-    /// <summary>
-    /// Управляющий приютом.
-    /// </summary>
-    Manager,
+	/// <summary>
+	/// Управляющий приютом.
+	/// </summary>
+	Manager,
 
-    /// <summary>
-    /// Ухаживает за животными.
-    /// </summary>
-    Caretaker,
+	/// <summary>
+	/// Ухаживает за животными.
+	/// </summary>
+	Caretaker,
 
-    /// <summary>
-    /// Ветеринар.
-    /// </summary>
-    Veterinarian
+	/// <summary>
+	/// Ветеринар.
+	/// </summary>
+	Veterinarian
 }

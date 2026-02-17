@@ -1,4 +1,4 @@
-﻿namespace Auth.Endpoints.Requests;
+namespace Auth.Endpoints.Requests;
 
 /// <summary>
 /// Запрос на вход в систему.

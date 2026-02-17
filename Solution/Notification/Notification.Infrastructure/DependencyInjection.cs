@@ -16,28 +16,28 @@ namespace Notification.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Добавить все зависимости Infrastructure слоя.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddDbContext<NotificationDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("NotificationDbContext")));
+	/// <summary>
+	/// Добавить все зависимости Infrastructure слоя.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	public static IServiceCollection AddInfrastructure(
+		this IServiceCollection services,
+		IConfiguration configuration)
+	{
+		services.AddDbContext<NotificationDbContext>(options =>
+			options.UseNpgsql(configuration.GetConnectionString("NotificationDbContext")));
 
-        services.AddScoped<IMigrator, NotificationMigrator>();
+		services.AddScoped<IMigrator, NotificationMigrator>();
 
-        services.AddScoped<IRepository<UserNotificationSettings>>(sp =>
-            new EntityFrameworkRepository<UserNotificationSettings>(sp.GetRequiredService<NotificationDbContext>()));
+		services.AddScoped<IRepository<UserNotificationSettings>>(sp =>
+			new EntityFrameworkRepository<UserNotificationSettings>(sp.GetRequiredService<NotificationDbContext>()));
 
-        services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
-        services.AddScoped<IEmailService, EmailService>();
+		services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
+		services.AddScoped<IEmailService, EmailService>();
 
-        services.AddHostedService<NotificationLogCleanupService>();
+		services.AddHostedService<NotificationLogCleanupService>();
 
-        return services;
-    }
+		return services;
+	}
 }

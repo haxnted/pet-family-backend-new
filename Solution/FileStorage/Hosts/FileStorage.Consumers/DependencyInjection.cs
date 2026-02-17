@@ -15,35 +15,35 @@ namespace FileStorage.Consumers;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Настройка зависимостей worker сервиса.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    public static void AddProgramDependencies(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<RabbitMqSettings>(configuration.GetSection(RabbitMqSettings.SectionName));
+	/// <summary>
+	/// Настройка зависимостей worker сервиса.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	public static void AddProgramDependencies(this IServiceCollection services, IConfiguration configuration)
+	{
+		services.Configure<RabbitMqSettings>(configuration.GetSection(RabbitMqSettings.SectionName));
 
-        services.Configure<MinIoSettings>(configuration.GetSection(MinIoSettings.SectionName));
+		services.Configure<MinIoSettings>(configuration.GetSection(MinIoSettings.SectionName));
 
-        services.AddApplication();
+		services.AddApplication();
 
-        services.AddSingleton<IMinIoService, MinIoService>();
+		services.AddSingleton<IMinIoService, MinIoService>();
 
-        services.AddMassTransitWithRabbitMq(
-            configuration,
-            configureBus: (cfg) => cfg.AddConsumer<FileDeleteRequestedConsumer>(),
-            configureRabbitMq: (context, cfg) =>
-            {
-                cfg.Message<FileDeleteRequestedEvent>(e => e.SetEntityName("filestorage-events"));
+		services.AddMassTransitWithRabbitMq(
+			configuration,
+			configureBus: (cfg) => cfg.AddConsumer<FileDeleteRequestedConsumer>(),
+			configureRabbitMq: (context, cfg) =>
+			{
+				cfg.Message<FileDeleteRequestedEvent>(e => e.SetEntityName("filestorage-events"));
 
-                cfg.ReceiveEndpoint("filestorage-delete-requests", e =>
-                {
-                    e.Bind("filestorage-events");
-                    e.ConfigureConsumer<FileDeleteRequestedConsumer>(context);
+				cfg.ReceiveEndpoint("filestorage-delete-requests", e =>
+				{
+					e.Bind("filestorage-events");
+					e.ConfigureConsumer<FileDeleteRequestedConsumer>(context);
 
-                    e.UseMessageRetry(r => r.Incremental(3, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2)));
-                });
-            });
-    }
+					e.UseMessageRetry(r => r.Incremental(3, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2)));
+				});
+			});
+	}
 }

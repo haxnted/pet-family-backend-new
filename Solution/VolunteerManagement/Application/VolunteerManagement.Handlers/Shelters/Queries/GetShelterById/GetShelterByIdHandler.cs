@@ -11,23 +11,24 @@ namespace VolunteerManagement.Handlers.Shelters.Queries.GetShelterById;
 /// </summary>
 public class GetShelterByIdHandler(IShelterService shelterService, ICacheService cache)
 {
-    /// <summary>
-    /// Обработать запрос на получение приюта.
-    /// </summary>
-    public async Task<ShelterDto> Handle(GetShelterByIdQuery query, CancellationToken ct)
-    {
-        var cacheKey = CacheKeys.ShelterById(query.ShelterId);
+	/// <summary>
+	/// Обработать запрос на получение приюта.
+	/// </summary>
+	public async Task<ShelterDto> Handle(GetShelterByIdQuery query, CancellationToken ct)
+	{
+		var cacheKey = CacheKeys.ShelterById(query.ShelterId);
 
-        var cached = await cache.GetAsync<ShelterDto>(cacheKey, ct);
-        if (cached != null)
-            return cached;
+		var cached = await cache.GetAsync<ShelterDto>(cacheKey, ct);
 
-        var shelter = await shelterService.GetAsync(query.ShelterId, ct);
+		if (cached != null)
+			return cached;
 
-        var result = shelter.ToDto();
+		var shelter = await shelterService.GetAsync(query.ShelterId, ct);
 
-        await cache.SetAsync(cacheKey, result, ct, CacheDurations.Shelters);
+		var result = shelter.ToDto();
 
-        return result;
-    }
+		await cache.SetAsync(cacheKey, result, ct, CacheDurations.Shelters);
+
+		return result;
+	}
 }

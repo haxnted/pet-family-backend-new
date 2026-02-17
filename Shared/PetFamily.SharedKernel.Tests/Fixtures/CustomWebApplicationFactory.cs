@@ -11,33 +11,35 @@ namespace PetFamily.SharedKernel.Tests.Fixtures;
 /// Базовая фабрика для интеграционных тестов API.
 /// </summary>
 public class CustomWebApplicationFactory<TProgram, TDbContext>(
-    string connectionString,
-    Action<IServiceCollection>? configureServices = null)
-    : WebApplicationFactory<TProgram>
-    where TProgram : class
-    where TDbContext : DbContext
+	string connectionString,
+	Action<IServiceCollection>? configureServices = null)
+	: WebApplicationFactory<TProgram>
+	where TProgram : class
+	where TDbContext : DbContext
 {
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseEnvironment("Testing");
+	protected override void ConfigureWebHost(IWebHostBuilder builder)
+	{
+		builder.UseEnvironment("Testing");
 
-        builder.ConfigureTestServices(services =>
-        {
-            services.RemoveAll<DbContextOptions<TDbContext>>();
-            services.RemoveAll<TDbContext>();
+		builder.ConfigureTestServices(services =>
+		{
+			services.RemoveAll<DbContextOptions<TDbContext>>();
+			services.RemoveAll<TDbContext>();
 
-            services.AddDbContext<TDbContext>(options =>
-            {
-                options.UseNpgsql(connectionString);
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            });
+			services.AddDbContext<TDbContext>(options =>
+			{
+				options.UseNpgsql(connectionString);
+				options.EnableSensitiveDataLogging();
+				options.EnableDetailedErrors();
+			});
 
-            configureServices?.Invoke(services);
+			configureServices?.Invoke(services);
 
-            using var scope = services.BuildServiceProvider().CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<TDbContext>();
-            dbContext.Database.EnsureCreated();
-        });
-    }
+			using var scope = services.BuildServiceProvider()
+				.CreateScope();
+
+			var dbContext = scope.ServiceProvider.GetRequiredService<TDbContext>();
+			dbContext.Database.EnsureCreated();
+		});
+	}
 }

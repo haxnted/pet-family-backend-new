@@ -1,4 +1,4 @@
-﻿using FileStorage.Contracts.Extensions;
+using FileStorage.Contracts.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PetFamily.SharedKernel.Infrastructure.Caching;
@@ -15,22 +15,27 @@ namespace VolunteerManagement.Hosts.DI;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Добавить все зависимости для Host приложений.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    public static IServiceCollection AddHostDependencies(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<RabbitMqSettings>(configuration.GetSection(RabbitMqSettings.SectionName));
+	/// <summary>
+	/// Добавить все зависимости для Host приложений.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	public static IServiceCollection AddHostDependencies(this IServiceCollection services, IConfiguration configuration)
+	{
+		services.Configure<RabbitMqSettings>(configuration.GetSection(RabbitMqSettings.SectionName));
 
-        services.AddApplication();
-        services.AddWolverine(opts => { opts.Discovery.IncludeAssembly(typeof(AddVolunteerHandler).Assembly); });
-        services.AddInfrastructure();
+		services.AddApplication();
 
-        services.AddFileStorageClient(configuration);
-        services.AddCaching(configuration);
+		services.AddWolverine(opts =>
+		{
+			opts.Discovery.IncludeAssembly(typeof(AddVolunteerHandler).Assembly);
+		});
 
-        return services;
-    }
+		services.AddInfrastructure();
+
+		services.AddFileStorageClient(configuration);
+		services.AddCaching(configuration);
+
+		return services;
+	}
 }

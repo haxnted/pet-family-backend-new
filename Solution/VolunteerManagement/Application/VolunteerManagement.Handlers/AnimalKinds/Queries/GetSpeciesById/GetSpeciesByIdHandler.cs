@@ -11,25 +11,26 @@ namespace VolunteerManagement.Handlers.AnimalKinds.Queries.GetSpeciesById;
 /// </summary>
 public class GetSpeciesByIdHandler(ISpeciesService speciesService, ICacheService cache)
 {
-    /// <summary>
-    /// Обработать запрос на получение вида по идентификатору.
-    /// </summary>
-    public async Task<SpeciesDto> Handle(
-        GetSpeciesByIdQuery query,
-        CancellationToken ct)
-    {
-        var cacheKey = CacheKeys.SpeciesById(query.SpeciesId);
+	/// <summary>
+	/// Обработать запрос на получение вида по идентификатору.
+	/// </summary>
+	public async Task<SpeciesDto> Handle(
+		GetSpeciesByIdQuery query,
+		CancellationToken ct)
+	{
+		var cacheKey = CacheKeys.SpeciesById(query.SpeciesId);
 
-        var cached = await cache.GetAsync<SpeciesDto>(cacheKey, ct);
-        if (cached != null)
-            return cached;
+		var cached = await cache.GetAsync<SpeciesDto>(cacheKey, ct);
 
-        var species = await speciesService.GetByIdAsync(query.SpeciesId, ct);
+		if (cached != null)
+			return cached;
 
-        var result = species.ToDto();
+		var species = await speciesService.GetByIdAsync(query.SpeciesId, ct);
 
-        await cache.SetAsync(cacheKey, result, ct, CacheDurations.Species);
+		var result = species.ToDto();
 
-        return result;
-    }
+		await cache.SetAsync(cacheKey, result, ct, CacheDurations.Species);
+
+		return result;
+	}
 }

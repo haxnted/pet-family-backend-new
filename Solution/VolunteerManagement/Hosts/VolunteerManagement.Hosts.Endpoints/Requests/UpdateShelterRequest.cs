@@ -10,9 +10,9 @@ namespace VolunteerManagement.Hosts.Endpoints.Requests;
 /// <param name="CloseTime">Время закрытия.</param>
 /// <param name="Capacity">Вместимость.</param>
 public sealed record UpdateShelterRequest(
-    string Name,
-    string PhoneNumber,
-    string Description,
-    TimeOnly OpenTime,
-    TimeOnly CloseTime,
-    int Capacity);
+	string Name,
+	string PhoneNumber,
+	string Description,
+	TimeOnly OpenTime,
+	TimeOnly CloseTime,
+	int Capacity);

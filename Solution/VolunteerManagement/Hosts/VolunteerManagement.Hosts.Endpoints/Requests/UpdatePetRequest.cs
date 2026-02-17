@@ -15,12 +15,12 @@ namespace VolunteerManagement.Hosts.Endpoints.Requests;
 /// <param name="HelpStatus">Статус помощи.</param>
 /// <param name="Requisites">Коллекция реквизитов для пожертвований.</param>
 public sealed record UpdatePetRequest(
-    Guid PetId,
-    string Description,
-    string HealthInformation,
-    double Weight,
-    double Height,
-    bool IsCastrated,
-    bool IsVaccinated,
-    int HelpStatus,
-    IEnumerable<RequisiteDto> Requisites);
+	Guid PetId,
+	string Description,
+	string HealthInformation,
+	double Weight,
+	double Height,
+	bool IsCastrated,
+	bool IsVaccinated,
+	int HelpStatus,
+	IEnumerable<RequisiteDto> Requisites);

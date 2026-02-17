@@ -9,8 +9,8 @@ namespace Conversation.Services.Dtos;
 /// <param name="ParentMessageId">Идентификатор родительского сообщения.</param>
 /// <param name="CreatedAt">Дата создания.</param>
 public record MessageDto(
-    Guid Id,
-    string Text,
-    Guid UserId,
-    Guid? ParentMessageId,
-    DateTime CreatedAt);
+	Guid Id,
+	string Text,
+	Guid UserId,
+	Guid? ParentMessageId,
+	DateTime CreatedAt);

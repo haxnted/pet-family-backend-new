@@ -9,91 +9,93 @@ namespace PetFamily.SharedKernel.Infrastructure.Caching;
 /// Подходит для распределённых систем (Redis, SQL Server, NCache).
 /// </summary>
 public sealed class DistributedCacheService(
-    IDistributedCache cache,
-    IOptions<CachingOptions> options) : ICacheService
+	IDistributedCache cache,
+	IOptions<CachingOptions> options) : ICacheService
 {
-    private static readonly JsonSerializerOptions DefaultJsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = false
-    };
+	private static readonly JsonSerializerOptions DefaultJsonOptions = new()
+	{
+		PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+		WriteIndented = false
+	};
 
-    private readonly CachingOptions _options = options.Value;
+	private readonly CachingOptions _options = options.Value;
 
-    /// <inheritdoc />
-    public async Task<T?> GetAsync<T>(string key, CancellationToken ct)
-    {
-        var prefixedKey = GetPrefixedKey(key);
-        var bytes = await cache.GetAsync(prefixedKey, ct);
+	/// <inheritdoc />
+	public async Task<T?> GetAsync<T>(string key, CancellationToken ct)
+	{
+		var prefixedKey = GetPrefixedKey(key);
+		var bytes = await cache.GetAsync(prefixedKey, ct);
 
-        if (bytes == null || bytes.Length == 0)
-        {
-            return default;
-        }
+		if (bytes == null || bytes.Length == 0)
+		{
+			return default;
+		}
 
-        return JsonSerializer.Deserialize<T>(bytes.AsSpan(), DefaultJsonOptions);
-    }
+		return JsonSerializer.Deserialize<T>(bytes.AsSpan(), DefaultJsonOptions);
+	}
 
-    /// <inheritdoc />
-    public async Task SetAsync<T>(
-        string key,
-        T value,
-        CancellationToken ct,
-        TimeSpan? expiration = null
-    )
-    {
-        var prefixedKey = GetPrefixedKey(key);
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(value, DefaultJsonOptions);
+	/// <inheritdoc />
+	public async Task SetAsync<T>(
+		string key,
+		T value,
+		CancellationToken ct,
+		TimeSpan? expiration = null)
+	{
+		var prefixedKey = GetPrefixedKey(key);
+		var bytes = JsonSerializer.SerializeToUtf8Bytes(value, DefaultJsonOptions);
 
-        var cacheOptions = new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = expiration ?? _options.DefaultExpiration
-        };
+		var cacheOptions = new DistributedCacheEntryOptions
+		{
+			AbsoluteExpirationRelativeToNow = expiration ?? _options.DefaultExpiration
+		};
 
-        await cache.SetAsync(prefixedKey, bytes, cacheOptions, ct);
-    }
+		await cache.SetAsync(prefixedKey, bytes, cacheOptions, ct);
+	}
 
-    /// <inheritdoc />
-    public async Task RemoveAsync(string key, CancellationToken ct)
-    {
-        var prefixedKey = GetPrefixedKey(key);
-        await cache.RemoveAsync(prefixedKey, ct);
-    }
+	/// <inheritdoc />
+	public async Task RemoveAsync(string key, CancellationToken ct)
+	{
+		var prefixedKey = GetPrefixedKey(key);
+		await cache.RemoveAsync(prefixedKey, ct);
+	}
 
-    /// <inheritdoc />
-    public async Task<T?> GetOrSetAsync<T>(
-        string key,
-        Func<CancellationToken, Task<T?>> factory,
-        CancellationToken ct,
-        TimeSpan? expiration = null)
-    {
-        var cached = await GetAsync<T>(key, ct);
-        if (cached != null)
-        {
-            return cached;
-        }
+	/// <inheritdoc />
+	public async Task<T?> GetOrSetAsync<T>(
+		string key,
+		Func<CancellationToken, Task<T?>> factory,
+		CancellationToken ct,
+		TimeSpan? expiration = null)
+	{
+		var cached = await GetAsync<T>(key, ct);
 
-        var value = await factory(ct);
-        if (value != null)
-        {
-            await SetAsync(key, value, ct, expiration);
-        }
+		if (cached != null)
+		{
+			return cached;
+		}
 
-        return value;
-    }
+		var value = await factory(ct);
 
-    /// <inheritdoc />
-    public async Task<bool> ExistsAsync(string key, CancellationToken ct)
-    {
-        var prefixedKey = GetPrefixedKey(key);
-        var bytes = await cache.GetAsync(prefixedKey, ct);
-        return bytes != null && bytes.Length > 0;
-    }
+		if (value != null)
+		{
+			await SetAsync(key, value, ct, expiration);
+		}
 
-    private string GetPrefixedKey(string key)
-    {
-        return string.IsNullOrEmpty(_options.KeyPrefix)
-            ? key
-            : $"{_options.KeyPrefix}:{key}";
-    }
+		return value;
+	}
+
+	/// <inheritdoc />
+	public async Task<bool> ExistsAsync(string key, CancellationToken ct)
+	{
+		var prefixedKey = GetPrefixedKey(key);
+		var bytes = await cache.GetAsync(prefixedKey, ct);
+
+		return bytes != null && bytes.Length > 0;
+	}
+
+	private string GetPrefixedKey(string key)
+	{
+		return string.IsNullOrEmpty(_options.KeyPrefix)
+			? key
+			: $"{_options.KeyPrefix}:{key}";
+	}
 }

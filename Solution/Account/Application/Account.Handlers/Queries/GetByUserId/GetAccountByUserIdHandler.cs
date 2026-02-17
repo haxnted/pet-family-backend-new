@@ -11,25 +11,28 @@ namespace Account.Handlers.Queries.GetByUserId;
 /// </summary>
 public class GetAccountByUserIdHandler(IAccountService accountService, ICacheService cache)
 {
-    /// <summary>
-    /// Обработать запрос на получение аккаунта.
-    /// </summary>
-    /// <param name="query">Запрос на получение аккаунта.</param>
-    /// <param name="ct">Токен отмены операции.</param>
-    public async Task<AccountDto> Handle(GetAccountByUserIdQuery query, CancellationToken ct)
-    {
-        var cacheKey = CacheKeys.AccountByUserId(query.UserId);
+	/// <summary>
+	/// Обработать запрос на получение аккаунта.
+	/// </summary>
+	/// <param name="query">Запрос на получение аккаунта.</param>
+	/// <param name="ct">Токен отмены операции.</param>
+	public async Task<AccountDto> Handle(GetAccountByUserIdQuery query, CancellationToken ct)
+	{
+		var cacheKey = CacheKeys.AccountByUserId(query.UserId);
 
-        var cached = await cache.GetAsync<AccountDto>(cacheKey, ct);
-        if (cached != null)
-            return cached;
+		var cached = await cache.GetAsync<AccountDto>(cacheKey, ct);
 
-        var account = await accountService.GetByUserIdAsync(query.UserId, ct);
+		if (cached != null)
+		{
+			return cached;
+		}
 
-        var result = account.ToDto();
+		var account = await accountService.GetByUserIdAsync(query.UserId, ct);
 
-        await cache.SetAsync(cacheKey, result, ct, CacheDurations.Account);
+		var result = account.ToDto();
 
-        return result;
-    }
+		await cache.SetAsync(cacheKey, result, ct, CacheDurations.Account);
+
+		return result;
+	}
 }

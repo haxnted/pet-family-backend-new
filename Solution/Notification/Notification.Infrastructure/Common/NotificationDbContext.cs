@@ -9,28 +9,28 @@ namespace Notification.Infrastructure.Common;
 /// </summary>
 public class NotificationDbContext(DbContextOptions<NotificationDbContext> options) : DbContext(options)
 {
-    /// <summary>
-    /// Базовые настройки уведомлений пользователей.
-    /// </summary>
-    public DbSet<UserNotificationSettings> UserNotificationSettings => Set<UserNotificationSettings>();
+	/// <summary>
+	/// Базовые настройки уведомлений пользователей.
+	/// </summary>
+	public DbSet<UserNotificationSettings> UserNotificationSettings => Set<UserNotificationSettings>();
 
-    /// <summary>
-    /// Настройки уведомлений для почты.
-    /// </summary>
-    public DbSet<EmailSettings> EmailSettings => Set<EmailSettings>();
+	/// <summary>
+	/// Настройки уведомлений для почты.
+	/// </summary>
+	public DbSet<EmailSettings> EmailSettings => Set<EmailSettings>();
 
-    /// <summary>
-    /// Логи доставки уведомлений.
-    /// </summary>
-    public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
+	/// <summary>
+	/// Логи доставки уведомлений.
+	/// </summary>
+	public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
 
-    /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        CustomModelBuilder.OnModelCreating(modelBuilder);
+	/// <inheritdoc/>
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		CustomModelBuilder.OnModelCreating(modelBuilder);
 
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
-    }
+		modelBuilder.AddInboxStateEntity();
+		modelBuilder.AddOutboxMessageEntity();
+		modelBuilder.AddOutboxStateEntity();
+	}
 }

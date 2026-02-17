@@ -12,43 +12,43 @@ namespace Conversation.Infrastructure.Common.Configurations;
 /// </summary>
 public class ChatConfiguration : IEntityTypeConfiguration<Chat>
 {
-    /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<Chat> builder)
-    {
-        builder.ToTable("Chats");
+	/// <inheritdoc />
+	public void Configure(EntityTypeBuilder<Chat> builder)
+	{
+		builder.ToTable("Chats");
 
-        builder.HasKey(c => c.Id);
-        builder.Property(c => c.Id)
-            .HasConversion(
-                id => id.Value,
-                value => ChatId.Of(value))
-            .ValueGeneratedNever();
+		builder.HasKey(c => c.Id);
+		builder.Property(c => c.Id)
+			.HasConversion(
+				id => id.Value,
+				value => ChatId.Of(value))
+			.ValueGeneratedNever();
 
-        builder.Property(c => c.Title)
-            .HasConversion(
-                title => title.Value,
-                value => Title.Of(value))
-            .HasMaxLength(Title.MaxLength)
-            .IsRequired();
+		builder.Property(c => c.Title)
+			.HasConversion(
+				title => title.Value,
+				value => Title.Of(value))
+			.HasMaxLength(Title.MaxLength)
+			.IsRequired();
 
-        builder.Property(c => c.Description)
-            .HasConversion(
-                desc => desc != null ? desc.Value : null,
-                value => value != null ? Description.Of(value) : null)
-            .HasMaxLength(Description.MaxLength)
-            .IsRequired(false);
+		builder.Property(c => c.Description)
+			.HasConversion(
+				desc => desc != null ? desc.Value : null,
+				value => value != null ? Description.Of(value) : null)
+			.HasMaxLength(Description.MaxLength)
+			.IsRequired(false);
 
-        builder.Property(c => c.LinkedId)
-            .IsRequired();
+		builder.Property(c => c.LinkedId)
+			.IsRequired();
 
-        builder.HasIndex(c => c.LinkedId);
+		builder.HasIndex(c => c.LinkedId);
 
-        builder.Property(c => c.CreatedAt)
-            .IsRequired();
+		builder.Property(c => c.CreatedAt)
+			.IsRequired();
 
-        builder.HasMany(c => c.Messages)
-            .WithOne()
-            .HasForeignKey(m => m.ChatId)
-            .OnDelete(DeleteBehavior.Cascade);
-    }
+		builder.HasMany(c => c.Messages)
+			.WithOne()
+			.HasForeignKey(m => m.ChatId)
+			.OnDelete(DeleteBehavior.Cascade);
+	}
 }

@@ -1,4 +1,4 @@
-﻿namespace Auth.Endpoints.Requests;
+namespace Auth.Endpoints.Requests;
 
 /// <summary>
 /// Запрос на регистрацию пользователя.
@@ -9,8 +9,8 @@
 /// <param name="LastName">Фамилия.</param>
 /// <param name="Patronymic">Отчество.</param>
 public record UserRegisterRequest(
-    string Email,
-    string Password,
-    string FirstName,
-    string LastName,
-    string? Patronymic);
+	string Email,
+	string Password,
+	string FirstName,
+	string LastName,
+	string? Patronymic);

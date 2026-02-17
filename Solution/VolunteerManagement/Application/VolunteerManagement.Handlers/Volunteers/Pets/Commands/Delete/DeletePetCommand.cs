@@ -7,13 +7,13 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Delete;
 /// </summary>
 public sealed class DeletePetCommand : Command
 {
-    /// <summary>
-    /// Идентификатор волонтёра.
-    /// </summary>
-    public Guid VolunteerId { get; init; }
+	/// <summary>
+	/// Идентификатор волонтёра.
+	/// </summary>
+	public Guid VolunteerId { get; init; }
 
-    /// <summary>
-    /// Идентификатор животного.
-    /// </summary>
-    public Guid PetId { get; init; }
+	/// <summary>
+	/// Идентификатор животного.
+	/// </summary>
+	public Guid PetId { get; init; }
 }

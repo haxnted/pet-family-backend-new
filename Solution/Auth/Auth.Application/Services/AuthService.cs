@@ -1,6 +1,6 @@
 using Auth.Contracts.Dtos;
 using Auth.Core.Models;
-using Auth.Infrastructure.Data;
+using Auth.Infrastructure.Common;
 using Auth.Infrastructure.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -14,178 +14,188 @@ namespace Auth.Application.Services;
 /// Реализация сервиса аутентификации.
 /// </summary>
 public class AuthService(
-    AuthDbContext dbContext,
-    IKeycloakService keycloakService,
-    IPublishEndpoint publishEndpoint,
-    ILogger<AuthService> logger)
-    : IAuthService
+	AuthDbContext dbContext,
+	IKeycloakService keycloakService,
+	IPublishEndpoint publishEndpoint,
+	ILogger<AuthService> logger)
+	: IAuthService
 {
-    /// <inheritdoc/>
-    public async Task RegisterAsync(string email,
-        string password,
-        string firstName,
-        string lastName,
-        string? patronymic,
-        CancellationToken ct)
-    {
-        var existingUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (existingUser != null)
-        {
-            throw new UseCaseException("Пользователь с таким email уже существует");
-        }
+	/// <inheritdoc/>
+	public async Task RegisterAsync(
+		string email,
+		string password,
+		string firstName,
+		string lastName,
+		string? patronymic,
+		CancellationToken ct)
+	{
+		email = email.ToLowerInvariant();
 
-        var userId = await keycloakService.CreateUserAsync(
-            email,
-            password,
-            firstName,
-            lastName,
-            patronymic,
-            ct);
+		var existingUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
 
-        await keycloakService.AssignRoleToUserAsync(userId, "user", ct);
+		if (existingUser != null)
+		{
+			throw new UseCaseException("Пользователь с таким email уже существует");
+		}
 
-        var user = new User
-        {
-            Id = userId,
-            Email = email,
-            FirstName = firstName,
-            LastName = lastName,
-            Patronymic = patronymic,
-            Role = "user",
-            EmailVerified = false,
-            CreatedAt = DateTime.UtcNow
-        };
+		var userId = await keycloakService.CreateUserAsync(
+			email,
+			password,
+			firstName,
+			lastName,
+			patronymic,
+			ct);
 
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync(ct);
+		await keycloakService.AssignRoleToUserAsync(userId, "user", ct);
 
-        var @event = new UserCreatedEvent(
-            userId,
-            email,
-            firstName,
-            lastName,
-            patronymic,
-            "user");
+		var user = new User
+		{
+			Id = userId,
+			Email = email,
+			FirstName = firstName,
+			LastName = lastName,
+			Patronymic = patronymic,
+			Role = "user",
+			EmailVerified = false,
+			CreatedAt = DateTime.UtcNow
+		};
 
-        await publishEndpoint.Publish(@event, ct);
-        await dbContext.SaveChangesAsync(ct);
+		dbContext.Users.Add(user);
 
-        try
-        {
-            await keycloakService.SendVerificationEmailAsync(userId, ct);
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex,
-                "Failed to send verification email for user {UserId}. User can request resend later",
-                userId);
-        }
-    }
+		var @event = new UserCreatedEvent(
+			userId,
+			email,
+			firstName,
+			lastName,
+			patronymic,
+			"user");
 
-    /// <inheritdoc/>
-    public async Task<AuthTokenResponse> LoginAsync(
-        string email,
-        string password,
-        CancellationToken ct)
-    {
-        var tokens = await keycloakService.LoginAsync(email, password, ct);
+		await publishEndpoint.Publish(@event, ct);
+		await dbContext.SaveChangesAsync(ct);
 
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, ct) ?? throw new EntityNotFoundException<User>(email);
-        var refreshToken = new RefreshToken
-        {
-            Id = Guid.NewGuid(),
-            Token = tokens.RefreshToken,
-            ExpiresAt = DateTime.UtcNow.AddDays(30),
-            CreatedAt = DateTime.UtcNow,
-            IsRevoked = false,
-            UserId = user.Id
-        };
+		try
+		{
+			await keycloakService.SendVerificationEmailAsync(userId, ct);
+		}
+		catch (Exception ex)
+		{
+			logger.LogWarning(
+				ex,
+				"Failed to send verification email for user {UserId}. User can request resend later",
+				userId);
+		}
+	}
 
-        dbContext.RefreshTokens.Add(refreshToken);
-        await dbContext.SaveChangesAsync(ct);
+	/// <inheritdoc/>
+	public async Task<AuthTokenResponse> LoginAsync(
+		string email,
+		string password,
+		CancellationToken ct)
+	{
+		email = email.ToLowerInvariant();
 
-        return tokens;
-    }
+		var tokens = await keycloakService.LoginAsync(email, password, ct);
 
-    /// <inheritdoc/>
-    public async Task<AuthTokenResponse> RefreshTokenAsync(string refreshToken, CancellationToken ct)
-    {
-        var storedToken = await dbContext.RefreshTokens.FirstOrDefaultAsync(rt =>
-            rt.Token == refreshToken &&
-            !rt.IsRevoked, ct);
+		var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, ct) ?? throw new EntityNotFoundException<User>(email);
 
-        if (storedToken == null)
-        {
-            throw new EntityNotFoundException<User>(refreshToken);
-        }
+		var refreshToken = new RefreshToken
+		{
+			Id = Guid.NewGuid(),
+			Token = tokens.RefreshToken,
+			ExpiresAt = DateTime.UtcNow.AddDays(30),
+			CreatedAt = DateTime.UtcNow,
+			IsRevoked = false,
+			UserId = user.Id
+		};
 
-        if (storedToken.ExpiresAt < DateTime.UtcNow)
-        {
-            throw new UseCaseException("Refresh token истек");
-        }
+		dbContext.RefreshTokens.Add(refreshToken);
+		await dbContext.SaveChangesAsync(ct);
 
-        var tokens = await keycloakService.RefreshTokenAsync(refreshToken, ct);
+		return tokens;
+	}
 
-        storedToken.IsRevoked = true;
+	/// <inheritdoc/>
+	public async Task<AuthTokenResponse> RefreshTokenAsync(string refreshToken, CancellationToken ct)
+	{
+		var storedToken = await dbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == refreshToken && !rt.IsRevoked, ct);
 
-        var newRefreshToken = new RefreshToken
-        {
-            Id = Guid.NewGuid(),
-            Token = tokens.RefreshToken,
-            ExpiresAt = DateTime.UtcNow.AddDays(30),
-            CreatedAt = DateTime.UtcNow,
-            IsRevoked = false,
-            UserId = storedToken.UserId
-        };
+		if (storedToken == null)
+		{
+			throw new EntityNotFoundException<User>(refreshToken);
+		}
 
-        dbContext.RefreshTokens.Add(newRefreshToken);
-        await dbContext.SaveChangesAsync(ct);
+		if (storedToken.ExpiresAt < DateTime.UtcNow)
+		{
+			throw new UseCaseException("Refresh token истек");
+		}
 
-        return tokens;
-    }
+		var tokens = await keycloakService.RefreshTokenAsync(refreshToken, ct);
 
-    /// <inheritdoc/>
-    public async Task ResendVerificationEmailAsync(string email, CancellationToken ct)
-    {
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (user == null)
-        {
-            throw new EntityNotFoundException<User>(email);
-        }
+		storedToken.IsRevoked = true;
 
-        if (user.EmailVerified)
-        {
-            throw new UseCaseException("Пользователь уже подтвержден");
-        }
+		var newRefreshToken = new RefreshToken
+		{
+			Id = Guid.NewGuid(),
+			Token = tokens.RefreshToken,
+			ExpiresAt = DateTime.UtcNow.AddDays(30),
+			CreatedAt = DateTime.UtcNow,
+			IsRevoked = false,
+			UserId = storedToken.UserId
+		};
 
-        await keycloakService.SendVerificationEmailAsync(user.Id, ct);
-    }
+		dbContext.RefreshTokens.Add(newRefreshToken);
+		await dbContext.SaveChangesAsync(ct);
 
-    /// <inheritdoc/>
-    public async Task ForgotPasswordAsync(string email, CancellationToken ct)
-    {
-        await keycloakService.SendPasswordResetEmailAsync(email, ct);
-    }
+		return tokens;
+	}
 
-    /// <inheritdoc/>
-    public async Task<UserDto?> GetUserByIdAsync(Guid userId, CancellationToken ct)
-    {
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == userId, ct);
+	/// <inheritdoc/>
+	public async Task ResendVerificationEmailAsync(string email, CancellationToken ct)
+	{
+		email = email.ToLowerInvariant();
 
-        if (user == null)
-        {
-            return null;
-        }
+		var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
 
-        return new UserDto(
-            user.Id,
-            user.Email,
-            user.FirstName,
-            user.LastName,
-            user.Patronymic,
-            user.Role,
-            user.EmailVerified,
-            user.CreatedAt);
-    }
+		if (user == null)
+		{
+			throw new EntityNotFoundException<User>(email);
+		}
+
+		if (user.EmailVerified)
+		{
+			throw new UseCaseException("Пользователь уже подтвержден");
+		}
+
+		await keycloakService.SendVerificationEmailAsync(user.Id, ct);
+	}
+
+	/// <inheritdoc/>
+	public async Task ForgotPasswordAsync(string email, CancellationToken ct)
+	{
+		email = email.ToLowerInvariant();
+
+		await keycloakService.SendPasswordResetEmailAsync(email, ct);
+	}
+
+	/// <inheritdoc/>
+	public async Task<UserDto?> GetUserByIdAsync(Guid userId, CancellationToken ct)
+	{
+		var user = await dbContext.Users
+			.FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+		if (user == null)
+		{
+			return null;
+		}
+
+		return new(
+			user.Id,
+			user.Email,
+			user.FirstName,
+			user.LastName,
+			user.Patronymic,
+			user.Role,
+			user.EmailVerified,
+			user.CreatedAt);
+	}
 }

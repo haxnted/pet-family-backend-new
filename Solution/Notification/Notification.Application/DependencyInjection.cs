@@ -8,12 +8,12 @@ namespace Notification.Application;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Регистрирует сервисы слоя Application в контейнере зависимостей.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        return services.AddScoped<INotificationSettingsService, NotificationSettingsService>();
-    }
+	/// <summary>
+	/// Регистрирует сервисы слоя Application в контейнере зависимостей.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	public static IServiceCollection AddApplication(this IServiceCollection services)
+	{
+		return services.AddScoped<INotificationSettingsService, NotificationSettingsService>();
+	}
 }

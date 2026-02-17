@@ -8,12 +8,12 @@ namespace VolunteerManagement.Services.AnimalKinds.Specifications;
 /// </summary>
 public sealed class GetAllSpeciesSpecification : Specification<Species>
 {
-    /// <summary>
-    /// Создаёт спецификацию для получения всех видов.
-    /// </summary>
-    public GetAllSpeciesSpecification()
-    {
-        Query.Include(s => s.Breeds)
-            .OrderBy(s => s.AnimalKind);
-    }
+	/// <summary>
+	/// Создаёт спецификацию для получения всех видов.
+	/// </summary>
+	public GetAllSpeciesSpecification()
+	{
+		Query.Include(s => s.Breeds)
+			.OrderBy(s => s.AnimalKind);
+	}
 }

@@ -7,8 +7,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Commands.SoftRemove;
 /// </summary>
 public sealed class SoftRemoveVolunteerCommand : Command
 {
-    /// <summary>
-    /// Идентификатор волонтёра.
-    /// </summary>
-    public Guid VolunteerId { get; init; }
+	/// <summary>
+	/// Идентификатор волонтёра.
+	/// </summary>
+	public Guid VolunteerId { get; init; }
 }

@@ -1,4 +1,4 @@
-﻿namespace VolunteerManagement.Services.Volunteers.Dtos;
+namespace VolunteerManagement.Services.Volunteers.Dtos;
 
 /// <summary>
 /// Dto Волонтер.
@@ -7,6 +7,6 @@
 /// <param name="FullName">Полное имя.</param>
 /// <param name="Pets">Коллекция животных.</param>
 public record VolunteerDto(
-    Guid Id,
-    FullNameDto FullName,
-    IEnumerable<PetDto> Pets);
+	Guid Id,
+	FullNameDto FullName,
+	IEnumerable<PetDto> Pets);

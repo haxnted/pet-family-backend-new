@@ -7,8 +7,8 @@ namespace VolunteerManagement.Handlers.AnimalKinds.Commands.DeleteSpecies;
 /// </summary>
 public sealed class DeleteSpeciesCommand : Command
 {
-    /// <summary>
-    /// Идентификатор вида животного.
-    /// </summary>
-    public Guid SpeciesId { get; init; }
+	/// <summary>
+	/// Идентификатор вида животного.
+	/// </summary>
+	public Guid SpeciesId { get; init; }
 }

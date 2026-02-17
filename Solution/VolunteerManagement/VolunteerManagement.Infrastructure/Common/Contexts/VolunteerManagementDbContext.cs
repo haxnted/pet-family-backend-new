@@ -15,40 +15,40 @@ namespace VolunteerManagement.Infrastructure.Common.Contexts;
 /// <param name="options">Опции контекста.</param>
 public class VolunteerManagementDbContext(DbContextOptions<VolunteerManagementDbContext> options) : DbContext(options)
 {
-    /// <summary>
-    /// Коллекция волонтеров.
-    /// </summary>
-    public DbSet<Volunteer> Volunteers => Set<Volunteer>();
+	/// <summary>
+	/// Коллекция волонтеров.
+	/// </summary>
+	public DbSet<Volunteer> Volunteers => Set<Volunteer>();
 
-    /// <summary>
-    /// Коллекция видов животных.
-    /// </summary>
-    public DbSet<DomainSpecies> Species => Set<DomainSpecies>();
+	/// <summary>
+	/// Коллекция видов животных.
+	/// </summary>
+	public DbSet<DomainSpecies> Species => Set<DomainSpecies>();
 
-    /// <summary>
-    /// Коллекция приютов.
-    /// </summary>
-    public DbSet<Shelter> Shelters => Set<Shelter>();
+	/// <summary>
+	/// Коллекция приютов.
+	/// </summary>
+	public DbSet<Shelter> Shelters => Set<Shelter>();
 
-    /// <summary>
-    /// Коллекция животных.
-    /// </summary>
-    public DbSet<Pet> Pets => Set<Pet>();
+	/// <summary>
+	/// Коллекция животных.
+	/// </summary>
+	public DbSet<Pet> Pets => Set<Pet>();
 
-    /// <summary>
-    /// Состояния саг усыновления питомцев.
-    /// </summary>
-    public DbSet<PetAdoptionState> PetAdoptionStates => Set<PetAdoptionState>();
+	/// <summary>
+	/// Состояния саг усыновления питомцев.
+	/// </summary>
+	public DbSet<PetAdoptionState> PetAdoptionStates => Set<PetAdoptionState>();
 
-    /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        CustomModelBuilder.OnModelCreating(modelBuilder);
+	/// <inheritdoc/>
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		CustomModelBuilder.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfiguration(new PetAdoptionStateConfiguration());
+		modelBuilder.ApplyConfiguration(new PetAdoptionStateConfiguration());
 
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
-    }
+		modelBuilder.AddInboxStateEntity();
+		modelBuilder.AddOutboxMessageEntity();
+		modelBuilder.AddOutboxStateEntity();
+	}
 }

@@ -11,23 +11,23 @@ namespace VolunteerManagement.Handlers.Volunteers.Queries.GetVolunteersWithPagin
 /// </summary>
 public class GetVolunteersWithPaginationHandler(IVolunteerService volunteerService, ICacheService cache)
 {
-    /// <summary>
-    /// Обработать запрос на получение волонтёров с пагинацией.
-    /// </summary>
-    public async Task<IEnumerable<VolunteerDto>> Handle(GetVolunteersWithPaginationQuery query, CancellationToken ct)
-    {
-        var cacheKey = CacheKeys.VolunteersPagination(query.Page, query.Count);
+	/// <summary>
+	/// Обработать запрос на получение волонтёров с пагинацией.
+	/// </summary>
+	public async Task<IEnumerable<VolunteerDto>> Handle(GetVolunteersWithPaginationQuery query, CancellationToken ct)
+	{
+		var cacheKey = CacheKeys.VolunteersPagination(query.Page, query.Count);
 
-        var cached = await cache.GetAsync<List<VolunteerDto>>(cacheKey, ct);
-        if (cached != null)
-            return cached;
+		var cached = await cache.GetAsync<List<VolunteerDto>>(cacheKey, ct);
+		if (cached != null)
+			return cached;
 
-        var volunteers = await volunteerService.GetWithPaginationAsync(query.Page, query.Count, ct);
+		var volunteers = await volunteerService.GetWithPaginationAsync(query.Page, query.Count, ct);
 
-        var result = volunteers.ToDto().ToList();
+		var result = volunteers.ToDto().ToList();
 
-        await cache.SetAsync(cacheKey, result, ct, CacheDurations.Volunteers);
+		await cache.SetAsync(cacheKey, result, ct, CacheDurations.Volunteers);
 
-        return result;
-    }
+		return result;
+	}
 }

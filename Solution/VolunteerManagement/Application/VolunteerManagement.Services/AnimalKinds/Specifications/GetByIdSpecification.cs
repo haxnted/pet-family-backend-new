@@ -9,13 +9,13 @@ namespace VolunteerManagement.Services.AnimalKinds.Specifications;
 /// </summary>
 public sealed class GetByIdSpecification : Specification<Species>
 {
-    /// <summary>
-    /// Создаёт спецификацию для поиска вида по идентификатору.
-    /// </summary>
-    /// <param name="speciesId">Идентификатор вида.</param>
-    public GetByIdSpecification(SpeciesId speciesId)
-    {
-        Query.Where(s => s.Id == speciesId)
-            .Include(s => s.Breeds);
-    }
+	/// <summary>
+	/// Создаёт спецификацию для поиска вида по идентификатору.
+	/// </summary>
+	/// <param name="speciesId">Идентификатор вида.</param>
+	public GetByIdSpecification(SpeciesId speciesId)
+	{
+		Query.Where(s => s.Id == speciesId)
+			.Include(s => s.Breeds);
+	}
 }

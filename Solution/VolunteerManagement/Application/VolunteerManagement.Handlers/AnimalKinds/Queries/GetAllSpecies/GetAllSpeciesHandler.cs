@@ -11,25 +11,26 @@ namespace VolunteerManagement.Handlers.AnimalKinds.Queries.GetAllSpecies;
 /// </summary>
 public class GetAllSpeciesHandler(ISpeciesService speciesService, ICacheService cache)
 {
-    /// <summary>
-    /// Обработать запрос на получение всех видов.
-    /// </summary>
-    public async Task<IEnumerable<SpeciesDto>> Handle(
-        GetAllSpeciesQuery query,
-        CancellationToken ct)
-    {
-        var cacheKey = CacheKeys.SpeciesAll();
+	/// <summary>
+	/// Обработать запрос на получение всех видов.
+	/// </summary>
+	public async Task<IEnumerable<SpeciesDto>> Handle(
+		GetAllSpeciesQuery query,
+		CancellationToken ct)
+	{
+		var cacheKey = CacheKeys.SpeciesAll();
 
-        var cached = await cache.GetAsync<List<SpeciesDto>>(cacheKey, ct);
-        if (cached != null)
-            return cached;
+		var cached = await cache.GetAsync<List<SpeciesDto>>(cacheKey, ct);
 
-        var species = await speciesService.GetAllAsync(ct);
+		if (cached != null)
+			return cached;
 
-        var result = species.Select(s => s.ToDto()).ToList();
+		var species = await speciesService.GetAllAsync(ct);
 
-        await cache.SetAsync(cacheKey, result, ct, CacheDurations.Species);
+		var result = species.Select(s => s.ToDto()).ToList();
 
-        return result;
-    }
+		await cache.SetAsync(cacheKey, result, ct, CacheDurations.Species);
+
+		return result;
+	}
 }

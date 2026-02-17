@@ -10,106 +10,108 @@ namespace Auth.Infrastructure.Services.Keycloak;
 /// </summary>
 public class KeycloakAuthorizationClient : IKeycloakAuthorizationClient
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly KeycloakOptions _options;
+	private readonly IHttpClientFactory _httpClientFactory;
 
-    /// <summary>
-    /// Создает экземпляр <see cref="KeycloakAuthorizationClient"/>.
-    /// </summary>
-    /// <param name="httpClientFactory">Фабрика HTTP клиентов.</param>
-    /// <param name="options">Настройки Keycloak.</param>
-    public KeycloakAuthorizationClient(
-        IHttpClientFactory httpClientFactory,
-        IOptions<KeycloakOptions> options)
-    {
-        _httpClientFactory = httpClientFactory;
-        _options = options.Value;
-    }
+	private readonly KeycloakOptions _options;
 
-    /// <inheritdoc />
-    public async Task<TokenResponse> LoginAsync(string email, string password, CancellationToken ct = default)
-    {
-        using var httpClient = _httpClientFactory.CreateClient("Keycloak");
+	/// <summary>
+	/// Создает экземпляр <see cref="KeycloakAuthorizationClient"/>.
+	/// </summary>
+	/// <param name="httpClientFactory">Фабрика HTTP клиентов.</param>
+	/// <param name="options">Настройки Keycloak.</param>
+	public KeycloakAuthorizationClient(
+		IHttpClientFactory httpClientFactory,
+		IOptions<KeycloakOptions> options)
+	{
+		_httpClientFactory = httpClientFactory;
+		_options = options.Value;
+	}
 
-        var disco = await GetDiscoveryAsync(httpClient, ct);
+	/// <inheritdoc />
+	public async Task<TokenResponse> LoginAsync(
+		string email,
+		string password,
+		CancellationToken ct)
+	{
+		using var httpClient = _httpClientFactory.CreateClient("Keycloak");
 
-        var request = new PasswordTokenRequest
-        {
-            Address = disco.TokenEndpoint,
-            ClientId = _options.ClientId,
-            ClientSecret = _options.ClientSecret,
-            UserName = email,
-            Password = password,
-            Scope = "openid"
-        };
+		var disco = await GetDiscoveryAsync(httpClient, ct);
 
-        var response = await httpClient.RequestPasswordTokenAsync(request, ct);
+		var request = new PasswordTokenRequest
+		{
+			Address = disco.TokenEndpoint,
+			ClientId = _options.ClientId,
+			ClientSecret = _options.ClientSecret,
+			UserName = email,
+			Password = password,
+			Scope = "openid"
+		};
 
-        if (!response.IsError) return response;
+		var response = await httpClient.RequestPasswordTokenAsync(request, ct);
 
-        if (response.HttpStatusCode == System.Net.HttpStatusCode.Unauthorized)
-        {
-            throw new KeycloakAuthenticationException("Неверный адрес электронной почты или пароль");
-        }
+		if (!response.IsError) return response;
 
-        throw new KeycloakException($"Ошибка логина: {response.Error} - {response.ErrorDescription}");
-    }
+		if (response.HttpStatusCode == System.Net.HttpStatusCode.Unauthorized)
+		{
+			throw new KeycloakAuthenticationException("Неверный адрес электронной почты или пароль");
+		}
 
-    /// <inheritdoc />
-    public async Task<TokenResponse> RefreshTokenAsync(string refreshToken, CancellationToken ct = default)
-    {
-        using var httpClient = _httpClientFactory.CreateClient("Keycloak");
+		throw new KeycloakException($"Ошибка логина: {response.Error} - {response.ErrorDescription}");
+	}
 
-        var disco = await GetDiscoveryAsync(httpClient, ct);
+	/// <inheritdoc />
+	public async Task<TokenResponse> RefreshTokenAsync(string refreshToken, CancellationToken ct)
+	{
+		using var httpClient = _httpClientFactory.CreateClient("Keycloak");
 
-        var request = new RefreshTokenRequest
-        {
-            Address = disco.TokenEndpoint,
-            ClientId = _options.ClientId,
-            ClientSecret = _options.ClientSecret,
-            RefreshToken = refreshToken
-        };
+		var disco = await GetDiscoveryAsync(httpClient, ct);
 
-        var response = await httpClient.RequestRefreshTokenAsync(request, ct);
+		var request = new RefreshTokenRequest
+		{
+			Address = disco.TokenEndpoint,
+			ClientId = _options.ClientId,
+			ClientSecret = _options.ClientSecret,
+			RefreshToken = refreshToken
+		};
 
-        if (response.IsError)
-        {
-            throw new KeycloakException(
-                $"Ошибка при получении refresh-token: {response.Error} - {response.ErrorDescription}");
-        }
+		var response = await httpClient.RequestRefreshTokenAsync(request, ct);
 
-        return response;
-    }
+		if (response.IsError)
+		{
+			throw new KeycloakException($"Ошибка при получении refresh-token: {response.Error} - {response.ErrorDescription}");
+		}
 
-    /// <summary>
-    /// Получить discovery-документ.
-    /// </summary>
-    /// <param name="httpClient">Http клиент.</param>
-    /// <param name="ct">Токен отмены.</param>
-    /// <exception cref="KeycloakException">
-    /// Если не получилось получить discovery-документ.
-    /// </exception>
-    private async Task<DiscoveryDocumentResponse> GetDiscoveryAsync(
-        HttpClient httpClient,
-        CancellationToken ct)
-    {
-        var disco = await httpClient.GetDiscoveryDocumentAsync(
-            new DiscoveryDocumentRequest
-            {
-                Address = _options.MetadataAddress,
-                Policy =
-                {
-                    RequireHttps = false,
-                    ValidateIssuerName = false
-                }
-            },
-            ct);
+		return response;
+	}
 
-        if (disco.IsError)
-        {
-            throw new KeycloakException($"Не удалось получить discovery-документ Keycloak: {disco.Error}");
-        }
+	/// <summary>
+	/// Получить discovery-документ.
+	/// </summary>
+	/// <param name="httpClient">Http клиент.</param>
+	/// <param name="ct">Токен отмены.</param>
+	/// <exception cref="KeycloakException">
+	/// Если не получилось получить discovery-документ.
+	/// </exception>
+	private async Task<DiscoveryDocumentResponse> GetDiscoveryAsync(
+		HttpClient httpClient,
+		CancellationToken ct)
+	{
+		var disco = await httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
+		{
+			Address = _options.MetadataAddress,
+			Policy =
+				{
+					RequireHttps = false,
+					ValidateIssuerName = false
+				}
+		},
+			ct);
 
-        return disco;
-    }
+		if (disco.IsError)
+		{
+			throw new KeycloakException($"Не удалось получить discovery-документ Keycloak: {disco.Error}");
+		}
+
+		return disco;
+	}
 }

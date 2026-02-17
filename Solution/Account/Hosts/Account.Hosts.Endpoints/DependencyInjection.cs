@@ -10,53 +10,57 @@ namespace Account.Hosts.Endpoints;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Внедрение зависимостей всего приложения.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    public static IServiceCollection AddProgramDependencies(this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddControllers();
-        services.AddGlobalErrorHandling();
-        services.AddHostDependencies(configuration)
-            .AddSwaggerGenWithJwt(
-                title: "Account API",
-                description: "API для управления профилями пользователей",
-                configureOptions: options =>
-                {
-                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                    if (File.Exists(xmlPath))
-                    {
-                        options.IncludeXmlComments(xmlPath);
-                    }
-                })
-            .AddDefaultAuthorizationPolicies()
-            .AddCurrentUser()
-            .AddAllowAllCors()
-            .ConfigureAuthentification(configuration);
+	/// <summary>
+	/// Внедрение зависимостей всего приложения.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	public static IServiceCollection AddProgramDependencies(
+		this IServiceCollection services,
+		IConfiguration configuration)
+	{
+		services.AddControllers();
+		services.AddGlobalErrorHandling();
 
-        services.AddStandardHealthChecks()
-            .AddDatabaseHealthCheck(configuration, "AccountDbContext")
-            .AddRabbitMqHealthCheck(configuration, "RabbitMQ")
-            .AddKeycloakHealthCheck(configuration, "Keycloak");
+		services.AddHostDependencies(configuration)
+			.AddSwaggerGenWithJwt(
+				title: "Account API",
+				description: "API для управления профилями пользователей",
+				configureOptions: options =>
+				{
+					var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+					var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-        return services;
-    }
+					if (File.Exists(xmlPath))
+					{
+						options.IncludeXmlComments(xmlPath);
+					}
+				})
+			.AddDefaultAuthorizationPolicies()
+			.AddCurrentUser()
+			.AddAllowAllCors()
+			.ConfigureAuthentification(configuration);
 
-    /// <summary>
-    /// Сконфигурировать аутентификацию.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    private static IServiceCollection ConfigureAuthentification(this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddKeycloakJwtBearer(configuration);
-        services.AddDefaultAuthorizationPolicies();
+		services.AddStandardHealthChecks()
+			.AddDatabaseHealthCheck(configuration, "AccountDbContext")
+			.AddRabbitMqHealthCheck(configuration, "RabbitMQ")
+			.AddKeycloakHealthCheck(configuration, "Keycloak");
 
-        return services;
-    }
+		return services;
+	}
+
+	/// <summary>
+	/// Сконфигурировать аутентификацию.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	private static IServiceCollection ConfigureAuthentification(
+		this IServiceCollection services,
+		IConfiguration configuration)
+	{
+		services.AddKeycloakJwtBearer(configuration);
+		services.AddDefaultAuthorizationPolicies();
+
+		return services;
+	}
 }

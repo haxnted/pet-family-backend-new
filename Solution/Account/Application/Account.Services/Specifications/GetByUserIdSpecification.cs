@@ -8,12 +8,12 @@ namespace Account.Services.Specifications;
 /// </summary>
 public sealed class GetByUserIdSpecification : Specification<DomainAccount>
 {
-    /// <summary>
-    /// Создаёт спецификацию для поиска аккаунта по UserId.
-    /// </summary>
-    /// <param name="userId">Идентификатор пользователя из Auth.</param>
-    public GetByUserIdSpecification(Guid userId)
-    {
-        Query.Where(account => account.UserId == userId);
-    }
+	/// <summary>
+	/// Создаёт спецификацию для поиска аккаунта по UserId.
+	/// </summary>
+	/// <param name="userId">Идентификатор пользователя из Auth.</param>
+	public GetByUserIdSpecification(Guid userId)
+	{
+		Query.Where(account => account.UserId == userId);
+	}
 }

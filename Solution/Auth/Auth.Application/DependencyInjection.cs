@@ -8,15 +8,15 @@ namespace Auth.Application;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Регистрация сервисов Application слоя.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <returns></returns>
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddScoped<IAuthService, AuthService>();
+	/// <summary>
+	/// Регистрация сервисов Application слоя.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <returns></returns>
+	public static IServiceCollection AddApplication(this IServiceCollection services)
+	{
+		services.AddScoped<IAuthService, AuthService>();
 
-        return services;
-    }
+		return services;
+	}
 }

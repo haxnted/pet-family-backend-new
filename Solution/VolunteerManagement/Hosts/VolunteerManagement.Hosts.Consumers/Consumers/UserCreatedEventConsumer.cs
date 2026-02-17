@@ -9,41 +9,41 @@ namespace VolunteerManagement.Hosts.Consumers.Consumers;
 /// Автоматически создает профиль волонтёра.
 /// </summary>
 public class UserCreatedEventConsumer(
-    AddVolunteerHandler handler,
-    ILogger<UserCreatedEventConsumer> logger)
-    : IConsumer<UserCreatedEvent>
+	AddVolunteerHandler handler,
+	ILogger<UserCreatedEventConsumer> logger)
+	: IConsumer<UserCreatedEvent>
 {
-    /// <inheritdoc />
-    public async Task Consume(ConsumeContext<UserCreatedEvent> context)
-    {
-        var userEvent = context.Message;
+	/// <inheritdoc />
+	public async Task Consume(ConsumeContext<UserCreatedEvent> context)
+	{
+		var userEvent = context.Message;
 
-        logger.LogInformation(
-            "Получено событие UserCreatedEvent для пользователя {UserId} ({Email})",
-            userEvent.UserId,
-            userEvent.Email);
-        try
-        {
-            var command = new AddVolunteerCommand()
-            {
-                Name = userEvent.FirstName,
-                Surname = userEvent.LastName,
-                Patronymic = userEvent.Patronymic,
-                UserId = userEvent.UserId
-            };
+		logger.LogInformation(
+			"Получено событие UserCreatedEvent для пользователя {UserId} ({Email})",
+			userEvent.UserId,
+			userEvent.Email);
+		try
+		{
+			var command = new AddVolunteerCommand()
+			{
+				Name = userEvent.FirstName,
+				Surname = userEvent.LastName,
+				Patronymic = userEvent.Patronymic,
+				UserId = userEvent.UserId
+			};
 
-            await handler.Handle(command, context.CancellationToken);
+			await handler.Handle(command, context.CancellationToken);
 
-            logger.LogInformation("Успешно создан профиль волонтера для пользователя {UserId}", userEvent.UserId);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(
-                ex,
-                "Ошибка при создании профиля волонтера для пользователя {UserId}",
-                userEvent.UserId);
+			logger.LogInformation("Успешно создан профиль волонтера для пользователя {UserId}", userEvent.UserId);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(
+				ex,
+				"Ошибка при создании профиля волонтера для пользователя {UserId}",
+				userEvent.UserId);
 
-            throw;
-        }
-    }
+			throw;
+		}
+	}
 }

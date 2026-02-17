@@ -11,21 +11,21 @@ namespace VolunteerManagement.Handlers.Shelters.Queries.GetAssignment;
 /// <param name="shelterService">Сервис для работы с приютами.</param>
 public class GetAssignmentHandler(IShelterService shelterService)
 {
-    /// <summary>
-    /// Обрабатывает запрос на получение назначения волонтёра.
-    /// </summary>
-    /// <param name="query">Запрос.</param>
-    /// <param name="ct">Токен отмены операции.</param>
-    public async Task<VolunteerAssignmentDto> Handle(GetAssignmentQuery query, CancellationToken ct)
-    {
-        var shelter = await shelterService.GetWithAssignmentAsync(
-            query.ShelterId,
-            query.AssignmentId,
-            ct);
+	/// <summary>
+	/// Обрабатывает запрос на получение назначения волонтёра.
+	/// </summary>
+	/// <param name="query">Запрос.</param>
+	/// <param name="ct">Токен отмены операции.</param>
+	public async Task<VolunteerAssignmentDto> Handle(GetAssignmentQuery query, CancellationToken ct)
+	{
+		var shelter = await shelterService.GetWithAssignmentAsync(
+			query.ShelterId,
+			query.AssignmentId,
+			ct);
 
-        var assignmentId = VolunteerAssignmentId.Of(query.AssignmentId);
-        var assignment = shelter.GetAssignmentById(assignmentId);
+		var assignmentId = VolunteerAssignmentId.Of(query.AssignmentId);
+		var assignment = shelter.GetAssignmentById(assignmentId);
 
-        return assignment.ToDto();
-    }
+		return assignment.ToDto();
+	}
 }
