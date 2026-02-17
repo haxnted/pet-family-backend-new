@@ -14,28 +14,28 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.RemovePhoto;
 /// <param name="publishEndpoint">Endpoint для публикации событий.</param>
 /// <param name="fileStorageSettings">Настройки FileStorage.</param>
 public class RemovePetPhotoHandler(
-    IVolunteerService volunteerService,
-    IPublishEndpoint publishEndpoint,
-    IOptions<FileStorageSettings> fileStorageSettings)
+	IVolunteerService volunteerService,
+	IPublishEndpoint publishEndpoint,
+	IOptions<FileStorageSettings> fileStorageSettings)
 {
-    /// <summary>
-    /// Обрабатывает команду удаления фотографии питомца.
-    /// </summary>
-    /// <param name="command">Команда удаления фотографии.</param>
-    /// <param name="ct">Токен отмены операции.</param>
-    public async Task Handle(RemovePetPhotoCommand command, CancellationToken ct)
-    {
-        var volunteer = await volunteerService.GetAsync(command.VolunteerId, ct);
-        var pet = volunteer.GetPetById(PetId.Of(command.PetId));
+	/// <summary>
+	/// Обрабатывает команду удаления фотографии питомца.
+	/// </summary>
+	/// <param name="command">Команда удаления фотографии.</param>
+	/// <param name="ct">Токен отмены операции.</param>
+	public async Task Handle(RemovePetPhotoCommand command, CancellationToken ct)
+	{
+		var volunteer = await volunteerService.GetAsync(command.VolunteerId, ct);
+		var pet = volunteer.GetPetById(PetId.Of(command.PetId));
 
-        pet.RemovePhoto(command.PhotoId);
+		pet.RemovePhoto(command.PhotoId);
 
-        var deleteEvent = new PhotoDeleteRequestedEvent
-        {
-            FileId = command.PhotoId,
-            BucketName = fileStorageSettings.Value.BucketName
-        };
+		var deleteEvent = new PhotoDeleteRequestedEvent
+		{
+			FileId = command.PhotoId,
+			BucketName = fileStorageSettings.Value.BucketName
+		};
 
-        await publishEndpoint.Publish(deleteEvent, ct);
-    }
+		await publishEndpoint.Publish(deleteEvent, ct);
+	}
 }

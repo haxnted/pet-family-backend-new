@@ -7,8 +7,8 @@ namespace PetFamily.SharedKernel.Contracts.Events.Auth;
 /// </summary>
 public sealed class UserDeletedEvent(Guid userId) : IntegrationEvent
 {
-    /// <summary>
-    /// Идентификатор пользователя.
-    /// </summary>
-    public Guid UserId { get; } = userId;
+	/// <summary>
+	/// Идентификатор пользователя.
+	/// </summary>
+	public Guid UserId { get; } = userId;
 }

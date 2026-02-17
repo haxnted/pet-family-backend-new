@@ -1,4 +1,4 @@
-﻿namespace VolunteerManagement.Handlers.Volunteers.Queries.GetVolunteersWithPagination;
+namespace VolunteerManagement.Handlers.Volunteers.Queries.GetVolunteersWithPagination;
 
 /// <summary>
 /// Получение волонтёров с пагинацией.

@@ -9,25 +9,25 @@ namespace FileStorage.Contracts.Client;
 /// </summary>
 public sealed class FileStorageHttpClient(HttpClient httpClient) : IFileStorageClient
 {
-    /// <inheritdoc />
-    public async Task<FileUploadResponse> UploadAsync(
-        Stream stream,
-        string fileName,
-        string contentType,
-        CancellationToken ct)
-    {
-        using var content = new MultipartFormDataContent();
+	/// <inheritdoc />
+	public async Task<FileUploadResponse> UploadAsync(
+		Stream stream,
+		string fileName,
+		string contentType,
+		CancellationToken ct)
+	{
+		using var content = new MultipartFormDataContent();
 
-        var streamContent = new StreamContent(stream);
-        streamContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+		var streamContent = new StreamContent(stream);
+		streamContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-        content.Add(streamContent, "file", fileName);
+		content.Add(streamContent, "file", fileName);
 
-        var response = await httpClient.PostAsync("api/files/upload", content, ct);
-        response.EnsureSuccessStatusCode();
-        response.EnsureSuccessStatusCode();
+		var response = await httpClient.PostAsync("api/files/upload", content, ct);
+		response.EnsureSuccessStatusCode();
+		response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<FileUploadResponse>(ct)
-               ?? throw new InvalidOperationException("Не удалось десериализовать ответ FileStorage.");
-    }
+		return await response.Content.ReadFromJsonAsync<FileUploadResponse>(ct)
+				?? throw new InvalidOperationException("Не удалось десериализовать ответ FileStorage.");
+	}
 }

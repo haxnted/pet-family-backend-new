@@ -7,6 +7,6 @@ namespace Conversation.Hosts.Endpoints.Requests;
 /// <param name="Description">Описание чата.</param>
 /// <param name="LinkedId">Идентификатор связанной сущности.</param>
 public record CreateChatRequest(
-    string Title,
-    string? Description,
-    Guid LinkedId);
+	string Title,
+	string? Description,
+	Guid LinkedId);

@@ -10,20 +10,20 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.AddPhotos;
 /// <param name="volunteerService">Сервис для работы с волонтёрами.</param>
 public class AddPetPhotosHandler(IVolunteerService volunteerService)
 {
-    /// <summary>
-    /// Обрабатывает команду добавления фотографий питомца.
-    /// </summary>
-    /// <param name="command">Команда добавления фотографий.</param>
-    /// <param name="ct">Токен отмены операции.</param>
-    public async Task Handle(AddPetPhotosCommand command, CancellationToken ct)
-    {
-        var volunteer = await volunteerService.GetAsync(command.VolunteerId, ct);
-        var pet = volunteer.GetPetById(PetId.Of(command.PetId));
+	/// <summary>
+	/// Обрабатывает команду добавления фотографий питомца.
+	/// </summary>
+	/// <param name="command">Команда добавления фотографий.</param>
+	/// <param name="ct">Токен отмены операции.</param>
+	public async Task Handle(AddPetPhotosCommand command, CancellationToken ct)
+	{
+		var volunteer = await volunteerService.GetAsync(command.VolunteerId, ct);
+		var pet = volunteer.GetPetById(PetId.Of(command.PetId));
 
-        var photos = command.PhotoIds
-            .Select(Photo.Create)
-            .ToList();
+		var photos = command.PhotoIds
+			.Select(Photo.Create)
+			.ToList();
 
-        pet.AddPhotos(photos);
-    }
+		pet.AddPhotos(photos);
+	}
 }

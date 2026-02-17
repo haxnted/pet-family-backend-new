@@ -8,7 +8,7 @@ namespace VolunteerManagement.Hosts.Endpoints.Requests;
 /// <param name="State">Регион.</param>
 /// <param name="ZipCode">Почтовый индекс.</param>
 public sealed record UpdateShelterAddressRequest(
-    string Street,
-    string City,
-    string State,
-    string ZipCode);
+	string Street,
+	string City,
+	string State,
+	string ZipCode);

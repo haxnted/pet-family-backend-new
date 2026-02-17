@@ -5,8 +5,8 @@ namespace Account.Services.Caching;
 /// </summary>
 public static class CacheDurations
 {
-    /// <summary>
-    /// Профиль аккаунта — 5 минут.
-    /// </summary>
-    public static readonly TimeSpan Account = TimeSpan.FromMinutes(5);
+	/// <summary>
+	/// Профиль аккаунта — 5 минут.
+	/// </summary>
+	public static readonly TimeSpan Account = TimeSpan.FromMinutes(5);
 }

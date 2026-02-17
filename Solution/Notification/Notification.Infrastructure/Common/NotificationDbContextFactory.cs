@@ -7,22 +7,22 @@ namespace Notification.Infrastructure.Common;
 /// Фабрика для создания контекста базы данных <see cref="NotificationDbContext"/> в режиме проектирования.
 /// </summary>
 public class NotificationDbContextFactory
-    : IDesignTimeDbContextFactory<NotificationDbContext>
+	: IDesignTimeDbContextFactory<NotificationDbContext>
 {
-    /// <summary>
-    /// Создаёт экземпляр контекста базы данных <see cref="NotificationDbContext"/> в режиме проектирования.
-    /// </summary>
-    /// <param name="args">Аргументы.</param>
-    public NotificationDbContext CreateDbContext(string[] args)
-    {
-        var connectionString = Environment.GetEnvironmentVariable("VolunteerManagementDbContext")
-                               ??
-                               "Host=localhost;Port=5435;Database=notification;Username=postgres;Password=postgres";
+	/// <summary>
+	/// Создаёт экземпляр контекста базы данных <see cref="NotificationDbContext"/> в режиме проектирования.
+	/// </summary>
+	/// <param name="args">Аргументы.</param>
+	public NotificationDbContext CreateDbContext(string[] args)
+	{
+		var connectionString = Environment.GetEnvironmentVariable("VolunteerManagementDbContext")
+							   ??
+							   "Host=localhost;Port=5435;Database=notification;Username=postgres;Password=postgres";
 
-        var options = new DbContextOptionsBuilder<NotificationDbContext>()
-            .UseNpgsql(connectionString)
-            .Options;
+		var options = new DbContextOptionsBuilder<NotificationDbContext>()
+			.UseNpgsql(connectionString)
+			.Options;
 
-        return new NotificationDbContext(options);
-    }
+		return new NotificationDbContext(options);
+	}
 }

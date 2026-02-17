@@ -9,129 +9,157 @@ namespace VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properti
 /// </summary>
 public sealed class FullName : ValueObject, IComparable<FullName>
 {
-    /// <summary>
-    /// Имя.
-    /// </summary>
-    public string Name { get; }
+	/// <summary>
+	/// Имя.
+	/// </summary>
+	public string Name { get; }
 
-    /// <summary>
-    /// Фамилия.
-    /// </summary>
-    public string Surname { get; }
+	/// <summary>
+	/// Фамилия.
+	/// </summary>
+	public string Surname { get; }
 
-    /// <summary>
-    /// Отчество.
-    /// </summary>
-    public string? Patronymic { get; }
+	/// <summary>
+	/// Отчество.
+	/// </summary>
+	public string? Patronymic { get; }
 
-    /// <summary>
-    /// Максимальная длина строки.
-    /// </summary>
-    public const int MaxLength = 50;
+	/// <summary>
+	/// Максимальная длина строки.
+	/// </summary>
+	public const int MaxLength = 50;
 
-    /// <summary>
-    /// Регулярное выражение для недопустимости спец символов в строке.
-    /// </summary>
-    private const string NamePattern = @"^[A-Za-zА-Яа-яЁё-]+$";
+	/// <summary>
+	/// Регулярное выражение для недопустимости спец символов в строке.
+	/// </summary>
+	private const string NamePattern = @"^[A-Za-zА-Яа-яЁё-]+$";
 
-    /// <summary>
-    /// Приватный конструктор для фабричного метода.
-    /// </summary>
-    /// <param name="name">Имя.</param>
-    /// <param name="surname">Фамилия.</param>
-    /// <param name="patronymic">Отчество.</param>
-    private FullName(string name, string surname, string? patronymic)
-    {
-        Name = name;
-        Surname = surname;
-        Patronymic = patronymic;
-    }
+	/// <summary>
+	/// Приватный конструктор для фабричного метода.
+	/// </summary>
+	/// <param name="name">Имя.</param>
+	/// <param name="surname">Фамилия.</param>
+	/// <param name="patronymic">Отчество.</param>
+	private FullName(
+		string name,
+		string surname,
+		string? patronymic)
+	{
+		Name = name;
+		Surname = surname;
+		Patronymic = patronymic;
+	}
 
-    /// <summary>
-    /// Фабричный метод для создания ФИО <see cref="FullName"/>.
-    /// </summary>
-    /// <param name="name">Имя.</param>
-    /// <param name="surname">Фамилия.</param>
-    /// <param name="patronymic">Отчество.</param>
-    /// <exception cref="DomainException">
-    /// Если Имя, Фамилия пустое.
-    /// Если Отчество превышает допустимый размер.
-    /// </exception>
-    public static FullName Of(string name, string surname, string? patronymic)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException($"{nameof(Name)} не может быть пустым.");
-        if (string.IsNullOrWhiteSpace(surname))
-            throw new DomainException($"{nameof(Surname)} не может быть пустым.");
+	/// <summary>
+	/// Фабричный метод для создания ФИО <see cref="FullName"/>.
+	/// </summary>
+	/// <param name="name">Имя.</param>
+	/// <param name="surname">Фамилия.</param>
+	/// <param name="patronymic">Отчество.</param>
+	/// <exception cref="DomainException">
+	/// Если Имя, Фамилия пустое.
+	/// Если Отчество превышает допустимый размер.
+	/// </exception>
+	public static FullName Of(
+		string name,
+		string surname,
+		string? patronymic)
+	{
+		if (string.IsNullOrWhiteSpace(name))
+		{
+			throw new DomainException($"{nameof(Name)} не может быть пустым.");
+		}
 
-        name = Normalize(name);
-        surname = Normalize(surname);
-        patronymic = patronymic == null ? null : Normalize(patronymic);
+		if (string.IsNullOrWhiteSpace(surname))
+		{
+			throw new DomainException($"{nameof(Surname)} не может быть пустым.");
+		}
 
-        ValidatePart(name, nameof(Name));
-        ValidatePart(surname, nameof(Surname));
+		name = Normalize(name);
+		surname = Normalize(surname);
 
-        if (patronymic != null)
-        {
-            ValidatePart(patronymic, nameof(Patronymic));
-        }
+		patronymic = patronymic == null
+			? null
+			: Normalize(patronymic);
 
-        return new FullName(name, surname, patronymic);
-    }
+		ValidatePart(name, nameof(Name));
+		ValidatePart(surname, nameof(Surname));
 
-    /// <summary>
-    /// Валидация строки.
-    /// </summary>
-    /// <param name="value">Значение</param>
-    /// <param name="partName">Название свойства.</param>
-    /// <exception cref="DomainException">
-    /// Если значение пустое,
-    /// Если привышает <see cref="MaxLength"/>,
-    /// Если содержит недопустимые символы.
-    /// </exception>
-    private static void ValidatePart(string value, string partName)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new DomainException($"{partName} не может быть пустым.");
-        }
+		if (patronymic != null)
+		{
+			ValidatePart(patronymic, nameof(Patronymic));
+		}
 
-        if (value.Length > MaxLength)
-        {
-            throw new DomainException($"{partName} не может превышать {MaxLength} символов.");
-        }
+		return new FullName(name, surname, patronymic);
+	}
 
-        if (!Regex.IsMatch(value, NamePattern))
-        {
-            throw new DomainException($"{partName} содержит недопустимые символы. Разрешены только буквы и дефис.");
-        }
-    }
+	/// <summary>
+	/// Валидация строки.
+	/// </summary>
+	/// <param name="value">Значение</param>
+	/// <param name="partName">Название свойства.</param>
+	/// <exception cref="DomainException">
+	/// Если значение пустое,
+	/// Если привышает <see cref="MaxLength"/>,
+	/// Если содержит недопустимые символы.
+	/// </exception>
+	private static void ValidatePart(string value, string partName)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			throw new DomainException($"{partName} не может быть пустым.");
+		}
 
-    /// <summary>
-    /// Нормализовать строку.
-    /// </summary>
-    /// <param name="value">Значение.</param>
-    private static string Normalize(string value) => value.Trim();
+		if (value.Length > MaxLength)
+		{
+			throw new DomainException($"{partName} не может превышать {MaxLength} символов.");
+		}
 
-    /// <inheritdoc/>
-    protected override IEnumerable<object?> GetEqualityComponents()
-    {
-        yield return Name;
-        yield return Surname;
-        yield return Patronymic;
-    }
+		if (!Regex.IsMatch(value, NamePattern))
+		{
+			throw new DomainException($"{partName} содержит недопустимые символы. Разрешены только буквы и дефис.");
+		}
+	}
 
-    /// <inheritdoc/>
-    public int CompareTo(FullName? other)
-    {
-        if (other == null) return 1;
-        var surnameCompare = string.Compare(Surname, other.Surname, StringComparison.Ordinal);
-        if (surnameCompare != 0) return surnameCompare;
-        var nameCompare = string.Compare(Name, other.Name, StringComparison.Ordinal);
-        if (nameCompare != 0) return nameCompare;
-        return string.Compare(Patronymic, other.Patronymic, StringComparison.Ordinal);
-    }
+	/// <summary>
+	/// Нормализовать строку.
+	/// </summary>
+	/// <param name="value">Значение.</param>
+	private static string Normalize(string value) => value.Trim();
 
-    /// <inheritdoc />
-    public override string ToString() => $"{Surname} {Name} {Patronymic}".Trim();
+	/// <inheritdoc/>
+	protected override IEnumerable<object?> GetEqualityComponents()
+	{
+		yield return Name;
+		yield return Surname;
+		yield return Patronymic;
+	}
+
+	/// <inheritdoc/>
+	public int CompareTo(FullName? other)
+	{
+		if (other == null)
+		{
+			return 1;
+		}
+
+		var surnameCompare = string.Compare(Surname, other.Surname, StringComparison.Ordinal);
+
+		if (surnameCompare != 0)
+		{
+			return surnameCompare;
+		}
+
+		var nameCompare = string.Compare(Name, other.Name, StringComparison.Ordinal);
+
+		if (nameCompare != 0)
+		{
+			return nameCompare;
+		}
+
+		return string.Compare(Patronymic, other.Patronymic, StringComparison.Ordinal);
+	}
+
+	/// <inheritdoc />
+	public override string ToString() => $"{Surname} {Name} {Patronymic}".Trim();
 }

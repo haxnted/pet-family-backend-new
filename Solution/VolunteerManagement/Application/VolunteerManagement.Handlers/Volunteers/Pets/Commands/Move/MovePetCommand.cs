@@ -7,18 +7,18 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Move;
 /// </summary>
 public sealed class MovePetCommand : Command
 {
-    /// <summary>
-    /// Идентификатор волонтёра.
-    /// </summary>
-    public Guid VolunteerId { get; init; }
+	/// <summary>
+	/// Идентификатор волонтёра.
+	/// </summary>
+	public Guid VolunteerId { get; init; }
 
-    /// <summary>
-    /// Идентификатор питомца.
-    /// </summary>
-    public Guid PetId { get; init; }
+	/// <summary>
+	/// Идентификатор питомца.
+	/// </summary>
+	public Guid PetId { get; init; }
 
-    /// <summary>
-    /// Новая позиция.
-    /// </summary>
-    public int NewPosition { get; init; }
+	/// <summary>
+	/// Новая позиция.
+	/// </summary>
+	public int NewPosition { get; init; }
 }

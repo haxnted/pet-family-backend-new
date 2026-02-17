@@ -9,8 +9,8 @@ namespace VolunteerManagement.Services.Shelters.Dtos;
 /// <param name="AssignedAt">Дата назначения.</param>
 /// <param name="IsActive">Активно ли назначение.</param>
 public record VolunteerAssignmentDto(
-    Guid Id,
-    Guid VolunteerId,
-    string Role,
-    DateTime AssignedAt,
-    bool IsActive);
+	Guid Id,
+	Guid VolunteerId,
+	string Role,
+	DateTime AssignedAt,
+	bool IsActive);

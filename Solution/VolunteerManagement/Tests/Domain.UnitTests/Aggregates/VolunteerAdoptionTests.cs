@@ -8,117 +8,127 @@ namespace VolunteerManagement.Tests.Domain.Aggregates;
 
 public sealed class VolunteerAdoptionTests : UnitTestBase
 {
-    #region ReservePet Tests
+	#region ReservePet Tests
 
-    [Fact]
-    public void ReservePet_ShouldChangeStatusToBooked()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
-        var pet = PetBuilder.Default()
-            .WithVolunteerId(volunteer.Id)
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        volunteer.AddPet(pet);
-        var adopterId = Guid.NewGuid();
+	[Fact]
+	public void ReservePet_ShouldChangeStatusToBooked()
+	{
+		var volunteer = VolunteerBuilder.Default().Build();
 
-        volunteer.ReservePet(pet.Id, adopterId);
+		var pet = PetBuilder.Default()
+			.WithVolunteerId(volunteer.Id)
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
 
-        var reservedPet = volunteer.GetPetById(pet.Id);
-        reservedPet.HelpStatus.Should().Be(HelpStatusPet.Booked);
-        reservedPet.BookerId.Should().Be(adopterId);
-    }
+		volunteer.AddPet(pet);
+		var adopterId = Guid.NewGuid();
 
-    [Fact]
-    public void ReservePet_WhenPetNotFound_ShouldThrow()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
+		volunteer.ReservePet(pet.Id, adopterId);
 
-        var act = () => volunteer.ReservePet(PetId.Of(Guid.NewGuid()), Guid.NewGuid());
+		var reservedPet = volunteer.GetPetById(pet.Id);
+		reservedPet.HelpStatus.Should().Be(HelpStatusPet.Booked);
+		reservedPet.BookerId.Should().Be(adopterId);
+	}
 
-        act.Should().Throw<DomainException>();
-    }
+	[Fact]
+	public void ReservePet_WhenPetNotFound_ShouldThrow()
+	{
+		var volunteer = VolunteerBuilder.Default().Build();
 
-    #endregion
+		var act = () => volunteer.ReservePet(PetId.Of(Guid.NewGuid()), Guid.NewGuid());
 
-    #region CancelPetReservation Tests
+		act.Should().Throw<DomainException>();
+	}
 
-    [Fact]
-    public void CancelPetReservation_ShouldResetToLookingForHome()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
-        var pet = PetBuilder.Default()
-            .WithVolunteerId(volunteer.Id)
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        volunteer.AddPet(pet);
-        volunteer.ReservePet(pet.Id, Guid.NewGuid());
+	#endregion
 
-        volunteer.CancelPetReservation(pet.Id);
+	#region CancelPetReservation Tests
 
-        var cancelledPet = volunteer.GetPetById(pet.Id);
-        cancelledPet.HelpStatus.Should().Be(HelpStatusPet.LookingForHome);
-        cancelledPet.BookerId.Should().BeNull();
-    }
+	[Fact]
+	public void CancelPetReservation_ShouldResetToLookingForHome()
+	{
+		var volunteer = VolunteerBuilder.Default().Build();
 
-    #endregion
+		var pet = PetBuilder.Default()
+			.WithVolunteerId(volunteer.Id)
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
 
-    #region AdoptPet Tests
+		volunteer.AddPet(pet);
+		volunteer.ReservePet(pet.Id, Guid.NewGuid());
 
-    [Fact]
-    public void AdoptPet_ShouldSetFoundHomeStatus()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
-        var pet = PetBuilder.Default()
-            .WithVolunteerId(volunteer.Id)
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        volunteer.AddPet(pet);
-        volunteer.ReservePet(pet.Id, Guid.NewGuid());
+		volunteer.CancelPetReservation(pet.Id);
 
-        volunteer.AdoptPet(pet.Id);
+		var cancelledPet = volunteer.GetPetById(pet.Id);
+		cancelledPet.HelpStatus.Should().Be(HelpStatusPet.LookingForHome);
+		cancelledPet.BookerId.Should().BeNull();
+	}
 
-        var adoptedPet = volunteer.GetPetById(pet.Id);
-        adoptedPet.HelpStatus.Should().Be(HelpStatusPet.FoundHome);
-    }
+	#endregion
 
-    [Fact]
-    public void AdoptPet_WhenNotBooked_ShouldThrow()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
-        var pet = PetBuilder.Default()
-            .WithVolunteerId(volunteer.Id)
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        volunteer.AddPet(pet);
+	#region AdoptPet Tests
 
-        var act = () => volunteer.AdoptPet(pet.Id);
+	[Fact]
+	public void AdoptPet_ShouldSetFoundHomeStatus()
+	{
+		var volunteer = VolunteerBuilder.Default().Build();
 
-        act.Should().Throw<DomainException>();
-    }
+		var pet = PetBuilder.Default()
+			.WithVolunteerId(volunteer.Id)
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
 
-    [Fact]
-    public void FullAdoptionFlow_ReserveThenCancelThenReReserve_ShouldWork()
-    {
-        var volunteer = VolunteerBuilder.Default().Build();
-        var pet = PetBuilder.Default()
-            .WithVolunteerId(volunteer.Id)
-            .WithHelpStatus(HelpStatusPet.LookingForHome)
-            .Build();
-        volunteer.AddPet(pet);
-        var adopter1 = Guid.NewGuid();
-        var adopter2 = Guid.NewGuid();
+		volunteer.AddPet(pet);
+		volunteer.ReservePet(pet.Id, Guid.NewGuid());
 
-        // First reserve and cancel
-        volunteer.ReservePet(pet.Id, adopter1);
-        volunteer.CancelPetReservation(pet.Id);
+		volunteer.AdoptPet(pet.Id);
 
-        // Re-reserve by different adopter
-        volunteer.ReservePet(pet.Id, adopter2);
+		var adoptedPet = volunteer.GetPetById(pet.Id);
+		adoptedPet.HelpStatus.Should().Be(HelpStatusPet.FoundHome);
+	}
 
-        var rePet = volunteer.GetPetById(pet.Id);
-        rePet.HelpStatus.Should().Be(HelpStatusPet.Booked);
-        rePet.BookerId.Should().Be(adopter2);
-    }
+	[Fact]
+	public void AdoptPet_WhenNotBooked_ShouldThrow()
+	{
+		var volunteer = VolunteerBuilder.Default().Build();
 
-    #endregion
+		var pet = PetBuilder.Default()
+			.WithVolunteerId(volunteer.Id)
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
+
+		volunteer.AddPet(pet);
+
+		var act = () => volunteer.AdoptPet(pet.Id);
+
+		act.Should().Throw<DomainException>();
+	}
+
+	[Fact]
+	public void FullAdoptionFlow_ReserveThenCancelThenReReserve_ShouldWork()
+	{
+		var volunteer = VolunteerBuilder.Default().Build();
+
+		var pet = PetBuilder.Default()
+			.WithVolunteerId(volunteer.Id)
+			.WithHelpStatus(HelpStatusPet.LookingForHome)
+			.Build();
+
+		volunteer.AddPet(pet);
+		var adopter1 = Guid.NewGuid();
+		var adopter2 = Guid.NewGuid();
+
+		// First reserve and cancel
+		volunteer.ReservePet(pet.Id, adopter1);
+		volunteer.CancelPetReservation(pet.Id);
+
+		// Re-reserve by different adopter
+		volunteer.ReservePet(pet.Id, adopter2);
+
+		var rePet = volunteer.GetPetById(pet.Id);
+		rePet.HelpStatus.Should().Be(HelpStatusPet.Booked);
+		rePet.BookerId.Should().Be(adopter2);
+	}
+
+	#endregion
 }

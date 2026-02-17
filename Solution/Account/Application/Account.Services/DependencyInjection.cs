@@ -7,14 +7,14 @@ namespace Account.Services;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Добавляет сервисы Application слоя в контейнер зависимостей.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddScoped<IAccountService, AccountService>();
+	/// <summary>
+	/// Добавляет сервисы Application слоя в контейнер зависимостей.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	public static IServiceCollection AddApplication(this IServiceCollection services)
+	{
+		services.AddScoped<IAccountService, AccountService>();
 
-        return services;
-    }
+		return services;
+	}
 }

@@ -11,25 +11,26 @@ namespace VolunteerManagement.Handlers.Shelters.Queries.GetSheltersWithPaginatio
 /// </summary>
 public class GetSheltersWithPaginationHandler(IShelterService shelterService, ICacheService cache)
 {
-    /// <summary>
-    /// Обработать запрос на получение приютов с пагинацией.
-    /// </summary>
-    public async Task<IEnumerable<ShelterDto>> Handle(
-        GetSheltersWithPaginationQuery query,
-        CancellationToken ct)
-    {
-        var cacheKey = CacheKeys.SheltersPagination(query.Page, query.Count);
+	/// <summary>
+	/// Обработать запрос на получение приютов с пагинацией.
+	/// </summary>
+	public async Task<IEnumerable<ShelterDto>> Handle(
+		GetSheltersWithPaginationQuery query,
+		CancellationToken ct)
+	{
+		var cacheKey = CacheKeys.SheltersPagination(query.Page, query.Count);
 
-        var cached = await cache.GetAsync<List<ShelterDto>>(cacheKey, ct);
-        if (cached != null)
-            return cached;
+		var cached = await cache.GetAsync<List<ShelterDto>>(cacheKey, ct);
 
-        var shelters = await shelterService.GetWithPaginationAsync(query.Page, query.Count, ct);
+		if (cached != null)
+			return cached;
 
-        var result = shelters.ToDto().ToList();
+		var shelters = await shelterService.GetWithPaginationAsync(query.Page, query.Count, ct);
 
-        await cache.SetAsync(cacheKey, result, ct, CacheDurations.Shelters);
+		var result = shelters.ToDto().ToList();
 
-        return result;
-    }
+		await cache.SetAsync(cacheKey, result, ct, CacheDurations.Shelters);
+
+		return result;
+	}
 }

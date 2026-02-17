@@ -7,18 +7,18 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.AddPhotos;
 /// </summary>
 public sealed class AddPetPhotosCommand : Command
 {
-    /// <summary>
-    /// Идентификатор волонтёра.
-    /// </summary>
-    public Guid VolunteerId { get; init; }
+	/// <summary>
+	/// Идентификатор волонтёра.
+	/// </summary>
+	public Guid VolunteerId { get; init; }
 
-    /// <summary>
-    /// Идентификатор питомца.
-    /// </summary>
-    public Guid PetId { get; init; }
+	/// <summary>
+	/// Идентификатор питомца.
+	/// </summary>
+	public Guid PetId { get; init; }
 
-    /// <summary>
-    /// Пути к фотографиям в хранилище.
-    /// </summary>
-    public List<Guid> PhotoIds { get; init; } = null!;
+	/// <summary>
+	/// Пути к фотографиям в хранилище.
+	/// </summary>
+	public List<Guid> PhotoIds { get; init; } = null!;
 }

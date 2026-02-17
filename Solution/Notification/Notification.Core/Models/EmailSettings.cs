@@ -5,28 +5,28 @@ namespace Notification.Core.Models;
 /// </summary>
 public class EmailSettings
 {
-    /// <summary>
-    /// Идентификатор.
-    /// </summary>
-    public Guid Id { get; init; }
+	/// <summary>
+	/// Идентификатор.
+	/// </summary>
+	public Guid Id { get; init; }
 
-    /// <summary>
-    /// Идентификатор базовых настроек уведомлений.
-    /// </summary>
-    public Guid UserNotificationSettingsId { get; init; }
+	/// <summary>
+	/// Идентификатор базовых настроек уведомлений.
+	/// </summary>
+	public Guid UserNotificationSettingsId { get; init; }
 
-    /// <summary>
-    /// Почта.
-    /// </summary>
-    public string Email { get; set; } = string.Empty;
+	/// <summary>
+	/// Почта.
+	/// </summary>
+	public string Email { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Флаг, указывающий включены ли обновления
-    /// </summary>
-    public bool IsEnabled { get; set; }
+	/// <summary>
+	/// Флаг, указывающий включены ли обновления
+	/// </summary>
+	public bool IsEnabled { get; set; }
 
-    /// <summary>
-    /// Ссылка на базовые настройки уведомлений.
-    /// </summary>
-    public UserNotificationSettings UserNotificationSettings { get; init; } = null!;
+	/// <summary>
+	/// Ссылка на базовые настройки уведомлений.
+	/// </summary>
+	public UserNotificationSettings UserNotificationSettings { get; init; } = null!;
 }

@@ -5,8 +5,10 @@ namespace PetFamily.SharedKernel.Application.Exceptions;
 /// </summary>
 public class ForbiddenException : Exception
 {
-    /// <summary>
-    /// Создает экземпляр ForbiddenException с указанным сообщением.
-    /// </summary>
-    public ForbiddenException(string message) : base(message) { }
+	/// <summary>
+	/// Создает экземпляр ForbiddenException с указанным сообщением.
+	/// </summary>
+	public ForbiddenException(string message) : base(message)
+	{
+	}
 }

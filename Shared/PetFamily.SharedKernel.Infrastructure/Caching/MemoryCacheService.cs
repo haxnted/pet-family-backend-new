@@ -8,119 +8,130 @@ namespace PetFamily.SharedKernel.Infrastructure.Caching;
 /// Реализация кеш-сервиса на основе IMemoryCache.
 /// Подходит для single-instance приложений и разработки.
 /// </summary>
-public sealed class MemoryCacheService : ICacheService
+public sealed class MemoryCacheService(IMemoryCache cache, IOptions<CachingOptions> options) : ICacheService
 {
-    private readonly IMemoryCache _cache;
-    private readonly CachingOptions _options;
-    private readonly ConcurrentDictionary<string, byte> _keys = new();
-    private readonly ConcurrentDictionary<string, object> _getOrSetTasks = new();
+	private readonly CachingOptions _options = options.Value;
 
-    public MemoryCacheService(IMemoryCache cache, IOptions<CachingOptions> options)
-    {
-        _cache = cache;
-        _options = options.Value;
-    }
+	private readonly ConcurrentDictionary<string, byte> _keys = new();
 
-    /// <inheritdoc />
-    public Task<T?> GetAsync<T>(string key, CancellationToken ct)
-    {
-        ct.ThrowIfCancellationRequested();
+	private readonly ConcurrentDictionary<string, object> _getOrSetTasks = new();
 
-        var result = _cache.TryGetValue(key, out T? value) ? value : default;
-        return Task.FromResult(result);
-    }
+	/// <inheritdoc />
+	public Task<T?> GetAsync<T>(string key, CancellationToken ct)
+	{
+		ct.ThrowIfCancellationRequested();
 
-    /// <inheritdoc />
-    public Task SetAsync<T>(string key, T value, CancellationToken ct, TimeSpan? expiration = null)
-    {
-        ct.ThrowIfCancellationRequested();
+		var result = cache.TryGetValue(key, out T? value)
+			? value
+			: default;
 
-        var cacheOptions = new MemoryCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = expiration ?? _options.DefaultExpiration
-        };
+		return Task.FromResult(result);
+	}
 
-        cacheOptions.RegisterPostEvictionCallback(OnEvicted, _keys);
+	/// <inheritdoc />
+	public Task SetAsync<T>(
+		string key,
+		T value,
+		CancellationToken ct,
+		TimeSpan? expiration = null)
+	{
+		ct.ThrowIfCancellationRequested();
 
-        _cache.Set(key, value, cacheOptions);
-        _keys.TryAdd(key, 0);
+		var cacheOptions = new MemoryCacheEntryOptions
+		{
+			AbsoluteExpirationRelativeToNow = expiration ?? _options.DefaultExpiration
+		};
 
-        return Task.CompletedTask;
-    }
+		cacheOptions.RegisterPostEvictionCallback(OnEvicted, _keys);
 
-    /// <inheritdoc />
-    public Task RemoveAsync(string key, CancellationToken ct)
-    {
-        ct.ThrowIfCancellationRequested();
+		cache.Set(key, value, cacheOptions);
+		_keys.TryAdd(key, 0);
 
-        _cache.Remove(key);
-        _keys.TryRemove(key, out _);
+		return Task.CompletedTask;
+	}
 
-        return Task.CompletedTask;
-    }
+	/// <inheritdoc />
+	public Task RemoveAsync(string key, CancellationToken ct)
+	{
+		ct.ThrowIfCancellationRequested();
 
-    /// <inheritdoc />
-    public async Task<T?> GetOrSetAsync<T>(
-        string key,
-        Func<CancellationToken, Task<T?>> factory,
-        CancellationToken ct,
-        TimeSpan? expiration = null)
-    {
-        ct.ThrowIfCancellationRequested();
+		cache.Remove(key);
+		_keys.TryRemove(key, out _);
 
-        var cached = await GetAsync<T>(key, ct);
-        if (cached != null)
-        {
-            return cached;
-        }
+		return Task.CompletedTask;
+	}
 
-        var task = (Task<T?>)_getOrSetTasks.GetOrAdd(
-            key,
-            k => (object)RunFactoryAndCacheAsync(k, factory, ct, expiration));
+	/// <inheritdoc />
+	public async Task<T?> GetOrSetAsync<T>(
+		string key,
+		Func<CancellationToken, Task<T?>> factory,
+		CancellationToken ct,
+		TimeSpan? expiration = null)
+	{
+		ct.ThrowIfCancellationRequested();
 
-        try
-        {
-            return await task;
-        }
-        finally
-        {
-            _getOrSetTasks.TryRemove(key, out _);
-        }
-    }
+		var cached = await GetAsync<T>(key, ct);
 
-    /// <inheritdoc />
-    public Task<bool> ExistsAsync(string key, CancellationToken ct)
-    {
-        ct.ThrowIfCancellationRequested();
-        return Task.FromResult(_cache.TryGetValue(key, out _));
-    }
+		if (cached != null)
+		{
+			return cached;
+		}
 
-    private async Task<T?> RunFactoryAndCacheAsync<T>(
-        string key,
-        Func<CancellationToken, Task<T?>> factory,
-        CancellationToken ct,
-        TimeSpan? expiration)
-    {
-        var cached = await GetAsync<T>(key, ct);
-        if (cached != null)
-        {
-            return cached;
-        }
+		var task = (Task<T?>)_getOrSetTasks.GetOrAdd(
+			key,
+			static (k, state) => state.self.RunFactoryAndCacheAsync(k, state.factory, state.ct, state.expiration),
+			(self: this, factory, ct, expiration));
 
-        var value = await factory(ct);
-        if (value != null)
-        {
-            await SetAsync(key, value, ct, expiration);
-        }
+		try
+		{
+			return await task;
+		}
+		finally
+		{
+			_getOrSetTasks.TryRemove(key, out _);
+		}
+	}
 
-        return value;
-    }
+	/// <inheritdoc />
+	public Task<bool> ExistsAsync(string key, CancellationToken ct)
+	{
+		ct.ThrowIfCancellationRequested();
 
-    private static void OnEvicted(object key, object? value, EvictionReason reason, object? state)
-    {
-        if (state is ConcurrentDictionary<string, byte> keys)
-        {
-            keys.TryRemove(key.ToString()!, out _);
-        }
-    }
+		return Task.FromResult(cache.TryGetValue(key, out _));
+	}
+
+	private async Task<T?> RunFactoryAndCacheAsync<T>(
+		string key,
+		Func<CancellationToken, Task<T?>> factory,
+		CancellationToken ct,
+		TimeSpan? expiration)
+	{
+		var cached = await GetAsync<T>(key, ct);
+
+		if (cached != null)
+		{
+			return cached;
+		}
+
+		var value = await factory(ct);
+
+		if (value != null)
+		{
+			await SetAsync(key, value, ct, expiration);
+		}
+
+		return value;
+	}
+
+	private static void OnEvicted(
+		object key,
+		object? value,
+		EvictionReason reason,
+		object? state)
+	{
+		if (state is ConcurrentDictionary<string, byte> keys)
+		{
+			keys.TryRemove(key.ToString()!, out _);
+		}
+	}
 }

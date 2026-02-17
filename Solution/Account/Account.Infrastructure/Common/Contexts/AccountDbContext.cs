@@ -10,18 +10,18 @@ namespace Account.Infrastructure.Common.Contexts;
 /// <param name="options">Опции контекста.</param>
 public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbContext(options)
 {
-    /// <summary>
-    /// Коллекция аккаунтов.
-    /// </summary>
-    public DbSet<DomainAccount> Accounts => Set<DomainAccount>();
+	/// <summary>
+	/// Коллекция аккаунтов.
+	/// </summary>
+	public DbSet<DomainAccount> Accounts => Set<DomainAccount>();
 
-    /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new Configurations.AccountConfiguration());
+	/// <inheritdoc/>
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.ApplyConfiguration(new Configurations.AccountConfiguration());
 
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
-    }
+		modelBuilder.AddInboxStateEntity();
+		modelBuilder.AddOutboxMessageEntity();
+		modelBuilder.AddOutboxStateEntity();
+	}
 }

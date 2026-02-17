@@ -11,10 +11,10 @@ namespace Auth.Infrastructure.Services.Keycloak.Models;
 /// <param name="Enabled">Признак активности пользователя.</param>
 /// <param name="EmailVerified">Признак подтверждения email.</param>
 public record CreateUserRequest(
-    string Email,
-    string Password,
-    string FirstName,
-    string LastName,
-    string? Patronymic,
-    bool Enabled = true,
-    bool EmailVerified = false);
+	string Email,
+	string Password,
+	string FirstName,
+	string LastName,
+	string? Patronymic,
+	bool Enabled = true,
+	bool EmailVerified = false);

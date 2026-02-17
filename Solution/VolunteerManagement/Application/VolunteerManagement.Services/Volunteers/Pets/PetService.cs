@@ -16,201 +16,201 @@ namespace VolunteerManagement.Services.Volunteers.Pets;
 /// <inheritdoc/>
 /// <param name="cache">Сервис кеширования.</param>
 internal sealed class PetService(
-    IRepository<Volunteer> repository,
-    ISpeciesService speciesService,
-    ICacheService cache) : IPetService
+	IRepository<Volunteer> repository,
+	ISpeciesService speciesService,
+	ICacheService cache) : IPetService
 {
-    /// <inheritdoc/>
-    public async Task<Guid> AddPet(Guid volunteerId,
-        string nickName,
-        string description,
-        string healthInformation,
-        Guid breedId,
-        Guid speciesId,
-        double weight,
-        double height,
-        DateTime birthDate,
-        bool isCastrated,
-        bool isVaccinated,
-        int helpStatus,
-        IEnumerable<RequisiteDto> requisites,
-        CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task<Guid> AddPet(Guid volunteerId,
+		string nickName,
+		string description,
+		string healthInformation,
+		Guid breedId,
+		Guid speciesId,
+		double weight,
+		double height,
+		DateTime birthDate,
+		bool isCastrated,
+		bool isVaccinated,
+		int helpStatus,
+		IEnumerable<RequisiteDto> requisites,
+		CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        var isBreedValid = await speciesService.ValidateBreedExistsAsync(
-            speciesId, breedId, ct);
+		var isBreedValid = await speciesService.ValidateBreedExistsAsync(
+			speciesId, breedId, ct);
 
-        if (!isBreedValid)
-        {
-            throw new UseCaseException(
-                $"Порода с id '{breedId}' не найдена в виде с id '{speciesId}'.");
-        }
+		if (!isBreedValid)
+		{
+			throw new UseCaseException(
+				$"Порода с id '{breedId}' не найдена в виде с id '{speciesId}'.");
+		}
 
-        var petId = PetId.Of(Guid.NewGuid());
-        var petNickName = NickName.Of(nickName);
-        var petDescription = Description.Of(description);
-        var petHealthInfo = Description.Of(healthInformation);
-        var petAttributes = PetPhysicalAttributes.Of(weight, height);
-        var petStatus = (HelpStatusPet)helpStatus;
-        var petRequisites = requisites.Select(r => Requisite.Of(r.Name, r.Description)).ToList();
+		var petId = PetId.Of(Guid.NewGuid());
+		var petNickName = NickName.Of(nickName);
+		var petDescription = Description.Of(description);
+		var petHealthInfo = Description.Of(healthInformation);
+		var petAttributes = PetPhysicalAttributes.Of(weight, height);
+		var petStatus = (HelpStatusPet) helpStatus;
+		var petRequisites = requisites.Select(r => Requisite.Of(r.Name, r.Description)).ToList();
 
-        var pet = Pet.Create(
-            petId,
-            id,
-            petNickName,
-            petDescription,
-            petHealthInfo,
-            petAttributes,
-            speciesId,
-            breedId,
-            birthDate,
-            isCastrated,
-            isVaccinated,
-            petStatus,
-            petRequisites);
+		var pet = Pet.Create(
+			petId,
+			id,
+			petNickName,
+			petDescription,
+			petHealthInfo,
+			petAttributes,
+			speciesId,
+			breedId,
+			birthDate,
+			isCastrated,
+			isVaccinated,
+			petStatus,
+			petRequisites);
 
-        volunteer.AddPet(pet);
-        await repository.UpdateAsync(volunteer, ct);
+		volunteer.AddPet(pet);
+		await repository.UpdateAsync(volunteer, ct);
 
-        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
 
-        return petId.Value;
-    }
+		return petId.Value;
+	}
 
-    /// <inheritdoc/>
-    public async Task UpdatePet(
-        Guid volunteerId,
-        Guid petId,
-        string description,
-        string healthInformation,
-        double weight,
-        double height,
-        bool isCastrated,
-        bool isVaccinated,
-        int helpStatus,
-        IEnumerable<RequisiteDto> requisites,
-        CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task UpdatePet(
+		Guid volunteerId,
+		Guid petId,
+		string description,
+		string healthInformation,
+		double weight,
+		double height,
+		bool isCastrated,
+		bool isVaccinated,
+		int helpStatus,
+		IEnumerable<RequisiteDto> requisites,
+		CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        var pet = volunteer.GetPetById(PetId.Of(petId));
+		var pet = volunteer.GetPetById(PetId.Of(petId));
 
-        var petDescription = Description.Of(description);
-        var petHealthInfo = Description.Of(healthInformation);
-        var petAttributes = PetPhysicalAttributes.Of(weight, height);
-        var petStatus = (HelpStatusPet)helpStatus;
-        var petRequisites = requisites.Select(r => Requisite.Of(r.Name, r.Description)).ToList();
+		var petDescription = Description.Of(description);
+		var petHealthInfo = Description.Of(healthInformation);
+		var petAttributes = PetPhysicalAttributes.Of(weight, height);
+		var petStatus = (HelpStatusPet) helpStatus;
+		var petRequisites = requisites.Select(r => Requisite.Of(r.Name, r.Description)).ToList();
 
-        pet.Update(
-            petDescription,
-            petHealthInfo,
-            petAttributes,
-            isCastrated,
-            isVaccinated,
-            petStatus,
-            petRequisites);
+		pet.Update(
+			petDescription,
+			petHealthInfo,
+			petAttributes,
+			isCastrated,
+			isVaccinated,
+			petStatus,
+			petRequisites);
 
-        await repository.UpdateAsync(volunteer, ct);
+		await repository.UpdateAsync(volunteer, ct);
 
-        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-    }
+		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+	}
 
-    /// <inheritdoc/>
-    public async Task DeletePet(Guid volunteerId, Guid petId, CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task DeletePet(Guid volunteerId, Guid petId, CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        var pet = volunteer.GetPetById(PetId.Of(petId));
-        volunteer.HardRemovePet(pet);
+		var pet = volunteer.GetPetById(PetId.Of(petId));
+		volunteer.HardRemovePet(pet);
 
-        await repository.UpdateAsync(volunteer, ct);
+		await repository.UpdateAsync(volunteer, ct);
 
-        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-        await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
-    }
+		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
+	}
 
-    /// <inheritdoc/>
-    public async Task<Pet> GetPetById(Guid volunteerId, Guid petId, CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task<Pet> GetPetById(Guid volunteerId, Guid petId, CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        return volunteer.GetPetById(PetId.Of(petId));
-    }
+		return volunteer.GetPetById(PetId.Of(petId));
+	}
 
-    /// <inheritdoc/>
-    public async Task<IReadOnlyList<Pet>> GetPetsByVolunteerId(Guid volunteerId, CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task<IReadOnlyList<Pet>> GetPetsByVolunteerId(Guid volunteerId, CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        return volunteer.Pets;
-    }
+		return volunteer.Pets;
+	}
 
-    /// <inheritdoc/>
-    public async Task SoftDeletePetAsync(Guid volunteerId, Guid petId, CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task SoftDeletePetAsync(Guid volunteerId, Guid petId, CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        var pet = volunteer.GetPetById(PetId.Of(petId));
-        volunteer.SoftRemovePet(pet);
+		var pet = volunteer.GetPetById(PetId.Of(petId));
+		volunteer.SoftRemovePet(pet);
 
-        await repository.UpdateAsync(volunteer, ct);
+		await repository.UpdateAsync(volunteer, ct);
 
-        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-    }
+		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+	}
 
-    /// <inheritdoc/>
-    public async Task RestorePetAsync(Guid volunteerId, Guid petId, CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task RestorePetAsync(Guid volunteerId, Guid petId, CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        var pet = volunteer.GetPetById(PetId.Of(petId));
-        volunteer.RestorePet(pet);
+		var pet = volunteer.GetPetById(PetId.Of(petId));
+		volunteer.RestorePet(pet);
 
-        await repository.UpdateAsync(volunteer, ct);
+		await repository.UpdateAsync(volunteer, ct);
 
-        await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-    }
+		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+	}
 
-    /// <inheritdoc/>
-    public async Task MovePetAsync(Guid volunteerId, Guid petId, int newPosition, CancellationToken ct)
-    {
-        var id = VolunteerId.Of(volunteerId);
-        var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
-        if (volunteer == null)
-            throw new EntityNotFoundException<Volunteer>(volunteerId);
+	/// <inheritdoc/>
+	public async Task MovePetAsync(Guid volunteerId, Guid petId, int newPosition, CancellationToken ct)
+	{
+		var id = VolunteerId.Of(volunteerId);
+		var volunteer = await repository.FirstOrDefaultAsync(new GetByIdWithPetsSpecification(id), ct);
+		if (volunteer == null)
+			throw new EntityNotFoundException<Volunteer>(volunteerId);
 
-        var position = Position.Of(newPosition);
-        volunteer.MovePet(PetId.Of(petId), position);
+		var position = Position.Of(newPosition);
+		volunteer.MovePet(PetId.Of(petId), position);
 
-        await repository.UpdateAsync(volunteer, ct);
+		await repository.UpdateAsync(volunteer, ct);
 
-        await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-    }
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
+	}
 }

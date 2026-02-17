@@ -6,5 +6,5 @@ namespace Conversation.Hosts.Endpoints.Requests;
 /// <param name="Text">Текст сообщения.</param>
 /// <param name="ParentMessageId">Идентификатор родительского сообщения (для ответа в ветке).</param>
 public record SendMessageRequest(
-    string Text,
-    Guid? ParentMessageId);
+	string Text,
+	Guid? ParentMessageId);

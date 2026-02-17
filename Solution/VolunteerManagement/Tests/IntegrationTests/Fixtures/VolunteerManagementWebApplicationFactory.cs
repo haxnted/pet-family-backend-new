@@ -14,85 +14,86 @@ using MassTransit;
 namespace VolunteerManagement.Tests.Integration.Fixtures;
 
 public sealed class VolunteerManagementWebApplicationFactory
-    : WebApplicationFactory<Program>, IAsyncLifetime, IIntegrationTestFixture
+	: WebApplicationFactory<Program>, IAsyncLifetime, IIntegrationTestFixture
 {
-    private PostgreSqlContainer? _dbContainer;
+	private PostgreSqlContainer? _dbContainer;
 
-    public string ConnectionString => _dbContainer?.GetConnectionString()
-        ?? throw new InvalidOperationException("Database container not initialized");
+	public string ConnectionString =>
+		_dbContainer?.GetConnectionString()
+		?? throw new InvalidOperationException("Database container not initialized");
 
-    public bool IsInitialized => _dbContainer != null;
+	public bool IsInitialized => _dbContainer != null;
 
-    public async Task InitializeAsync()
-    {
-        _dbContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:17.2-alpine")
-            .WithDatabase("volunteer_management_test")
-            .WithUsername("test_user")
-            .WithPassword("test_password")
-            .WithCleanUp(true)
-            .Build();
+	public async Task InitializeAsync()
+	{
+		_dbContainer = new PostgreSqlBuilder()
+			.WithImage("postgres:17.2-alpine")
+			.WithDatabase("volunteer_management_test")
+			.WithUsername("test_user")
+			.WithPassword("test_password")
+			.WithCleanUp(true)
+			.Build();
 
-        await _dbContainer.StartAsync();
-    }
+		await _dbContainer.StartAsync();
+	}
 
-    public new async Task DisposeAsync()
-    {
-        if (_dbContainer != null)
-        {
-            await _dbContainer.DisposeAsync();
-        }
+	public new async Task DisposeAsync()
+	{
+		if (_dbContainer != null)
+		{
+			await _dbContainer.DisposeAsync();
+		}
 
-        await base.DisposeAsync();
-    }
+		await base.DisposeAsync();
+	}
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseEnvironment("Testing");
+	protected override void ConfigureWebHost(IWebHostBuilder builder)
+	{
+		builder.UseEnvironment("Testing");
 
-        builder.ConfigureTestServices(services =>
-        {
-            services.RemoveAll<DbContextOptions<VolunteerManagementDbContext>>();
-            services.RemoveAll<VolunteerManagementDbContext>();
+		builder.ConfigureTestServices(services =>
+		{
+			services.RemoveAll<DbContextOptions<VolunteerManagementDbContext>>();
+			services.RemoveAll<VolunteerManagementDbContext>();
 
-            services.AddDbContext<VolunteerManagementDbContext>(options =>
-            {
-                options.UseNpgsql(ConnectionString);
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            });
+			services.AddDbContext<VolunteerManagementDbContext>(options =>
+			{
+				options.UseNpgsql(ConnectionString);
+				options.EnableSensitiveDataLogging();
+				options.EnableDetailedErrors();
+			});
 
-            var massTransitDescriptors = services
-                .Where(d =>
-                    (d.ServiceType.FullName?.Contains("MassTransit") ?? false) ||
-                    (d.ImplementationType?.FullName?.Contains("MassTransit") ?? false))
-                .ToList();
+			var massTransitDescriptors = services
+				.Where(d =>
+					(d.ServiceType.FullName?.Contains("MassTransit") ?? false)
+					|| (d.ImplementationType?.FullName?.Contains("MassTransit") ?? false))
+				.ToList();
 
-            foreach (var descriptor in massTransitDescriptors)
-                services.Remove(descriptor);
+			foreach (var descriptor in massTransitDescriptors)
+				services.Remove(descriptor);
 
-            services.Configure<HealthCheckServiceOptions>(options =>
-            {
-                var mtChecks = options.Registrations
-                    .Where(r => r.Name.StartsWith("masstransit", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+			services.Configure<HealthCheckServiceOptions>(options =>
+			{
+				var mtChecks = options.Registrations
+					.Where(r => r.Name.StartsWith("masstransit", StringComparison.OrdinalIgnoreCase))
+					.ToList();
 
-                foreach (var check in mtChecks)
-                    options.Registrations.Remove(check);
-            });
+				foreach (var check in mtChecks)
+					options.Registrations.Remove(check);
+			});
 
-            services.AddMassTransitTestHarness();
+			services.AddMassTransitTestHarness();
 
-            services.RemoveAll<ICacheService>();
-            services.AddSingleton<ICacheService, MemoryCacheService>();
-            services.AddMemoryCache();
-        });
-    }
+			services.RemoveAll<ICacheService>();
+			services.AddSingleton<ICacheService, MemoryCacheService>();
+			services.AddMemoryCache();
+		});
+	}
 
+	public VolunteerManagementDbContext GetDbContext()
+	{
+		var scope = Services.CreateScope();
 
-    public VolunteerManagementDbContext GetDbContext()
-    {
-        var scope = Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
-    }
+		return scope.ServiceProvider.GetRequiredService<VolunteerManagementDbContext>();
+	}
 }

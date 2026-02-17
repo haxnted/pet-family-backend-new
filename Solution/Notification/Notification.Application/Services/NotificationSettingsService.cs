@@ -8,100 +8,103 @@ using PetFamily.SharedKernel.Infrastructure.Abstractions;
 namespace Notification.Application.Services;
 
 /// <inheritdoc/>
-public class NotificationSettingsService(
-    IRepository<UserNotificationSettings> repository)
-    : INotificationSettingsService
+public class NotificationSettingsService(IRepository<UserNotificationSettings> repository)
+	: INotificationSettingsService
 {
-    /// <inheritdoc/>
-    public async Task DisableNotifyAsync(Guid userId, CancellationToken ct)
-    {
-        var specification = new GetUserNotificationSettingsSpecification(userId);
+	/// <inheritdoc/>
+	public async Task DisableNotifyAsync(Guid userId, CancellationToken ct)
+	{
+		var specification = new GetUserNotificationSettingsSpecification(userId);
 
-        var configuration = await repository.FirstOrDefaultAsync(specification, ct);
+		var configuration = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (configuration == null)
-        {
-            throw new EntityNotFoundException<UserNotificationSettings>(userId);
-        }
+		if (configuration == null)
+		{
+			throw new EntityNotFoundException<UserNotificationSettings>(userId);
+		}
 
-        configuration.IsMuted = true;
+		configuration.IsMuted = true;
 
-        await repository.UpdateAsync(configuration, ct);
-    }
+		await repository.UpdateAsync(configuration, ct);
+	}
 
-    /// <inheritdoc/>
-    public async Task<UserNotificationSettingsDto> GetSettingsByIdAsync(Guid userId, CancellationToken ct)
-    {
-        var specification = new GetUserNotificationSettingsWithIncludesSpecification(userId);
+	/// <inheritdoc/>
+	public async Task<UserNotificationSettingsDto> GetSettingsByIdAsync(Guid userId, CancellationToken ct)
+	{
+		var specification = new GetUserNotificationSettingsWithIncludesSpecification(userId);
 
-        var configuration = await repository.FirstOrDefaultAsync(specification, ct);
+		var configuration = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (configuration == null)
-        {
-            throw new EntityNotFoundException<UserNotificationSettings>(userId);
-        }
+		if (configuration == null)
+		{
+			throw new EntityNotFoundException<UserNotificationSettings>(userId);
+		}
 
-        var mappedConfiguration = configuration.ToDto();
-        return mappedConfiguration;
-    }
+		var mappedConfiguration = configuration.ToDto();
 
-    /// <inheritdoc/>
-    public async Task UpdateAsync(Guid userId, bool isEmailNotifyEnabled, CancellationToken ct)
-    {
-        var specification = new GetUserNotificationSettingsSpecification(userId);
+		return mappedConfiguration;
+	}
 
-        var configuration = await repository.FirstOrDefaultAsync(specification, ct);
+	/// <inheritdoc/>
+	public async Task UpdateAsync(
+		Guid userId,
+		bool isEmailNotifyEnabled,
+		CancellationToken ct)
+	{
+		var specification = new GetUserNotificationSettingsSpecification(userId);
 
-        if (configuration == null)
-        {
-            throw new EntityNotFoundException<UserNotificationSettings>(userId);
-        }
+		var configuration = await repository.FirstOrDefaultAsync(specification, ct);
 
-        if (configuration.EmailSettings == null)
-        {
-            configuration.EmailSettings = new EmailSettings
-            {
-                Id = Guid.NewGuid(),
-                UserNotificationSettingsId = configuration.Id,
-                IsEnabled = isEmailNotifyEnabled,
-                UserNotificationSettings = configuration
-            };
-        }
-        else
-        {
-            configuration.EmailSettings.IsEnabled = isEmailNotifyEnabled;
-        }
+		if (configuration == null)
+		{
+			throw new EntityNotFoundException<UserNotificationSettings>(userId);
+		}
 
-        configuration.UpdatedAt = DateTime.UtcNow;
+		if (configuration.EmailSettings == null)
+		{
+			configuration.EmailSettings = new EmailSettings
+			{
+				Id = Guid.NewGuid(),
+				UserNotificationSettingsId = configuration.Id,
+				IsEnabled = isEmailNotifyEnabled,
+				UserNotificationSettings = configuration
+			};
+		}
+		else
+		{
+			configuration.EmailSettings.IsEnabled = isEmailNotifyEnabled;
+		}
 
-        await repository.UpdateAsync(configuration, ct);
-    }
+		configuration.UpdatedAt = DateTime.UtcNow;
 
-    /// <inheritdoc/>
-    public async Task CreateConfigurationAsync(Guid userId, CancellationToken ct)
-    {
-        var specification = new GetUserNotificationSettingsSpecification(userId);
+		await repository.UpdateAsync(configuration, ct);
+	}
 
-        var configuration = await repository.FirstOrDefaultAsync(specification, ct);
+	/// <inheritdoc/>
+	public async Task CreateConfigurationAsync(Guid userId, CancellationToken ct)
+	{
+		var specification = new GetUserNotificationSettingsSpecification(userId);
 
-        if (configuration != null)
-        {
-            throw new UseCaseException("Настройки уведомлений для данного пользователя уже существуют.");
-        }
+		var configuration = await repository.FirstOrDefaultAsync(specification, ct);
 
-        var newConfiguration = new UserNotificationSettings
-        {
-            UserId = userId,
-            IsMuted = false,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-            EmailSettings = new EmailSettings
-            {
-                Email = string.Empty,
-                IsEnabled = false
-            }
-        };
+		if (configuration != null)
+		{
+			throw new UseCaseException("Настройки уведомлений для данного пользователя уже существуют.");
+		}
 
-        await repository.AddAsync(newConfiguration, ct);
-    }
+		var newConfiguration = new UserNotificationSettings
+		{
+			UserId = userId,
+			IsMuted = false,
+			CreatedAt = DateTime.UtcNow,
+			UpdatedAt = DateTime.UtcNow,
+			EmailSettings = new EmailSettings
+			{
+				Email = string.Empty,
+				IsEnabled = false
+			}
+		};
+
+		await repository.AddAsync(newConfiguration, ct);
+	}
 }

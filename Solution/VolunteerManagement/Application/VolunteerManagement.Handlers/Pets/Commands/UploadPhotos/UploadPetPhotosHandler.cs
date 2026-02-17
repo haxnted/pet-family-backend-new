@@ -9,30 +9,31 @@ namespace VolunteerManagement.Handlers.Pets.Commands.UploadPhotos;
 /// Обработчик команды добавления фотографий к животному.
 /// </summary>
 public class UploadPetPhotosHandler(
-    IVolunteerService volunteerService,
-    ILogger<UploadPetPhotosHandler> logger)
+	IVolunteerService volunteerService,
+	ILogger<UploadPetPhotosHandler> logger)
 {
-    /// <summary>
-    /// Обрабатывает команду добавления фотографий к животному.
-    /// </summary>
-    /// <param name="command">Команда добавления фотографий.</param>
-    /// <param name="ct">Токен отмены.</param>
-    public async Task Handle(UploadPetPhotosCommand command, CancellationToken ct)
-    {
-        var petId = PetId.Of(command.PetId);
+	/// <summary>
+	/// Обрабатывает команду добавления фотографий к животному.
+	/// </summary>
+	/// <param name="command">Команда добавления фотографий.</param>
+	/// <param name="ct">Токен отмены.</param>
+	public async Task Handle(UploadPetPhotosCommand command, CancellationToken ct)
+	{
+		var petId = PetId.Of(command.PetId);
 
-        var volunteer = await volunteerService.GetAsync(command.VolunteerId, ct);
-        if (volunteer == null)
-            throw new InvalidOperationException($"Волонтёр с ID {command.VolunteerId} не найден");
+		var volunteer = await volunteerService.GetAsync(command.VolunteerId, ct);
 
-        var pet = volunteer.GetPetById(petId);
+		if (volunteer == null)
+			throw new InvalidOperationException($"Волонтёр с ID {command.VolunteerId} не найден");
 
-        var photos = command.PhotoIds.Select(Photo.Create).ToList();
+		var pet = volunteer.GetPetById(petId);
 
-        pet.AddPhotos(photos);
+		var photos = command.PhotoIds.Select(Photo.Create).ToList();
 
-        logger.LogInformation(
-            "Добавлено {Count} фотографий для животного {PetId} волонтёра {VolunteerId}",
-            photos.Count, command.PetId, command.VolunteerId);
-    }
+		pet.AddPhotos(photos);
+
+		logger.LogInformation(
+			"Добавлено {Count} фотографий для животного {PetId} волонтёра {VolunteerId}",
+			photos.Count, command.PetId, command.VolunteerId);
+	}
 }

@@ -7,8 +7,8 @@ namespace VolunteerManagement.Handlers.Shelters.Commands.HardRemove;
 /// </summary>
 public sealed class HardRemoveShelterCommand : Command
 {
-    /// <summary>
-    /// Идентификатор приюта.
-    /// </summary>
-    public Guid ShelterId { get; init; }
+	/// <summary>
+	/// Идентификатор приюта.
+	/// </summary>
+	public Guid ShelterId { get; init; }
 }

@@ -7,13 +7,13 @@ namespace VolunteerManagement.Handlers.AnimalKinds.Commands.RestoreBreed;
 /// </summary>
 public sealed class RestoreBreedCommand : Command
 {
-    /// <summary>
-    /// Идентификатор вида.
-    /// </summary>
-    public Guid SpeciesId { get; init; }
+	/// <summary>
+	/// Идентификатор вида.
+	/// </summary>
+	public Guid SpeciesId { get; init; }
 
-    /// <summary>
-    /// Идентификатор породы.
-    /// </summary>
-    public Guid BreedId { get; init; }
+	/// <summary>
+	/// Идентификатор породы.
+	/// </summary>
+	public Guid BreedId { get; init; }
 }

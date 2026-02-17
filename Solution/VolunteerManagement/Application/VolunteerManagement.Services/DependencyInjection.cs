@@ -12,19 +12,19 @@ namespace VolunteerManagement.Services;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Добавляет сервисы Application слоя в контейнер зависимостей.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddScoped<IVolunteerService, VolunteerService>();
-        services.AddScoped<IPetService, PetService>();
-        services.AddScoped<ISpeciesService, SpeciesService>();
-        services.AddScoped<IShelterService, ShelterService>();
-        services.AddScoped<IPetSearchService, PetSearchService>();
-        services.AddScoped<IPetAdoptionService, PetAdoptionService>();
+	/// <summary>
+	/// Добавляет сервисы Application слоя в контейнер зависимостей.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	public static IServiceCollection AddApplication(this IServiceCollection services)
+	{
+		services.AddScoped<IVolunteerService, VolunteerService>();
+		services.AddScoped<IPetService, PetService>();
+		services.AddScoped<ISpeciesService, SpeciesService>();
+		services.AddScoped<IShelterService, ShelterService>();
+		services.AddScoped<IPetSearchService, PetSearchService>();
+		services.AddScoped<IPetAdoptionService, PetAdoptionService>();
 
-        return services;
-    }
+		return services;
+	}
 }

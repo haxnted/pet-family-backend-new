@@ -10,9 +10,9 @@ namespace Account.Services.Dtos;
 /// <param name="Description">Описание профиля.</param>
 /// <param name="PhotoId">Идентификатор фотографии.</param>
 public record AccountDto(
-    Guid Id,
-    Guid UserId,
-    string? PhoneNumber,
-    int? AgeExperience,
-    string? Description,
-    Guid? PhotoId);
+	Guid Id,
+	Guid UserId,
+	string? PhoneNumber,
+	int? AgeExperience,
+	string? Description,
+	Guid? PhotoId);

@@ -1,4 +1,4 @@
-﻿using PetFamily.SharedKernel.Domain.Primitives;
+using PetFamily.SharedKernel.Domain.Primitives;
 using PetFamily.SharedKernel.Domain.Exceptions;
 
 namespace VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
@@ -8,46 +8,47 @@ namespace VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properti
 /// </summary>
 public sealed class Photo : ValueObject, IComparable<Photo>
 {
-    /// <summary>
-    /// Идентификатор файла в хранилище.
-    /// </summary>
-    public Guid Value { get; }
+	/// <summary>
+	/// Идентификатор файла в хранилище.
+	/// </summary>
+	public Guid Value { get; }
 
-    /// <summary>
-    /// Приватный конструктор для фабричного метода.
-    /// </summary>
-    /// <param name="value">Идентификатор файла.</param>
-    private Photo(Guid value)
-    {
-        Value = value;
-    }
+	/// <summary>
+	/// Приватный конструктор для фабричного метода.
+	/// </summary>
+	/// <param name="value">Идентификатор файла.</param>
+	private Photo(Guid value)
+	{
+		Value = value;
+	}
 
-    /// <summary>
-    /// Фабричный метод для создания фото <see cref="Photo"/>.
-    /// </summary>
-    /// <param name="fileId">Идентификатор файла в хранилище.</param>
-    /// <returns>Фото <see cref="Photo"/>.</returns>
-    /// <exception cref="DomainException">Если входные данные некорректны.</exception>
-    public static Photo Create(Guid fileId)
-    {
-        if (fileId == Guid.Empty)
-        {
-            throw new DomainException("Идентификатор файла не может быть пустым.");
-        }
+	/// <summary>
+	/// Фабричный метод для создания фото <see cref="Photo"/>.
+	/// </summary>
+	/// <param name="fileId">Идентификатор файла в хранилище.</param>
+	/// <returns>Фото <see cref="Photo"/>.</returns>
+	/// <exception cref="DomainException">Если входные данные некорректны.</exception>
+	public static Photo Create(Guid fileId)
+	{
+		if (fileId == Guid.Empty)
+		{
+			throw new DomainException("Идентификатор файла не может быть пустым.");
+		}
 
-        return new Photo(fileId);
-    }
+		return new(fileId);
+	}
 
-    /// <inheritdoc/>
-    public int CompareTo(Photo? other)
-    {
-        if (other == null) return 1;
-        return Value.CompareTo(other.Value);
-    }
+	/// <inheritdoc/>
+	public int CompareTo(Photo? other)
+	{
+		if (other == null) return 1;
 
-    /// <inheritdoc/>
-    protected override IEnumerable<object?> GetEqualityComponents()
-    {
-        yield return Value;
-    }
+		return Value.CompareTo(other.Value);
+	}
+
+	/// <inheritdoc/>
+	protected override IEnumerable<object?> GetEqualityComponents()
+	{
+		yield return Value;
+	}
 }

@@ -7,8 +7,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Commands.HardRemoveAllPets;
 /// </summary>
 public sealed class HardRemoveAllPetsCommand : Command
 {
-    /// <summary>
-    /// Идентификатор волонтёра.
-    /// </summary>
-    public Guid VolunteerId { get; init; }
+	/// <summary>
+	/// Идентификатор волонтёра.
+	/// </summary>
+	public Guid VolunteerId { get; init; }
 }

@@ -1,4 +1,4 @@
-﻿namespace Notification.Application.Dtos;
+namespace Notification.Application.Dtos;
 
 /// <summary>
 /// Настройки уведомлений для почты.

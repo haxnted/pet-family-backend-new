@@ -11,26 +11,27 @@ namespace Account.Infrastructure.Common;
 /// Конфигуратор для <see cref="AccountDbContext"/>.
 /// </summary>
 public sealed class AccountDbContextConfigurator(IConfiguration configuration, ILoggerFactory loggerFactory)
-    : IDbContextOptionsConfigurator<AccountDbContext>
+	: IDbContextOptionsConfigurator<AccountDbContext>
 {
-    /// <inheritdoc/>
-    public void Configure(DbContextOptionsBuilder<AccountDbContext> options)
-    {
-        var connectionString = configuration.GetConnectionString("AccountDbContext")
-                               ?? throw new InvalidOperationException("Строка подключения 'AccountDbContext' не найдена.");
+	/// <inheritdoc/>
+	public void Configure(DbContextOptionsBuilder<AccountDbContext> options)
+	{
+		var connectionString = configuration.GetConnectionString("AccountDbContext")
+								?? throw new InvalidOperationException("Строка подключения 'AccountDbContext' не найдена.");
 
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-        dataSourceBuilder.EnableDynamicJson();
-        var dataSource = dataSourceBuilder.Build();
+		var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+		dataSourceBuilder.EnableDynamicJson();
+		var dataSource = dataSourceBuilder.Build();
 
-        options
-            .UseLoggerFactory(loggerFactory)
-            .UseNpgsql(dataSource, npgsqlOptions =>
-            {
-                npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                npgsqlOptions.CommandTimeout(60);
-                npgsqlOptions.EnableRetryOnFailure();
-            })
-            .EnableSensitiveDataLogging();
-    }
+		options
+			.UseLoggerFactory(loggerFactory)
+			.UseNpgsql(
+				dataSource, npgsqlOptions =>
+				{
+					npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+					npgsqlOptions.CommandTimeout(60);
+					npgsqlOptions.EnableRetryOnFailure();
+				})
+			.EnableSensitiveDataLogging();
+	}
 }

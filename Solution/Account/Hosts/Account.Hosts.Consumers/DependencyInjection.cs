@@ -13,29 +13,30 @@ namespace Account.Hosts.Consumers;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>
-    /// Настройка зависимостей worker сервиса.
-    /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    public static void AddProgramDependencies(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddHostDependencies(configuration);
+	/// <summary>
+	/// Настройка зависимостей worker сервиса.
+	/// </summary>
+	/// <param name="services">Коллекция сервисов.</param>
+	/// <param name="configuration">Конфигурация приложения.</param>
+	public static void AddProgramDependencies(this IServiceCollection services, IConfiguration configuration)
+	{
+		services.AddHostDependencies(configuration);
 
-        services.AddScoped<CreateAccountHandler>();
+		services.AddScoped<CreateAccountHandler>();
 
-        services.AddMassTransitWithInbox<AccountDbContext>(
-            configuration,
-            configureBus: (cfg) => cfg.AddConsumer<UserCreatedEventConsumer>(),
-            configureRabbitMq: (context, cfg) =>
-            {
-                cfg.Message<UserCreatedEvent>(e => e.SetEntityName("auth-events"));
+		services.AddMassTransitWithInbox<AccountDbContext>(
+			configuration,
+			configureBus: (cfg) => cfg.AddConsumer<UserCreatedEventConsumer>(),
+			configureRabbitMq: (context, cfg) =>
+			{
+				cfg.Message<UserCreatedEvent>(e => e.SetEntityName("auth-events"));
 
-                cfg.ReceiveEndpoint("account-user-events", e =>
-                {
-                    e.Bind("auth-events");
-                    e.ConfigureConsumer<UserCreatedEventConsumer>(context);
-                });
-            });
-    }
+				cfg.ReceiveEndpoint(
+					"account-user-events", e =>
+					{
+						e.Bind("auth-events");
+						e.ConfigureConsumer<UserCreatedEventConsumer>(context);
+					});
+			});
+	}
 }

@@ -14,13 +14,13 @@ namespace VolunteerManagement.Hosts.Endpoints.Requests;
 /// <param name="CloseTime">Время закрытия.</param>
 /// <param name="Capacity">Вместимость.</param>
 public sealed record AddShelterRequest(
-    string Name,
-    string Street,
-    string City,
-    string State,
-    string ZipCode,
-    string PhoneNumber,
-    string Description,
-    TimeOnly OpenTime,
-    TimeOnly CloseTime,
-    int Capacity);
+	string Name,
+	string Street,
+	string City,
+	string State,
+	string ZipCode,
+	string PhoneNumber,
+	string Description,
+	TimeOnly OpenTime,
+	TimeOnly CloseTime,
+	int Capacity);

@@ -9,8 +9,8 @@ namespace FileStorage.Contracts.Dtos;
 /// <param name="ContentType">MIME-тип содержимого файла</param>
 /// <param name="UploadedAt">Дата и время загрузки файла</param>
 public record FileInfoDto(
-    Guid FileId,
-    string FileName,
-    long FileSize,
-    string ContentType,
-    DateTime UploadedAt);
+	Guid FileId,
+	string FileName,
+	long FileSize,
+	string ContentType,
+	DateTime UploadedAt);

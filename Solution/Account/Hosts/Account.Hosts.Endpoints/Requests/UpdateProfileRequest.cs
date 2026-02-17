@@ -7,6 +7,6 @@ namespace Account.Hosts.Endpoints.Requests;
 /// <param name="AgeExperience">Опыт (в годах).</param>
 /// <param name="Description">Описание профиля.</param>
 public sealed record UpdateProfileRequest(
-    string? PhoneNumber,
-    int? AgeExperience,
-    string? Description);
+	string? PhoneNumber,
+	int? AgeExperience,
+	string? Description);

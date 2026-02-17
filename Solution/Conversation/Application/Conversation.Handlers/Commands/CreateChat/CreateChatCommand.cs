@@ -7,18 +7,18 @@ namespace Conversation.Handlers.Commands.CreateChat;
 /// </summary>
 public sealed class CreateChatCommand : Command
 {
-    /// <summary>
-    /// Заголовок чата.
-    /// </summary>
-    public required string Title { get; init; }
+	/// <summary>
+	/// Заголовок чата.
+	/// </summary>
+	public required string Title { get; init; }
 
-    /// <summary>
-    /// Описание чата.
-    /// </summary>
-    public string? Description { get; init; }
+	/// <summary>
+	/// Описание чата.
+	/// </summary>
+	public string? Description { get; init; }
 
-    /// <summary>
-    /// Идентификатор связанной сущности.
-    /// </summary>
-    public required Guid LinkedId { get; init; }
+	/// <summary>
+	/// Идентификатор связанной сущности.
+	/// </summary>
+	public required Guid LinkedId { get; init; }
 }
