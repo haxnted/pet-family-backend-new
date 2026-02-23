@@ -11,7 +11,7 @@ public sealed class FormFileValidator : AbstractValidator<IFormFile>
 	private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
 
 	private static readonly string[] AllowedContentTypes =
-	{
+	[
 		"image/jpeg",
 		"image/jpg",
 		"image/png",
@@ -20,7 +20,7 @@ public sealed class FormFileValidator : AbstractValidator<IFormFile>
 		"application/pdf",
 		"application/msword",
 		"application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-	};
+	];
 
 	/// <inheritdoc />
 	public FormFileValidator()
