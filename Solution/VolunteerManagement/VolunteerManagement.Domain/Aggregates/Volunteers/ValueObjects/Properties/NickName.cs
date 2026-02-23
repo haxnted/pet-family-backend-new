@@ -17,7 +17,7 @@ public sealed class NickName : ValueObject, IComparable<NickName>
 	/// <summary>
 	/// Минимально допустимая длина.
 	/// </summary>
-	public const int MinLength = 10;
+	public const int MinLength = 1;
 
 	/// <summary>
 	/// Максимально допустимая длина.

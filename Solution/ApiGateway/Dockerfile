@@ -9,6 +9,7 @@ ARG GITHUB_USERNAME
 # Copy Directory.Packages.props, Directory.Build.props and nuget.config
 COPY ["Directory.Packages.props", "./"]
 COPY ["Directory.Build.props", "./"]
+COPY ["stylecop.json", "./"]
 COPY ["nuget.Docker.config", "nuget.config"]
 
 # Configure GitHub Packages authentication

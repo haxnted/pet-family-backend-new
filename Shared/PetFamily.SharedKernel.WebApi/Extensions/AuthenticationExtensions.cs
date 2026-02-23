@@ -95,7 +95,8 @@ public static class AuthenticationExtensions
 		{
 			options.AddPolicy(
 				"UserPolicy", policy =>
-					policy.RequireRole("user"));
+					policy.RequireAssertion(context =>
+						context.User.IsInRole("user") || context.User.IsInRole("admin") || context.User.IsInRole("volunteer")));
 
 			options.AddPolicy(
 				"AdminPolicy", policy =>
