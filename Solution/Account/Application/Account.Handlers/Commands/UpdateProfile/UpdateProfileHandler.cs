@@ -1,4 +1,6 @@
 using Account.Services;
+using Account.Services.Caching;
+using PetFamily.SharedKernel.Infrastructure.Caching;
 
 namespace Account.Handlers.Commands.UpdateProfile;
 
@@ -6,7 +8,8 @@ namespace Account.Handlers.Commands.UpdateProfile;
 /// Обработчик команды обновления профильных данных аккаунта.
 /// </summary>
 /// <param name="accountService">Сервис для работы с аккаунтами.</param>
-public class UpdateProfileHandler(IAccountService accountService)
+/// <param name="cache">Сервис кэширования.</param>
+public class UpdateProfileHandler(IAccountService accountService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду обновления профиля.
@@ -21,5 +24,7 @@ public class UpdateProfileHandler(IAccountService accountService)
 			command.AgeExperience,
 			command.Description,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.AccountByUserId(command.UserId), ct);
 	}
 }

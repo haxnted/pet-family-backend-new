@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Pets;
 
 namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.SoftDelete;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.SoftDelete;
 /// Обработчик команды мягкого удаления питомца.
 /// </summary>
 /// <param name="petService">Сервис для работы с питомцами.</param>
-public class SoftDeletePetHandler(IPetService petService)
+/// <param name="cache">Сервис кэширования.</param>
+public class SoftDeletePetHandler(IPetService petService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду мягкого удаления питомца.
@@ -19,5 +22,8 @@ public class SoftDeletePetHandler(IPetService petService)
 			command.VolunteerId,
 			command.PetId,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.PetById(command.VolunteerId, command.PetId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(command.VolunteerId), ct);
 	}
 }

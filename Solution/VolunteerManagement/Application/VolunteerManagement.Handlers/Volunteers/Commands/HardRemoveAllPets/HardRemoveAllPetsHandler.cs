@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers;
 
 namespace VolunteerManagement.Handlers.Volunteers.Commands.HardRemoveAllPets;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Commands.HardRemoveAllPets;
 /// Обработчик команды жёсткого удаления всех питомцев волонтёра.
 /// </summary>
 /// <param name="volunteerService">Сервис для работы с волонтёрами.</param>
-public class HardRemoveAllPetsHandler(IVolunteerService volunteerService)
+/// <param name="cache">Сервис кэширования.</param>
+public class HardRemoveAllPetsHandler(IVolunteerService volunteerService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду жёсткого удаления всех питомцев.
@@ -16,5 +19,8 @@ public class HardRemoveAllPetsHandler(IVolunteerService volunteerService)
 	public async Task Handle(HardRemoveAllPetsCommand command, CancellationToken ct)
 	{
 		await volunteerService.HardRemoveAllPetsAsync(command.VolunteerId, ct);
+
+		await cache.RemoveAsync(CacheKeys.VolunteerById(command.VolunteerId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(command.VolunteerId), ct);
 	}
 }

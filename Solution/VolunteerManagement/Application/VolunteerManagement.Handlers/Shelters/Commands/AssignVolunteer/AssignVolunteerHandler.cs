@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Shelters;
 
 namespace VolunteerManagement.Handlers.Shelters.Commands.AssignVolunteer;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Shelters.Commands.AssignVolunteer;
 /// Обработчик команды назначения волонтёра в приют.
 /// </summary>
 /// <param name="shelterService">Сервис для работы с приютами.</param>
-public class AssignVolunteerHandler(IShelterService shelterService)
+/// <param name="cache">Сервис кэширования.</param>
+public class AssignVolunteerHandler(IShelterService shelterService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду назначения волонтёра в приют.
@@ -20,5 +23,7 @@ public class AssignVolunteerHandler(IShelterService shelterService)
 			command.VolunteerId,
 			command.Role,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.ShelterById(command.ShelterId), ct);
 	}
 }
