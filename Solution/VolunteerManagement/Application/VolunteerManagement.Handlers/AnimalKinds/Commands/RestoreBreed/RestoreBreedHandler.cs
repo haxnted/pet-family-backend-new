@@ -1,4 +1,6 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
 using VolunteerManagement.Services.AnimalKinds;
+using VolunteerManagement.Services.Caching;
 
 namespace VolunteerManagement.Handlers.AnimalKinds.Commands.RestoreBreed;
 
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.AnimalKinds.Commands.RestoreBreed;
 /// Обработчик команды восстановления породы.
 /// </summary>
 /// <param name="speciesService">Сервис для работы с видами животных.</param>
-public class RestoreBreedHandler(ISpeciesService speciesService)
+/// <param name="cache">Сервис кэширования.</param>
+public class RestoreBreedHandler(ISpeciesService speciesService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду восстановления породы.
@@ -19,5 +22,8 @@ public class RestoreBreedHandler(ISpeciesService speciesService)
 			command.SpeciesId,
 			command.BreedId,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.SpeciesAll(), ct);
+		await cache.RemoveAsync(CacheKeys.SpeciesById(command.SpeciesId), ct);
 	}
 }

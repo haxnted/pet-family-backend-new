@@ -1,19 +1,16 @@
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
-using PetFamily.SharedKernel.Infrastructure.Caching;
 using VolunteerManagement.Domain.Aggregates.AnimalKinds;
 using VolunteerManagement.Domain.Aggregates.AnimalKinds.Entities;
 using VolunteerManagement.Domain.Aggregates.AnimalKinds.ValueObjects.Identifiers;
 using VolunteerManagement.Domain.Aggregates.AnimalKinds.ValueObjects.Properties;
 using VolunteerManagement.Services.AnimalKinds.Specifications;
-using VolunteerManagement.Services.Caching;
 using PetFamily.SharedKernel.Application.Exceptions;
 
 namespace VolunteerManagement.Services.AnimalKinds;
 
 /// <inheritdoc/>
 /// <param name="repository">Репозиторий над видами животных.</param>
-/// <param name="cache">Сервис кеширования.</param>
-internal sealed class SpeciesService(IRepository<Species> repository, ICacheService cache) : ISpeciesService
+internal sealed class SpeciesService(IRepository<Species> repository) : ISpeciesService
 {
 	/// <inheritdoc/>
 	public async Task<Guid> AddAsync(string animalKind, CancellationToken ct)
@@ -32,8 +29,6 @@ internal sealed class SpeciesService(IRepository<Species> repository, ICacheServ
 		var species = Species.Create(animalKindValue);
 
 		await repository.AddAsync(species, ct);
-
-		await InvalidateSpeciesCacheAsync(species.Id.Value, ct);
 
 		return species.Id.Value;
 	}
@@ -59,7 +54,6 @@ internal sealed class SpeciesService(IRepository<Species> repository, ICacheServ
 
 		await repository.UpdateAsync(species, ct);
 
-		await InvalidateSpeciesCacheAsync(speciesId, ct);
 
 		return breed.Id.Value;
 	}
@@ -82,7 +76,6 @@ internal sealed class SpeciesService(IRepository<Species> repository, ICacheServ
 
 		await repository.UpdateAsync(species, ct);
 
-		await InvalidateSpeciesCacheAsync(speciesId, ct);
 	}
 
 	/// <inheritdoc/>
@@ -112,7 +105,6 @@ internal sealed class SpeciesService(IRepository<Species> repository, ICacheServ
 
 		await repository.UpdateAsync(species, ct);
 
-		await InvalidateSpeciesCacheAsync(speciesId, ct);
 	}
 
 	/// <inheritdoc/>
@@ -179,7 +171,6 @@ internal sealed class SpeciesService(IRepository<Species> repository, ICacheServ
 
 		await repository.UpdateAsync(species, ct);
 
-		await InvalidateSpeciesCacheAsync(speciesId, ct);
 	}
 
 	/// <inheritdoc/>
@@ -208,12 +199,6 @@ internal sealed class SpeciesService(IRepository<Species> repository, ICacheServ
 
 		await repository.UpdateAsync(species, ct);
 
-		await InvalidateSpeciesCacheAsync(speciesId, ct);
 	}
 
-	private async Task InvalidateSpeciesCacheAsync(Guid speciesId, CancellationToken ct)
-	{
-		await cache.RemoveAsync(CacheKeys.SpeciesAll(), ct);
-		await cache.RemoveAsync(CacheKeys.SpeciesById(speciesId), ct);
-	}
 }

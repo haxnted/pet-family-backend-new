@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Shelters;
 
 namespace VolunteerManagement.Handlers.Shelters.Commands.SoftRemove;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Shelters.Commands.SoftRemove;
 /// Обработчик команды мягкого удаления приюта.
 /// </summary>
 /// <param name="shelterService">Сервис для работы с приютами.</param>
-public class SoftRemoveShelterHandler(IShelterService shelterService)
+/// <param name="cache">Сервис кэширования.</param>
+public class SoftRemoveShelterHandler(IShelterService shelterService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду мягкого удаления приюта.
@@ -16,5 +19,7 @@ public class SoftRemoveShelterHandler(IShelterService shelterService)
 	public async Task Handle(SoftRemoveShelterCommand command, CancellationToken ct)
 	{
 		await shelterService.SoftRemoveAsync(command.ShelterId, ct);
+
+		await cache.RemoveAsync(CacheKeys.ShelterById(command.ShelterId), ct);
 	}
 }

@@ -1,4 +1,6 @@
 using Conversation.Services;
+using Conversation.Services.Caching;
+using PetFamily.SharedKernel.Infrastructure.Caching;
 
 namespace Conversation.Handlers.Commands.SendMessage;
 
@@ -6,7 +8,8 @@ namespace Conversation.Handlers.Commands.SendMessage;
 /// Обработчик команды отправки сообщения в чат.
 /// </summary>
 /// <param name="chatService">Сервис для работы с чатами.</param>
-public class SendMessageHandler(IChatService chatService)
+/// <param name="cache">Сервис кэширования.</param>
+public class SendMessageHandler(IChatService chatService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду отправки сообщения.
@@ -16,11 +19,15 @@ public class SendMessageHandler(IChatService chatService)
 	/// <returns>Идентификатор созданного сообщения.</returns>
 	public async Task<Guid> Handle(SendMessageCommand command, CancellationToken ct)
 	{
-		return await chatService.AddMessageAsync(
+		var messageId = await chatService.AddMessageAsync(
 			command.ChatId,
 			command.Text,
 			command.UserId,
 			command.ParentMessageId,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.ChatById(command.ChatId), ct);
+
+		return messageId;
 	}
 }

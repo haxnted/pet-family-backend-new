@@ -1,21 +1,17 @@
 using Account.Domain.Aggregates.ValueObjects;
 using Account.Domain.Aggregates.ValueObjects.Identifiers;
 using Account.Domain.Aggregates.ValueObjects.Properties;
-using Account.Services.Caching;
 using Account.Services.Specifications;
 using PetFamily.SharedKernel.Application.Exceptions;
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
-using PetFamily.SharedKernel.Infrastructure.Caching;
 using DomainAccount = Account.Domain.Aggregates.Account;
 
 namespace Account.Services;
 
 /// <inheritdoc/>
 /// <param name="repository">Репозиторий над аккаунтами.</param>
-/// <param name="cache">Сервис кеширования.</param>
 internal sealed class AccountService(
-	IRepository<DomainAccount> repository,
-	ICacheService cache) : IAccountService
+	IRepository<DomainAccount> repository) : IAccountService
 {
 	/// <inheritdoc/>
 	public async Task CreateAsync(Guid userId, CancellationToken ct)
@@ -43,8 +39,6 @@ internal sealed class AccountService(
 		account.UpdateProfile(phoneNumber, ageExperience, desc);
 
 		await repository.UpdateAsync(account, ct);
-
-		await cache.RemoveAsync(CacheKeys.AccountByUserId(userId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -57,8 +51,6 @@ internal sealed class AccountService(
 		account.UpdatePhoto(photo);
 
 		await repository.UpdateAsync(account, ct);
-
-		await cache.RemoveAsync(CacheKeys.AccountByUserId(userId), ct);
 	}
 
 	/// <inheritdoc/>

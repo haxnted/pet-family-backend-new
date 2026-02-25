@@ -1,5 +1,4 @@
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
-using PetFamily.SharedKernel.Infrastructure.Caching;
 using PetFamily.SharedKernel.Application.Exceptions;
 using VolunteerManagement.Domain.Aggregates.Shelters;
 using VolunteerManagement.Domain.Aggregates.Shelters.Entities;
@@ -7,15 +6,13 @@ using VolunteerManagement.Domain.Aggregates.Shelters.Enums;
 using VolunteerManagement.Domain.Aggregates.Shelters.ValueObjects.Identifiers;
 using VolunteerManagement.Domain.Aggregates.Shelters.ValueObjects.Properties;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
-using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Shelters.Specifications;
 
 namespace VolunteerManagement.Services.Shelters;
 
 /// <inheritdoc/>
 /// <param name="repository">Репозиторий над приютами.</param>
-/// <param name="cache">Сервис кеширования.</param>
-internal sealed class ShelterService(IRepository<Shelter> repository, ICacheService cache) : IShelterService
+internal sealed class ShelterService(IRepository<Shelter> repository) : IShelterService
 {
 	/// <inheritdoc/>
 	public async Task AddAsync(
@@ -73,8 +70,6 @@ internal sealed class ShelterService(IRepository<Shelter> repository, ICacheServ
 		shelter.UpdateMainInfo(shelterName, desc, phone, workingHours, capacity);
 
 		await repository.UpdateAsync(shelter, ct);
-
-		await cache.RemoveAsync(CacheKeys.ShelterById(shelterId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -92,8 +87,6 @@ internal sealed class ShelterService(IRepository<Shelter> repository, ICacheServ
 		}
 
 		await repository.RemoveAsync(shelter, ct);
-
-		await cache.RemoveAsync(CacheKeys.ShelterById(shelterId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -113,8 +106,6 @@ internal sealed class ShelterService(IRepository<Shelter> repository, ICacheServ
 		shelter.Delete();
 
 		await repository.UpdateAsync(shelter, ct);
-
-		await cache.RemoveAsync(CacheKeys.ShelterById(shelterId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -166,8 +157,6 @@ internal sealed class ShelterService(IRepository<Shelter> repository, ICacheServ
 		shelter.UpdateAddress(address);
 
 		await repository.UpdateAsync(shelter, ct);
-
-		await cache.RemoveAsync(CacheKeys.ShelterById(shelterId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -189,8 +178,6 @@ internal sealed class ShelterService(IRepository<Shelter> repository, ICacheServ
 		shelter.ChangeStatus(status);
 
 		await repository.UpdateAsync(shelter, ct);
-
-		await cache.RemoveAsync(CacheKeys.ShelterById(shelterId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -219,8 +206,6 @@ internal sealed class ShelterService(IRepository<Shelter> repository, ICacheServ
 		shelter.AssignVolunteer(assignment);
 
 		await repository.UpdateAsync(shelter, ct);
-
-		await cache.RemoveAsync(CacheKeys.ShelterById(shelterId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -240,8 +225,6 @@ internal sealed class ShelterService(IRepository<Shelter> repository, ICacheServ
 		shelter.RemoveVolunteer(volunteerId);
 
 		await repository.UpdateAsync(shelter, ct);
-
-		await cache.RemoveAsync(CacheKeys.ShelterById(shelterId), ct);
 	}
 
 	/// <inheritdoc/>

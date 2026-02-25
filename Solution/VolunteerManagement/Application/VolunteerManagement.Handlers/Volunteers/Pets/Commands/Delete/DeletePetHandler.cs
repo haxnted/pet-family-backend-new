@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Pets;
 
 namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Delete;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Delete;
 /// Обработчик команды на удаление животного.
 /// </summary>
 /// <param name="petService">Сервис для работы с животными.</param>
-public class DeletePetHandler(IPetService petService)
+/// <param name="cache">Сервис кэширования.</param>
+public class DeletePetHandler(IPetService petService, ICacheService cache)
 {
 	/// <summary>
 	/// Обработать команду на удаление животного.
@@ -19,5 +22,9 @@ public class DeletePetHandler(IPetService petService)
 			command.VolunteerId,
 			command.PetId,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.PetById(command.VolunteerId, command.PetId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(command.VolunteerId), ct);
+		await cache.RemoveAsync(CacheKeys.VolunteerById(command.VolunteerId), ct);
 	}
 }

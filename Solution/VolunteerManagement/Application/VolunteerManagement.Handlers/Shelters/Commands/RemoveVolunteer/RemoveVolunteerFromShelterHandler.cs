@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Shelters;
 
 namespace VolunteerManagement.Handlers.Shelters.Commands.RemoveVolunteer;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Shelters.Commands.RemoveVolunteer;
 /// Обработчик команды удаления волонтёра из приюта.
 /// </summary>
 /// <param name="shelterService">Сервис для работы с приютами.</param>
-public class RemoveVolunteerFromShelterHandler(IShelterService shelterService)
+/// <param name="cache">Сервис кэширования.</param>
+public class RemoveVolunteerFromShelterHandler(IShelterService shelterService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду удаления волонтёра из приюта.
@@ -19,5 +22,7 @@ public class RemoveVolunteerFromShelterHandler(IShelterService shelterService)
 			command.ShelterId,
 			command.VolunteerId,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.ShelterById(command.ShelterId), ct);
 	}
 }
