@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers;
 
 namespace VolunteerManagement.Handlers.Volunteers.Commands.ActivateAccount;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Commands.ActivateAccount;
 /// Обработчик команды активации аккаунта волонтёра.
 /// </summary>
 /// <param name="volunteerService">Сервис для работы с волонтёрами.</param>
-public class ActivateAccountVolunteerHandler(IVolunteerService volunteerService)
+/// <param name="cache">Сервис кэширования.</param>
+public class ActivateAccountVolunteerHandler(IVolunteerService volunteerService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду активации аккаунта волонтёра.
@@ -16,5 +19,7 @@ public class ActivateAccountVolunteerHandler(IVolunteerService volunteerService)
 	public async Task Handle(ActivateAccountVolunteerCommand command, CancellationToken ct)
 	{
 		await volunteerService.ActivateAccountVolunteerRequest(command.VolunteerId, ct);
+
+		await cache.RemoveAsync(CacheKeys.VolunteerById(command.VolunteerId), ct);
 	}
 }

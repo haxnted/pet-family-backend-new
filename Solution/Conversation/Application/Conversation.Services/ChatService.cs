@@ -5,7 +5,6 @@ using Conversation.Domain.Aggregates.ValueObjects.Properties;
 using Conversation.Services.Specifications;
 using PetFamily.SharedKernel.Application.Exceptions;
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
-using PetFamily.SharedKernel.Infrastructure.Caching;
 
 namespace Conversation.Services;
 
@@ -13,8 +12,7 @@ namespace Conversation.Services;
 /// Сервис для работы с чатами.
 /// </summary>
 internal sealed class ChatService(
-	IRepository<Chat> repository,
-	ICacheService cacheService) : IChatService
+	IRepository<Chat> repository) : IChatService
 {
 	/// <inheritdoc />
 	public async Task<Guid> CreateAsync(
@@ -59,8 +57,6 @@ internal sealed class ChatService(
 				: null);
 
 		await repository.UpdateAsync(chat, ct);
-
-		await cacheService.RemoveAsync(Caching.CacheKeys.ChatById(chatId), ct);
 
 		return messageId.Value;
 	}

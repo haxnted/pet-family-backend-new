@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Shelters;
 
 namespace VolunteerManagement.Handlers.Shelters.Commands.UpdateAddress;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Shelters.Commands.UpdateAddress;
 /// Обработчик команды обновления адреса приюта.
 /// </summary>
 /// <param name="shelterService">Сервис для работы с приютами.</param>
-public class UpdateShelterAddressHandler(IShelterService shelterService)
+/// <param name="cache">Сервис кэширования.</param>
+public class UpdateShelterAddressHandler(IShelterService shelterService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду обновления адреса приюта.
@@ -22,5 +25,7 @@ public class UpdateShelterAddressHandler(IShelterService shelterService)
 			command.State,
 			command.ZipCode,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.ShelterById(command.ShelterId), ct);
 	}
 }

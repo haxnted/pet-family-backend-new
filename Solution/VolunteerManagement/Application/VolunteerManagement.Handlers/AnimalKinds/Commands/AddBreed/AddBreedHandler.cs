@@ -1,4 +1,6 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
 using VolunteerManagement.Services.AnimalKinds;
+using VolunteerManagement.Services.Caching;
 
 namespace VolunteerManagement.Handlers.AnimalKinds.Commands.AddBreed;
 
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.AnimalKinds.Commands.AddBreed;
 /// Обработчик команды добавления породы.
 /// </summary>
 /// <param name="speciesService">Сервис для работы с видами животных.</param>
-public class AddBreedHandler(ISpeciesService speciesService)
+/// <param name="cache">Сервис кэширования.</param>
+public class AddBreedHandler(ISpeciesService speciesService, ICacheService cache)
 {
 	/// <summary>
 	/// Обрабатывает команду добавления породы.
@@ -16,10 +19,10 @@ public class AddBreedHandler(ISpeciesService speciesService)
 	/// <returns>Идентификатор созданной породы.</returns>
 	public async Task<Guid> Handle(AddBreedCommand command, CancellationToken ct)
 	{
-		var breedId = await speciesService.AddBreedAsync(
-			command.SpeciesId,
-			command.BreedName,
-			ct);
+		var breedId = await speciesService.AddBreedAsync(command.SpeciesId, command.BreedName, ct);
+
+		await cache.RemoveAsync(CacheKeys.SpeciesAll(), ct);
+		await cache.RemoveAsync(CacheKeys.SpeciesById(command.SpeciesId), ct);
 
 		return breedId;
 	}

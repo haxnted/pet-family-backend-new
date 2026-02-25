@@ -1,18 +1,15 @@
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
-using PetFamily.SharedKernel.Infrastructure.Caching;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Identifiers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
 using PetFamily.SharedKernel.Application.Exceptions;
-using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Specifications;
 
 namespace VolunteerManagement.Services.Volunteers;
 
 /// <inheritdoc/>
 /// <param name="repository">Репозиторий над волонтёрами.</param>
-/// <param name="cache">Сервис кеширования.</param>
-internal sealed class VolunteerService(IRepository<Volunteer> repository, ICacheService cache) : IVolunteerService
+internal sealed class VolunteerService(IRepository<Volunteer> repository) : IVolunteerService
 {
 	/// <inheritdoc/>
 	public async Task AddAsync(
@@ -47,8 +44,6 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository, ICache
 		}
 
 		await repository.RemoveAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -68,8 +63,6 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository, ICache
 		volunteer.Delete();
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -89,8 +82,6 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository, ICache
 		volunteer.Restore();
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -134,8 +125,5 @@ internal sealed class VolunteerService(IRepository<Volunteer> repository, ICache
 		volunteer.HardRemoveAllPets();
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
-		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
 	}
 }

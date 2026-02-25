@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Pets;
 
 namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Add;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Add;
 /// Обработчик команды на добавление животного.
 /// </summary>
 /// <param name="petService">Сервис для работы с животными.</param>
-public class AddPetHandler(IPetService petService)
+/// <param name="cache">Сервис кэширования.</param>
+public class AddPetHandler(IPetService petService, ICacheService cache)
 {
 	/// <summary>
 	/// Обработать команду на добавление животного.
@@ -16,7 +19,7 @@ public class AddPetHandler(IPetService petService)
 	/// <returns>Идентификатор созданного животного.</returns>
 	public async Task<Guid> Handle(AddPetCommand command, CancellationToken ct)
 	{
-		return await petService.AddPet(
+		var petId = await petService.AddPet(
 			command.VolunteerId,
 			command.NickName,
 			command.GeneralDescription,
@@ -31,5 +34,10 @@ public class AddPetHandler(IPetService petService)
 			command.HelpStatus,
 			command.Requisites,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(command.VolunteerId), ct);
+		await cache.RemoveAsync(CacheKeys.VolunteerById(command.VolunteerId), ct);
+
+		return petId;
 	}
 }

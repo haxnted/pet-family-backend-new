@@ -1,3 +1,5 @@
+using PetFamily.SharedKernel.Infrastructure.Caching;
+using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Pets;
 
 namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Update;
@@ -6,7 +8,8 @@ namespace VolunteerManagement.Handlers.Volunteers.Pets.Commands.Update;
 /// Обработчик команды на обновление животного.
 /// </summary>
 /// <param name="petService">Сервис для работы с животными.</param>
-public class UpdatePetHandler(IPetService petService)
+/// <param name="cache">Сервис кэширования.</param>
+public class UpdatePetHandler(IPetService petService, ICacheService cache)
 {
 	/// <summary>
 	/// Обработать команду на обновление животного.
@@ -27,5 +30,8 @@ public class UpdatePetHandler(IPetService petService)
 			command.HelpStatus,
 			command.Requisites,
 			ct);
+
+		await cache.RemoveAsync(CacheKeys.PetById(command.VolunteerId, command.PetId), ct);
+		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(command.VolunteerId), ct);
 	}
 }

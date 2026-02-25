@@ -1,5 +1,4 @@
 using PetFamily.SharedKernel.Infrastructure.Abstractions;
-using PetFamily.SharedKernel.Infrastructure.Caching;
 using VolunteerManagement.Domain.Aggregates.Volunteers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.Entities;
 using VolunteerManagement.Domain.Aggregates.Volunteers.Enums;
@@ -7,18 +6,15 @@ using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Identifiers;
 using VolunteerManagement.Domain.Aggregates.Volunteers.ValueObjects.Properties;
 using VolunteerManagement.Services.AnimalKinds;
 using PetFamily.SharedKernel.Application.Exceptions;
-using VolunteerManagement.Services.Caching;
 using VolunteerManagement.Services.Volunteers.Dtos;
 using VolunteerManagement.Services.Volunteers.Specifications;
 
 namespace VolunteerManagement.Services.Volunteers.Pets;
 
 /// <inheritdoc/>
-/// <param name="cache">Сервис кеширования.</param>
 internal sealed class PetService(
 	IRepository<Volunteer> repository,
-	ISpeciesService speciesService,
-	ICacheService cache) : IPetService
+	ISpeciesService speciesService) : IPetService
 {
 	/// <inheritdoc/>
 	public async Task<Guid> AddPet(Guid volunteerId,
@@ -76,9 +72,6 @@ internal sealed class PetService(
 		volunteer.AddPet(pet);
 		await repository.UpdateAsync(volunteer, ct);
 
-		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
-
 		return petId.Value;
 	}
 
@@ -119,9 +112,6 @@ internal sealed class PetService(
 			petRequisites);
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -136,10 +126,6 @@ internal sealed class PetService(
 		volunteer.HardRemovePet(pet);
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
-		await cache.RemoveAsync(CacheKeys.VolunteerById(volunteerId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -176,9 +162,6 @@ internal sealed class PetService(
 		volunteer.SoftRemovePet(pet);
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -193,9 +176,6 @@ internal sealed class PetService(
 		volunteer.RestorePet(pet);
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.PetById(volunteerId, petId), ct);
-		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
 	}
 
 	/// <inheritdoc/>
@@ -210,7 +190,5 @@ internal sealed class PetService(
 		volunteer.MovePet(PetId.Of(petId), position);
 
 		await repository.UpdateAsync(volunteer, ct);
-
-		await cache.RemoveAsync(CacheKeys.PetsByVolunteerId(volunteerId), ct);
 	}
 }
