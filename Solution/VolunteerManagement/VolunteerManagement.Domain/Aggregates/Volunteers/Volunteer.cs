@@ -72,7 +72,7 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
 	/// <param name="pet">Животное.</param>
 	public void AddPet(Pet pet)
 	{
-		if (Pets.Count > LimitPets)
+		if (Pets.Count + 1 > LimitPets)
 		{
 			throw new DomainException($"Вы привысили допустимый лимит {LimitPets} на создание животных.");
 		}
@@ -99,7 +99,7 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
 	public void HardRemovePet(Pet pet)
 	{
 		var petToRemove = _pets.FirstOrDefault(p => p.Id == pet.Id)
-						?? throw new DomainException("Не найдено животное");
+			?? throw new DomainException("Не найдено животное");
 
 		_pets.Remove(petToRemove);
 	}
@@ -120,12 +120,8 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
 	{
 		ArgumentNullException.ThrowIfNull(pet);
 
-		var existing = _pets.FirstOrDefault(p => p.Id == pet.Id);
-
-		if (existing == null)
-		{
-			throw new DomainException("Питомец не найден.");
-		}
+		var existing = _pets.FirstOrDefault(p => p.Id == pet.Id)
+			?? throw new DomainException("Питомец не найден.");
 
 		existing.Delete();
 	}
@@ -141,12 +137,8 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
 	{
 		ArgumentNullException.ThrowIfNull(pet);
 
-		var existing = _pets.FirstOrDefault(p => p.Id == pet.Id);
-
-		if (existing == null)
-		{
-			throw new DomainException("Питомец не найден.");
-		}
+		var existing = _pets.FirstOrDefault(p => p.Id == pet.Id)
+			?? throw new DomainException("Питомец не найден.");
 
 		existing.Restore();
 	}
@@ -162,12 +154,7 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
 	{
 		var pet = _pets.FirstOrDefault(x => x.Id == petId);
 
-		if (pet == null)
-		{
-			throw new DomainException("Животное с таким идентификатором не найдено.");
-		}
-
-		return pet;
+		return pet ?? throw new DomainException("Животное с таким идентификатором не найдено.");
 	}
 
 	/// <summary>
@@ -233,12 +220,8 @@ public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
 			throw new DomainException("Позиция животного превышает размер списка животных");
 		}
 
-		var pet = _pets.FirstOrDefault(p => p.Id == id);
-
-		if (pet == null)
-		{
-			throw new DomainException("Не удалось найти животное с таким идентификатором.");
-		}
+		var pet = _pets.FirstOrDefault(p => p.Id == id)
+			?? throw new DomainException("Не удалось найти животное с таким идентификатором.");
 
 		if (pet.Position == newIdx)
 		{
