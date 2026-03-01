@@ -6,18 +6,13 @@ namespace PetFamily.SharedKernel.Domain.Primitives;
 /// </summary>
 public abstract class ValueObject : IEquatable<ValueObject>
 {
-	/// <summary>
-	/// Возвращает компоненты, участвующие в сравнении объектов-значений.
-	/// Каждый наследник обязан их определить.
-	/// </summary>
-	/// <returns>Перечисление компонентов, участвующих в равенстве.</returns>
-	protected abstract IEnumerable<object?> GetEqualityComponents();
-
 	/// <inheritdoc />
 	public override bool Equals(object? obj)
 	{
 		if (obj == null || obj.GetType() != GetType())
+		{
 			return false;
+		}
 
 		var other = (ValueObject)obj;
 
@@ -31,6 +26,13 @@ public abstract class ValueObject : IEquatable<ValueObject>
 			.Aggregate(0, (hash, component) =>
 				HashCode.Combine(hash, component?.GetHashCode() ?? 0));
 	}
+
+	/// <summary>
+	/// Возвращает компоненты, участвующие в сравнении объектов-значений.
+	/// Каждый наследник обязан их определить.
+	/// </summary>
+	/// <returns>Перечисление компонентов, участвующих в равенстве.</returns>
+	protected abstract IEnumerable<object?> GetEqualityComponents();
 
 	/// <summary>
 	/// Универсальный оператор равенства для объектов-значений.
